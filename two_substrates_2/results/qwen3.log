@@ -1,0 +1,33 @@
+Loading prompterminal/fdm-40ch-nhop-qwen3...
+Loading weights: 100%|███████████████████████████████| 310/310 [00:04<00:00, 68.08it/s]
+  Loaded. Layers: 28, KV heads: 8, Head dim: 64
+  FDM prefix seq_len: 513
+  Write head parameters: 31,337,216 (31.3M)
+  Loading checkpoint: fdm_write_[head.pt](http://head.pt)
+
+============================================================
+EXPERIMENT 3: Learned Write Head (facts in parameters)
+  No FDM encoder, no FDM tokens — just the write head's weights
+============================================================
+Write head eval: 100%|███████████████████████████████| 100/100 [06:38<00:00,  3.98s/it]
+
+  Overall extra-channel accuracy: 0.0%
+    TEAM: 0.0%
+    REGION: 0.0%
+    PHASE: 0.0%
+    COMM: 0.0%
+    ASSET: 0.0%
+
+============================================================
+COMPARISON
+============================================================
+  Baseline (FDM in context):    93.7%
+  Frozen KV injection:          89.1%
+  Learned write head:           0.0%
+
+  → Write head needs more capacity or different architecture.
+    The read path works (89.1% frozen KV proves it).
+    The write path needs to produce better KV approximations.
+
+Results saved to fdm_write_head_results.json
+root@1606ef76afe0:/workspace/FDM_IN_WEIGHTS#
