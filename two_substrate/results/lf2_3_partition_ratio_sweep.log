@@ -1,0 +1,352 @@
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# 
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# 
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# 
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# echo "=== split_ratio_sweep ==="
+ls -la /workspace/FDM_IN_WEIGHTS/split_ratio_sweep/
+
+echo ""
+echo "=== split_ratio_sweep_n200 ==="
+ls -la /workspace/FDM_IN_WEIGHTS/split_ratio_sweep_n200/
+
+echo ""
+echo "=== split_ratio_sweep_n200_12 ==="
+ls -la /workspace/FDM_IN_WEIGHTS/split_ratio_sweep_n200_12/
+=== split_ratio_sweep ===
+total 3916
+drwxrwxrwx  2 root root 1000243 May  2 14:02 .
+drwxrwxrwx 32 root root 3005562 May  3 01:33 ..
+-rw-rw-rw-  1 root root    1247 May  2 14:02 sweep_results.json
+-rw-rw-rw-  1 root root    1247 May  2 14:02 sweep_results_smoke.json
+
+=== split_ratio_sweep_n200 ===
+total 4259
+drwxrwxrwx  2 root root 1031480 May  2 14:02 .
+drwxrwxrwx 32 root root 3005562 May  3 01:33 ..
+-rw-rw-rw-  1 root root  161295 May  2 14:02 sweep_results.json
+-rw-rw-rw-  1 root root  161067 May  2 14:02 sweep_results_merged.json
+
+=== split_ratio_sweep_n200_12 ===
+total 3922
+drwxrwxrwx  2 root root 1000817 May  2 14:02 .
+drwxrwxrwx 32 root root 3005562 May  3 01:33 ..
+-rw-rw-rw-  1 root root    8367 May  2 14:02 sweep_results.json
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# 
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# 
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# 
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# 
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# python3 << 'PYEOF'
+import json
+with open('/workspace/FDM_IN_WEIGHTS/split_ratio_sweep_n200/sweep_results.json') as f:
+    d = json.load(f)
+
+print(f"Type: {type(d).__name__}")
+if isinstance(d, list):
+    print(f"List with {len(d)} entries")
+    if d:
+        print(f"First entry keys: {list(d[0].keys())}")
+        print(f"First entry:")
+        print(json.dumps(d[0], indent=2)[:1500])
+elif isinstance(d, dict):
+    print(f"Dict with top-level keys: {list(d.keys())[:20]}")
+    # Show structure of first key
+    first_key = list(d.keys())[0]
+    print(f"\nFirst key '{first_key}':")
+    val = d[first_key]
+    if isinstance(val, dict):
+        print(f"  Keys: {list(val.keys())}")
+        print(json.dumps(val, indent=2)[:1500])
+    else:
+        print(f"  Type: {type(val).__name__}, value: {str(val)[:500]}")
+PYEOF
+Type: list
+List with 9 entries
+First entry keys: ['block_a_acc', 'block_b_acc', 'all_acc', 'all_acc_slot', 'all_acc_joint', 'n_param', 'n_ctx', 'n_samples', 'slot_correct', 'slot_total', 'sample_all_correct', 'per_sample_correct', 'block_a_channels', 'block_b_channels']
+First entry:
+{
+  "block_a_acc": 0.0,
+  "block_b_acc": 0.99265625,
+  "all_acc": 0.99265625,
+  "all_acc_slot": 0.99265625,
+  "all_acc_joint": 0.83,
+  "n_param": 0,
+  "n_ctx": 32,
+  "n_samples": 200,
+  "slot_correct": 6353,
+  "slot_total": 6400,
+  "sample_all_correct": 166,
+  "per_sample_correct": [
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      tru
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# 
+
+
+
+
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# 
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# 
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# python3 << 'PYEOF'
+import json
+
+with open('/workspace/FDM_IN_WEIGHTS/split_ratio_sweep_n200/sweep_results.json') as f:
+    d = json.load(f)
+
+print(f"{'n_param':>8} {'n_ctx':>6} {'A_slot':>8} {'B_slot':>8} {'all_slot':>10} {'joint':>8} {'n_samples':>10} {'slot_corr':>10}/{'slot_tot':<8} {'sample_corr':>12}")
+print("-" * 120)
+
+for e in d:
+    n_param = e['n_param']
+    n_ctx = e['n_ctx']
+    a_acc = e['block_a_acc']
+    b_acc = e['block_b_acc']
+    all_slot = e['all_acc_slot']
+    joint = e['all_acc_joint']
+    n_samples = e['n_samples']
+    slot_corr = e['slot_correct']
+    slot_tot = e['slot_total']
+    sample_corr = e['sample_all_correct']
+    print(f"{n_param:>8} {n_ctx:>6} {a_acc*100:>7.2f}% {b_acc*100:>7.2f}% {all_slot*100:>9.2f}% {joint*100:>7.2f}% {n_samples:>10} {slot_corr:>10}/{slot_tot:<8} {sample_corr:>12}")
+
+# Also compute Wilson 95% CIs
+print("\n\n=== With Wilson 95% CIs ===")
+import math
+
+def wilson_ci(p, n, z=1.96):
+    if n == 0:
+        return (0, 0)
+    denom = 1 + z**2 / n
+    centre = (p + z**2 / (2*n)) / denom
+    halfw = z * math.sqrt(p*(1-p)/n + z**2/(4*n*n)) / denom
+    return (max(0, centre - halfw), min(1, centre + halfw))
+
+print(f"{'n_param':>8} {'n_ctx':>6} {'A slot':>20} {'B slot':>20} {'Joint':>20}")
+print("-" * 100)
+for e in d:
+    n_param = e['n_param']
+    n_ctx = e['n_ctx']
+    n_samples = e['n_samples']
+    
+    # A slot CI: out of (n_samples * n_param) trials
+    a_n = n_samples * n_param if n_param > 0 else 0
+    a_lo, a_hi = wilson_ci(e['block_a_acc'], a_n) if a_n > 0 else (0, 0)
+    a_half = (a_hi - a_lo) / 2
+    
+    # B slot CI: out of (n_samples * n_ctx) trials
+    b_n = n_samples * n_ctx if n_ctx > 0 else 0
+    b_lo, b_hi = wilson_ci(e['block_b_acc'], b_n) if b_n > 0 else (0, 0)
+    b_half = (b_hi - b_lo) / 2
+    
+    # Joint CI: out of n_samples trials
+PYEOFrint(f"{n_param:>8} {n_ctx:>6} {a_str:>20} {b_str:>20} {j_str:>20}")lse "---"
+ n_param  n_ctx   A_slot   B_slot   all_slot    joint  n_samples  slot_corr/slot_tot  sample_corr
+------------------------------------------------------------------------------------------------------------------------
+       0     32    0.00%   99.27%     99.27%   83.00%        200       6353/6400              166
+Traceback (most recent call last):
+  File "<stdin>", line 17, in <module>
+KeyError: 'slot_correct'
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# 
+
+
+
+
+
+
+
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# 
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# 
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# python3 << 'PYEOF'
+import json
+import math
+
+def wilson_ci(p, n, z=1.96):
+    if n == 0:
+        return (0, 0)
+    denom = 1 + z**2 / n
+    centre = (p + z**2 / (2*n)) / denom
+    halfw = z * math.sqrt(p*(1-p)/n + z**2/(4*n*n)) / denom
+    return (max(0, centre - halfw), min(1, centre + halfw))
+
+with open('/workspace/FDM_IN_WEIGHTS/split_ratio_sweep_n200/sweep_results.json') as f:
+    d = json.load(f)
+
+print(f"Total entries: {len(d)}")
+print(f"\nPer-entry available keys:")
+for i, e in enumerate(d):
+    keys = [k for k in e.keys() if k != 'per_sample_correct']
+    print(f"  Entry {i} (n_param={e.get('n_param')}, n_ctx={e.get('n_ctx')}): {keys}")
+
+print("\n\n=== Sweep results table ===")
+print(f"{'n_param':>8} {'n_ctx':>6} {'A_slot':>10} {'B_slot':>10} {'all_slot':>10} {'joint':>10} {'sample_corr':>12} {'n_samples':>10}")
+print("-" * 100)
+
+for e in d:
+    n_param = e['n_param']
+    n_ctx = e['n_ctx']
+    a_acc = e.get('block_a_acc', 0.0)
+    b_acc = e.get('block_b_acc', 0.0)
+    all_slot = e.get('all_acc_slot', 0.0)
+    joint = e.get('all_acc_joint', 0.0)
+    n_samples = e['n_samples']
+    sample_corr = e.get('sample_all_correct', 'N/A')
+    
+    print(f"{n_param:>8} {n_ctx:>6} {a_acc*100:>9.2f}% {b_acc*100:>9.2f}% {all_slot*100:>9.2f}% {joint*100:>9.2f}% {str(sample_corr):>12} {n_samples:>10}")
+
+print("\n\n=== With Wilson 95% CIs (joint) ===")
+print(f"{'n_param':>8} {'n_ctx':>6} {'A slot':>15} {'B slot':>15} {'Joint':>20}")
+print("-" * 80)
+
+for e in d:
+    n_param = e['n_param']
+    n_ctx = e['n_ctx']
+    n_samples = e['n_samples']
+    
+    j_lo, j_hi = wilson_ci(e.get('all_acc_joint', 0), n_samples)
+    j_half = (j_hi - j_lo) / 2
+    
+    a_str = f"{e.get('block_a_acc', 0)*100:.2f}%"
+    b_str = f"{e.get('block_b_acc', 0)*100:.2f}%"
+    j_str = f"{e.get('all_acc_joint', 0)*100:.2f} ± {j_half*100:.2f}"
+PYEOFrint(f"{n_param:>8} {n_ctx:>6} {a_str:>15} {b_str:>15} {j_str:>20}")
+Total entries: 9
+
+Per-entry available keys:
+  Entry 0 (n_param=0, n_ctx=32): ['block_a_acc', 'block_b_acc', 'all_acc', 'all_acc_slot', 'all_acc_joint', 'n_param', 'n_ctx', 'n_samples', 'slot_correct', 'slot_total', 'sample_all_correct', 'block_a_channels', 'block_b_channels']
+  Entry 1 (n_param=4, n_ctx=28): ['block_a_acc', 'block_b_acc', 'all_acc', 'block_a_acc_slot', 'block_b_acc_slot', 'all_acc_slot', 'block_a_acc_joint', 'block_b_acc_joint', 'all_acc_joint', 'block_a_slot_correct', 'block_a_slot_total', 'block_b_slot_correct', 'block_b_slot_total', 'sample_a_all_correct', 'sample_b_all_correct', 'sample_all_all_correct', 'n_samples', 'per_sample_block_a_all', 'per_sample_block_b_all', 'per_sample_all32_all', 'n_param', 'n_ctx', 'final_loss', 'block_a_channels', 'block_b_channels']
+  Entry 2 (n_param=8, n_ctx=24): ['block_a_acc', 'block_b_acc', 'all_acc', 'block_a_acc_slot', 'block_b_acc_slot', 'all_acc_slot', 'block_a_acc_joint', 'block_b_acc_joint', 'all_acc_joint', 'block_a_slot_correct', 'block_a_slot_total', 'block_b_slot_correct', 'block_b_slot_total', 'sample_a_all_correct', 'sample_b_all_correct', 'sample_all_all_correct', 'n_samples', 'per_sample_block_a_all', 'per_sample_block_b_all', 'per_sample_all32_all', 'n_param', 'n_ctx', 'final_loss', 'block_a_channels', 'block_b_channels']
+  Entry 3 (n_param=12, n_ctx=20): ['block_a_acc', 'block_b_acc', 'all_acc', 'block_a_acc_slot', 'block_b_acc_slot', 'all_acc_slot', 'block_a_acc_joint', 'block_b_acc_joint', 'all_acc_joint', 'block_a_slot_correct', 'block_a_slot_total', 'block_b_slot_correct', 'block_b_slot_total', 'sample_a_all_correct', 'sample_b_all_correct', 'sample_all_all_correct', 'n_samples', 'per_sample_block_a_all', 'per_sample_block_b_all', 'per_sample_all32_all', 'n_param', 'n_ctx', 'final_loss', 'block_a_channels', 'block_b_channels']
+  Entry 4 (n_param=16, n_ctx=16): ['block_a_acc', 'block_b_acc', 'all_acc', 'block_a_acc_slot', 'block_b_acc_slot', 'all_acc_slot', 'block_a_acc_joint', 'block_b_acc_joint', 'all_acc_joint', 'block_a_slot_correct', 'block_a_slot_total', 'block_b_slot_correct', 'block_b_slot_total', 'sample_a_all_correct', 'sample_b_all_correct', 'sample_all_all_correct', 'n_samples', 'per_sample_block_a_all', 'per_sample_block_b_all', 'per_sample_all32_all', 'n_param', 'n_ctx', 'final_loss', 'block_a_channels', 'block_b_channels']
+  Entry 5 (n_param=20, n_ctx=12): ['block_a_acc', 'block_b_acc', 'all_acc', 'block_a_acc_slot', 'block_b_acc_slot', 'all_acc_slot', 'block_a_acc_joint', 'block_b_acc_joint', 'all_acc_joint', 'block_a_slot_correct', 'block_a_slot_total', 'block_b_slot_correct', 'block_b_slot_total', 'sample_a_all_correct', 'sample_b_all_correct', 'sample_all_all_correct', 'n_samples', 'per_sample_block_a_all', 'per_sample_block_b_all', 'per_sample_all32_all', 'n_param', 'n_ctx', 'final_loss', 'block_a_channels', 'block_b_channels']
+  Entry 6 (n_param=24, n_ctx=8): ['block_a_acc', 'block_b_acc', 'all_acc', 'block_a_acc_slot', 'block_b_acc_slot', 'all_acc_slot', 'block_a_acc_joint', 'block_b_acc_joint', 'all_acc_joint', 'block_a_slot_correct', 'block_a_slot_total', 'block_b_slot_correct', 'block_b_slot_total', 'sample_a_all_correct', 'sample_b_all_correct', 'sample_all_all_correct', 'n_samples', 'per_sample_block_a_all', 'per_sample_block_b_all', 'per_sample_all32_all', 'n_param', 'n_ctx', 'final_loss', 'block_a_channels', 'block_b_channels']
+  Entry 7 (n_param=28, n_ctx=4): ['block_a_acc', 'block_b_acc', 'all_acc', 'block_a_acc_slot', 'block_b_acc_slot', 'all_acc_slot', 'block_a_acc_joint', 'block_b_acc_joint', 'all_acc_joint', 'block_a_slot_correct', 'block_a_slot_total', 'block_b_slot_correct', 'block_b_slot_total', 'sample_a_all_correct', 'sample_b_all_correct', 'sample_all_all_correct', 'n_samples', 'per_sample_block_a_all', 'per_sample_block_b_all', 'per_sample_all32_all', 'n_param', 'n_ctx', 'final_loss', 'block_a_channels', 'block_b_channels']
+  Entry 8 (n_param=32, n_ctx=0): ['block_a_acc', 'block_b_acc', 'all_acc', 'block_a_acc_slot', 'block_b_acc_slot', 'all_acc_slot', 'block_a_acc_joint', 'block_b_acc_joint', 'all_acc_joint', 'block_a_slot_correct', 'block_a_slot_total', 'block_b_slot_correct', 'block_b_slot_total', 'sample_a_all_correct', 'sample_b_all_correct', 'sample_all_all_correct', 'n_samples', 'per_sample_block_a_all', 'per_sample_block_b_all', 'per_sample_all32_all', 'n_param', 'n_ctx', 'final_loss', 'block_a_channels', 'block_b_channels']
+
+
+=== Sweep results table ===
+ n_param  n_ctx     A_slot     B_slot   all_slot      joint  sample_corr  n_samples
+----------------------------------------------------------------------------------------------------
+       0     32      0.00%     99.27%     99.27%     83.00%          166        200
+       4     28     99.38%     99.46%     99.45%     88.50%          N/A        200
+       8     24     99.38%     99.58%     99.53%     88.00%          N/A        200
+      12     20     33.75%     28.18%     30.27%      0.00%          N/A        200
+      16     16     99.62%     99.62%     99.62%     89.50%          N/A        200
+      20     12     99.78%     99.58%     99.70%     92.50%          N/A        200
+      24      8     99.58%     99.69%     99.61%     90.00%          N/A        200
+      28      4     99.55%     99.50%     99.55%     88.50%          N/A        200
+      32      0     43.84%      0.00%     43.84%      0.00%          N/A        200
+
+
+=== With Wilson 95% CIs (joint) ===
+ n_param  n_ctx          A slot          B slot                Joint
+--------------------------------------------------------------------------------
+       0     32           0.00%          99.27%         83.00 ± 5.19
+       4     28          99.38%          99.46%         88.50 ± 4.44
+       8     24          99.38%          99.58%         88.00 ± 4.52
+      12     20          33.75%          28.18%          0.00 ± 0.94
+      16     16          99.62%          99.62%         89.50 ± 4.27
+      20     12          99.78%          99.58%         92.50 ± 3.70
+      24      8          99.58%          99.69%         90.00 ± 4.19
+      28      4          99.55%          99.50%         88.50 ± 4.44
+      32      0          43.84%           0.00%          0.00 ± 0.94
+root@1606ef76afe0:/workspace/ASK_FDM_CHECK# 
