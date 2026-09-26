@@ -1,0 +1,79 @@
+|_|  \_\__,_|_| |_| .__/ \___/ \__,_|
+                  | |                
+                  |_|                
+For detailed documentation and guides, please visit:
+https://docs.runpod.io/ and https://blog.runpod.io/
+
+
+root@00608554171d:/# tmux ls
+bench2: 1 windows (created Sun Apr  5 18:49:26 2026)
+root@00608554171d:/# tmux attach -t bench2
+
+  ch21 (FREQ        ): 100.0%
+  ch22 (PAYLOAD     ): 100.0%
+  ch23 (ROUTE       ): 100.0%
+  ch24 (DURATION    ): 100.0%
+  ch25 (CONTACT     ): 100.0%
+  ch26 (FUEL        ): 100.0%
+  ch27 (ALTITUDE    ): 100.0%
+  ch28 (VISIBILITY  ): 100.0%
+  ch29 (NOISE       ): 100.0%
+  ch30 (FORMATION   ): 100.0%
+  ch31 (ARMOR       ): 100.0%
+  ch32 (SIGNAL      ): 100.0%
+  ch33 (MORALE      ): 100.0%
+  ch34 (SUPPLY      ): 100.0%
+  ch35 (INTEL       ): 100.0%
+  ch36 (EVAC        ): 100.0%
+  ch37 (WEATHER2    ): 100.0%
+  ch38 (DOCTRINE    ): 100.0%
+  ch39 (COMMS       ): 100.0%
+
+Joint Accuracy (all N extra channels correct per sample):
+N channels   Correct        Pct       
+  1          5000/5000         100.0%
+  2          5000/5000         100.0%
+  4          4999/5000         100.0%
+  8          4997/5000         99.9%
+  16         4997/5000         99.9%
+  24         4997/5000         99.9%
+  32         4997/5000         99.9%
+
+  ALL 32 correct: 4997/5000 = 99.9%
+
+Error Analysis: 3/5000 samples have errors
+Most error-prone:
+  ch15 (SUPPORT): 2 errors
+  ch11 (COMM): 1 errors
+
+Saved: nhop_results_hermes3/results.json
+root@00608554171d:/workspace/edeidic_memory_14_percent# 
+root@00608554171d:/workspace/edeidic_memory_14_percent# 
+
+
+
+root@00608554171d:/workspace/edeidic_memory_14_percent# 
+root@00608554171d:/workspace/edeidic_memory_14_percent# grep -A20 "Hop\|hop\|decision\|Decision" nhop_results_hermes3/results.json | head -40
+  "hop_results": {
+    "3": {
+      "total": 1023,
+      "action_correct": 1023,
+      "fact_correct": 3050
+    },
+    "2": {
+      "total": 973,
+      "action_correct": 973,
+      "fact_correct": 1945
+    },
+    "5": {
+      "total": 965,
+      "action_correct": 965,
+      "fact_correct": 4015
+    },
+    "1": {
+      "total": 1003,
+      "action_correct": 1003,
+      "fact_correct": 1003
+    },
+root@00608554171d:/workspace/edeidic_memory_14_percent# 
+[
