@@ -1,0 +1,71 @@
+cd /workspace/FDM_IN_WEIGHTS
+python3 << 'PYEOF'
+import json, math
+from glob import glob
+
+def wilson_hw(p, n, z=1.96):
+    if n == 0: return 0.0
+    return (z * math.sqrt(p*(1-p)/n + z*z/(4*n*n))) / (1 + z*z/n)
+
+results = {}
+for path in sorted(glob("split_ratio_sweep_5seed/seed_*/sweep_results.json")):
+    seed = path.split("seed_")[1].split("/")[0]
+    data = json.load(open(path))
+    for entry in data:
+        key = (entry['n_param'], entry['n_ctx'])
+        results.setdefault(key, []).append((seed, entry['all_acc_slot'], entry['all_acc_joint']))
+
+print(f"{'Partition':<12} {'Conv':<8} {'Slot':<10} {'Joint':<10} {'Pooled n':<10} {'Wilson 95% CI':<16}")
+print("-" * 80)
+for (n_p, n_c) in sorted(results.keys()):
+    converged = [(s, slot, j) for (s, slot, j) in results[(n_p, n_c)] if slot >= 0.5]
+    n_conv = len(converged)
+    n_total = len(results[(n_p, n_c)])
+    if not converged:
+        print(f"{n_p}/{n_c:<10} {n_conv}/{n_total:<5} (all collapsed)")
+        continue
+    
+    # Pooled stats: each seed contributed 200 samples (n_eval)
+    n_per_seed = 200
+    pooled_n = n_conv * n_per_seed
+    pooled_joint_correct = sum(int(round(j * n_per_seed)) for (_, _, j) in converged)
+    pooled_joint_p = pooled_joint_correct / pooled_n
+    pooled_joint_hw = wilson_hw(pooled_joint_p, pooled_n)
+    
+    pooled_slot_n = n_conv * n_per_seed * 32
+    pooled_slot_correct = sum(int(round(slot * n_per_seed * 32)) for (_, slot, _) in converged)
+    pooled_slot_p = pooled_slot_correct / pooled_slot_n
+    pooled_slot_hw = wilson_hw(pooled_slot_p, pooled_slot_n)
+    
+    print(f"{n_p}/{n_c:<10} {n_conv}/{n_total:<5} {pooled_slot_p*100:>5.2f}±{pooled_slot_hw*100:.2f}% {pooled_joint_p*100:>5.2f}±{pooled_joint_hw*100:.2f}% {pooled_n:<10} ±{pooled_joint_hw*100:.2f}pp")
+PYEOF
+
+
+
+
+
+    n_total = len(results[(n_p, n_c)])
+    if not converged:
+        print(f"{n_p}/{n_c:<10} {n_conv}/{n_total:<5} (all collapsed)")
+        continue
+    
+    # Pooled stats: each seed contributed 200 samples (n_eval)
+    n_per_seed = 200
+    pooled_n = n_conv * n_per_seed
+    pooled_joint_correct = sum(int(round(j * n_per_seed)) for (_, _, j) in converged)
+    pooled_joint_p = pooled_joint_correct / pooled_n
+    pooled_joint_hw = wilson_hw(pooled_joint_p, pooled_n)
+    
+PYEOF0:.2f}pp")d_joint_p*100:>5.2f}±{pooled_joint_hw*100:.2f}% {pooled_n:<10} ±{pooled_joint_
+Partition    Conv     Slot       Joint      Pooled n   Wilson 95% CI   
+--------------------------------------------------------------------------------
+0/32         5/5     99.27±0.09% 83.00±2.33% 1000       ±2.33pp
+4/28         5/5     99.51±0.08% 88.00±2.02% 1000       ±2.02pp
+8/24         4/5     99.37±0.10% 87.00±2.33% 800        ±2.33pp
+12/20         4/5     99.45±0.09% 88.00±2.25% 800        ±2.25pp
+16/16         5/5     99.58±0.07% 89.00±1.94% 1000       ±1.94pp
+20/12         4/5     99.62±0.08% 90.25±2.06% 800        ±2.06pp
+24/8          5/5     99.54±0.07% 90.00±1.86% 1000       ±1.86pp
+28/4          4/5     99.63±0.07% 91.62±1.93% 800        ±1.93pp
+32/0          0/5     (all collapsed)
+root@c1d4bda933c9:/workspace/FDM_IN_WEIGHTS# 
