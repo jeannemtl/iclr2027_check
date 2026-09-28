@@ -1,0 +1,6 @@
+nohup python split_ratio_sweep_disjoint.py \
+  --model /workspace/FDM_IN_WEIGHTS/two_block_qwen3 \
+  --output_dir /workspace/FDM_IN_WEIGHTS/disjoint_qwen3 \
+  --vocab_size 151936 --splits 4,8 --n_eval 100 --seed 1 \
+  > /workspace/FDM_IN_WEIGHTS/disjoint_qwen3/seed1.log 2>&1 &
+tail -f /workspace/FDM_IN_WEIGHTS/disjoint_qwen3/seed1.log
