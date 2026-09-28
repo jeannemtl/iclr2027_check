@@ -1,0 +1,18 @@
+cd /workspace
+mv nhop_source.py patch_nhop_source.py
+export PYTHONPATH=/workspace/FDM_PARAMETRIC:$PYTHONPATH
+python patch_nhop_source.py /workspace/FDM_PARAMETRIC/nhop_source.py
+python -c "import nhop_source, inspect; print(nhop_source.__file__); print(inspect.signature(nhop_source.TurboFDMSignalEncoder.encode_memory))"
+grep -rn "TurboFDMSignalEncoder(" /workspace/FDM_PARAMETRIC --include=*.py -A3 | grep -i vocab
+
+
+python split_ratio_sweep_disjoint.py \
+  --model /workspace/FDM_IN_WEIGHTS/two_block_qwen3 \
+  --output_dir /workspace/FDM_IN_WEIGHTS/disjoint_qwen3 \
+  --vocab_size 151936 --splits 0 --n_eval 50
+
+
+python split_ratio_sweep_disjoint.py \
+  --model /workspace/FDM_IN_WEIGHTS/two_block_qwen3 \
+  --output_dir /workspace/FDM_IN_WEIGHTS/disjoint_qwen3 \
+  --vocab_size 151936 --ctx_only_masked --splits 4,8,16 --n_eval 100
