@@ -1,0 +1,66 @@
+The 4/28 matched result is strong, but don't quote it until the control finishes.
+
+Block A: 100.0% slot (400 of 400), against about 27% before training. The write head is carrying the four prefix-only channels perfectly. Loss went from 0.065 to 0.0035.
+Block B: 99.1%, up from 96.1% in the masked baseline. That jump probably isn't the prefix helping. My guess is it's the position offset. The baseline ran the block at position 0, and the trained rows run it at 513 and later, where the two-block host was trained. The control row will settle it: if B stays at about 99% with a shuffled prefix, it's position and not the prefix.
+Joint B at 80% is just 0.991^28 ≈ 78% compounding, so don't read anything into it.
+
+The control is running now (about 13 minutes) and is the row that makes 100% mean something. You want A to fall to roughly 25–33% with B unchanged. If A stays high under a shuffled prefix, the host is getting Block A from somewhere other than the prefix, and we should stop and look for a leak.
+
+Four channels is also a small test. With about 5 values per channel there are only a few hundred possible combinations, so the head could be close to a lookup table, which is fine for showing the prefix is read but says little about capacity. The 8/24 split is next, then 16/16. Whether 100% holds as the channel count grows is what decides which claim §3.2 can make.
+
+Timing: about 23 minutes to train, then two evals of about 13 minutes each, so roughly 50 minutes for the 8-channel split. Detach with Ctrl+b, then d, and paste the summary table when both splits finish.
+
+root@0d27d76c2c38:/workspace# export HF_HOME=/workspace/hf_cache
+export PYTHONPATH=/workspace/FDM_PARAMETRIC:$PYTHONPATH
+python split_ratio_sweep_disjoint.py \
+  --model /workspace/FDM_IN_WEIGHTS/two_block_qwen3 \
+  --output_dir /workspace/FDM_IN_WEIGHTS/disjoint_qwen3 \
+  --vocab_size 151936 --splits 4,8 --n_eval 100 --seed 1 \
+  2>&1 | tee /workspace/FDM_IN_WEIGHTS/disjoint_qwen3/seed1.log
+[seed] 1   [partition] interleaved
+Loading weights: 100%|██████████| 310/310 [00:00<00:00, 6348.09it/s]
+
+[leak check] Block A values must not affect the context tokens
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+============================================================
+  SPLIT: 4 parametric / 28 context (DISJOINT)
+  Block A (prefix only): [8, 10, 12, 14]
+  Block B (context only): [9, 11, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
+============================================================
+  Write head: 62.7M params
+    Step  1000/5000 | loss 0.0650 | 270s
+    Step  2000/5000 | loss 0.0236 | 542s
+    Step  3000/5000 | loss 0.0110 | 813s
+    Step  4000/5000 | loss 0.0055 | 1085s
+    Step  5000/5000 | loss 0.0035 | 1356s
+  [matched prefix] SLOT   A  100.0%  B   99.1%  All   99.2%   (chance A 27.1%, chance B 27.1%)
+  [matched prefix] JOINT  A  100.0%  B   80.0%  All-32   80.0%   (n=100)
+  [SHUFFLED prefix] SLOT   A   28.2%  B   99.6%  All   90.7%   (chance A 27.1%, chance B 27.1%)
+  [SHUFFLED prefix] JOINT  A    0.0%  B   90.0%  All-32    0.0%   (n=100)
+  Block A drop under shuffled prefix: 71.8 pts (should approach 72.9 pts for a full collapse)
+
+[leak check] Block A values must not affect the context tokens
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+============================================================
+  SPLIT: 8 parametric / 24 context (DISJOINT)
+  Block A (prefix only): [8, 10, 12, 14, 16, 18, 20, 22]
+  Block B (context only): [9, 11, 13, 15, 17, 19, 21, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
+============================================================
+  Write head: 62.7M params
+
+The control passed, so 4/28 is a clean result.
+
+Block A collapses to chance under a shuffled prefix: 100.0% matched down to 28.2%, a 71.8-point drop against a possible 72.9. The block tokens are identical in both conditions (that's the leak check), so the four prefix-only channels come from the prefix.
+Block B stays at 99.6% under the control. So the jump from 96.1% in the masked baseline isn't the prefix supplying information. It's the position offset, or just having a 513-token prefix in front. The baseline ran the block at position 0, which is what I flagged earlier.
+B is 99.1% matched versus 99.6% shuffled, a 0.5-point gap that's about 2 standard errors. I wouldn't call it interference yet, but check whether it repeats at 8 channels. If B is consistently a little lower with the real prefix, the prefix may slightly disturb the host's block-reading.
+Joint B is 80% matched versus 90% control. At n=100 that's mostly noise. The slot numbers are the ones to report.
+
+For the rebuttal, the sentence this supports is: "With 4 channels removed from the token block and carried only by the learned K/V prefix, the model recovers them at 100% (400/400 slots), which falls to chance (28.2%) when the prefix is replaced by one from a different sample, while the 28 in-context channels stay at about 99%." That is the corrected §3.2 result the current paper only gestures at. Report per-slot numbers rather than the compounded joint figure.
+
+Four channels is still a modest test, since the head could be close to a lookup table. The 8/24 split is training now, about 50 minutes. If A stays near 100% at 8 and the control collapses again, then 16 is worth the host finetune. If A drops at 8, that's a measured capacity limit and still a usable result.
+
+Paste the summary table when both splits finish. Meanwhile, copy the JSON off the volume, since it's your evidence: /workspace/FDM_IN_WEIGHTS/disjoint_qwen3/sweep_results_seed1.json.
