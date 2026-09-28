@@ -23,5 +23,9 @@ Loading weights: 100%|██████████| 310/310 [00:00<00:00, 6348
     Step  3000/5000 | loss 0.0110 | 813s
     Step  4000/5000 | loss 0.0055 | 1085s
     Step  5000/5000 | loss 0.0035 | 1356s
-Eval:  89%|████████▉ | 89/100 [12:21<01:30,  8.27s/it]
+  [matched prefix] SLOT   A  100.0%  B   99.1%  All   99.2%   (chance A 27.1%, chance B 27.1%)
+  [matched prefix] JOINT  A  100.0%  B   80.0%  All-32   80.0%   (n=100)
+Control:  11%|█         | 11/100 [01:29<12:06,  8.16s/it]
+
+
 
