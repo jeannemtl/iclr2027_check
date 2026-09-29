@@ -77,3 +77,56 @@ Loading weights: 100%|██████████| 310/310 [00:00<00:00, 6348
   Block B (context only): [9, 11, 13, 15, 17, 19, 21, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
 ============================================================
   Write head: 62.7M params
+
+
+
+
+
+
+
+
+
+
+
+
+   Step  5000/5000 | loss 0.0035 | 1356s
+  [matched prefix] SLOT   A  100.0%  B   99.1%  All   99.2%   (chance A 27.1%, chance B 27.1%)
+  [matched prefix] JOINT  A  100.0%  B   80.0%  All-32   80.0%   (n=100)
+  [SHUFFLED prefix] SLOT   A   28.2%  B   99.6%  All   90.7%   (chance A 27.1%, chance B 27.1%)
+  [SHUFFLED prefix] JOINT  A    0.0%  B   90.0%  All-32    0.0%   (n=100)
+  Block A drop under shuffled prefix: 71.8 pts (should approach 72.9 pts for a full collapse)
+
+[leak check] Block A values must not affect the context tokens
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+============================================================
+  SPLIT: 8 parametric / 24 context (DISJOINT)
+  Block A (prefix only): [8, 10, 12, 14, 16, 18, 20, 22]
+  Block B (context only): [9, 11, 13, 15, 17, 19, 21, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
+============================================================
+  Write head: 62.7M params
+
+
+
+    Step  1000/5000 | loss 0.1113 | 270s
+    Step  2000/5000 | loss 0.0659 | 542s
+    Step  3000/5000 | loss 0.0697 | 814s
+    Step  4000/5000 | loss 0.0491 | 1085s
+    Step  5000/5000 | loss 0.0439 | 1356s
+Eval:  85%|████████▌ | 85/100 [11:35<02:03,  8.25s/it]^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[                                                                                                      [[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[                                      
+
+
+  [matched prefix] SLOT   A   64.8%  B   99.1%  All   90.5%   (chance A 26.0%, chance B 27.4%)
+  [matched prefix] JOINT  A    1.0%  B   85.0%  All-32    1.0%   (n=100)
+Control:  35%|███▌      | 35/100 [04                     ^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B                                                                        
+
+
+
+
+
+Control:  37%|███▋      | 37/100 [04:57<07:46,  7.40s/it]^[[B^[[B^[[A^[[A^[[A^[[B^[[B^[[B^[[B^[[B^[[B
+
+
+Control:  38%|███▊      | 38/100 [05:05<07:53,  7.63s/it]
+
