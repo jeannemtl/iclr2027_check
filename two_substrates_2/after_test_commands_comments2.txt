@@ -1,0 +1,38 @@
+The 8/24 control is the surprise, and it changes how to read the whole table.
+
+A	B	A matched	A control	Analytic chance
+4	28	100.0%	28.2%	27.1%
+8	24	64.8%	37.2%	26.0%
+4/28 is clean. The control sits at chance, so the prefix carries all four channels.
+8/24 is partial, and the floor is elevated. The control lands 11 points above the analytic chance, about 7 standard errors. The masked baselines showed the same pattern with no prefix at all (28.9% at 8 removed, 33.3% at 16), so it comes from the host or the scoring, not from the head.
+The honest prefix-attributable number at 8 is about 28 points (64.8 − 37.2), not the 39 you'd get against analytic chance. That's roughly 44% of the recoverable range at 8, against 100% at 4.
+B is unaffected at 99.1% matched and 99.5% control.
+
+I can't explain the elevated floor from what I have. A deterministic guess should score exactly 1/M per channel on uniformly drawn values, so guessing alone doesn't explain it. One thing I can check is whether the generation can produce more than one guess per channel. It runs up to 350 tokens, and a repeated NAME=value list would give two shots at each channel, since any match counts as a hit. Another is that the effect could be concentrated in a few channels. The script logs only aggregates, so I'll add per-channel accuracy and a repeated-name counter.
+
+The updated script logs the diagnostics I described. I unit-tested them against a stubbed model with known answers, and the per-channel accuracy and repeated-name counts came out correct.
+
+Each eval now also prints:
+
+Per-channel A accuracy (ch8:100 ch10:37 ...). Even accuracy across channels means the head is undertrained. A mix of 100% and near-chance channels means a real capacity limit.
+The share of answers that repeat a channel name. If that's high in the control condition, some of the elevated floor is extra guesses.
+Three sample answers per eval, saved in the JSON, so you can read what the model actually outputs.
+
+Run this next. Copy the new file over the old one, then rerun 8/24 with longer training and the diagnostics (~70 minutes of training plus about 26 minutes of evals):
+
+bash
+tmux attach -t fdm    # or: tmux new -s fdm
+cd /workspace && export HF_HOME=/workspace/hf_cache PYTHONPATH=/workspace/FDM_PARAMETRIC:$PYTHONPATH
+python split_ratio_sweep_disjoint.py \
+  --model /workspace/FDM_IN_WEIGHTS/two_block_qwen3 \
+  --output_dir /workspace/FDM_IN_WEIGHTS/disjoint_qwen3_8long \
+  --vocab_size 151936 --splits 8 --n_steps 15000 --n_eval 100 --seed 1 \
+  2>&1 | tee /workspace/FDM_IN_WEIGHTS/disjoint_qwen3_8long.log
+
+I used a separate --output_dir so the 5K-step results stay intact. Before you launch, the per-channel line for the existing 8/24 run isn't recoverable, so this rerun is the first time you'll see it.
+
+What each outcome means for the paper:
+
+A climbs toward 100% and the control stays near 37%. The head was undertrained. You have a clean 8-channel result and 16 is worth trying with a warm start.
+A stalls near 65% with an uneven per-channel pattern. That's a capacity limit. Report 4 channels at 100% and 8 as the measured limit under this recipe.
+The control floor drops when repeated names are counted. Then the earlier control number was inflated by the scoring, and the true prefix-attributable A is higher than 28 points.
