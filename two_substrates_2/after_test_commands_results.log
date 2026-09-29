@@ -130,3 +130,50 @@ Control:  37%|███▋      | 37/100 [04:57<07:46,  7.40s/it]^[[B^[[B^[[A^[[
 
 Control:  38%|███▊      | 38/100 [05:05<07:53,  7.63s/it]
 
+
+
+
+
+
+
+
+
+
+
+tmux is already the newest version (3.4-1ubuntu0.1).
+0 upgraded, 0 newly installed, 0 to remove and 268 not upgraded.
+root@0d27d76c2c38:/workspace# tmux new -s fdm
+cd /workspace
+
+  [matched prefix] JOINT  A    1.0%  B   85.0%  All-32    1.0%   (n=100)
+Control:  35%|███▌      | 35/100 [04                     ^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B                                                                        
+
+
+
+
+
+Control:  37%|███▋      | 37/100 [04:57<07:46,  7.40s/it]^[[B^[[B^[[A^[[A^[[A^[[B^[[B^[[B^[[B^[[B^[[B
+
+
+Control:  75%|███████▌  | 75/100 [10:06<03:25,  8.23s/it]
+
+  [SHUFFLED prefix] SLOT   A   37.2%  B   99.5%  All   83.9%   (chance A 26.0%, chance B 27.4%)
+  [SHUFFLED prefix] JOINT  A    0.0%  B   90.0%  All-32    0.0%   (n=100)
+  Block A drop under shuffled prefix: 27.5 pts (should approach 38.7 pts for a full collapse)
+
+========================================================================
+  SWEEP SUMMARY (disjoint; A = prefix only, B = context only)
+========================================================================
+    A   B |  A slot  B slot All slot | All-32 joint |  A ctrl A chance
+    4  28 |  100.0%   99.1%    99.2% |        80.0% |   28.2%    27.1%
+    8  24 |   64.8%   99.1%    90.5% |         1.0% |   37.2%    26.0%
+
+  Saved to /workspace/FDM_IN_WEIGHTS/disjoint_qwen3/
+root@0d27d76c2c38:/workspace# 
+root@0d27d76c2c38:/workspace# 
+root@0d27d76c2c38:/workspace# 
+root@0d27d76c2c38:/workspace# cd /workspace/
+root@0d27d76c2c38:/workspace# 
+root@0d27d76c2c38:/workspace# 
+
+
