@@ -140,3 +140,20 @@ Loading weights: 100%|██████████| 310/310 [00:00<00:00, 7082
 
 [fdm] 0:bash*                                                                                              "b7d572d505db" 05:06 30-Sep-26
 
+
+
+
+
+
+root@b7d572d505db:/# grep -n "SHUFFLED" /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3/run.log
+  [SHUFFLED prefix] SLOT   A   25.0%  B   99.6%  All   90.2%   (chance A 27.1%, chance B 27.1%)
+247:  [SHUFFLED prefix] JOINT  A    0.0%  B   90.0%  All-32    0.0%   (n=100)
+248:  [SHUFFLED prefix] per-channel A %: ch8:20  ch10:23  ch12:26  ch14:31
+249:  [SHUFFLED prefix] answers repeating a channel name: 100%
+  [SHUFFLED prefix] SLOT   A   24.1%  B   99.3%  All   80.5%   (chance A 26.0%, chance B 27.4%)
+295:  [SHUFFLED prefix] JOINT  A    0.0%  B   90.0%  All-32    0.0%   (n=100)
+296:  [SHUFFLED prefix] per-channel A %: ch8:19  ch10:25  ch12:27  ch14:28  ch16:26  ch18:21  ch20:22  ch22:25
+297:  [SHUFFLED prefix] answers repeating a channel name: 100%
+root@b7d572d505db:/# 
+
+
