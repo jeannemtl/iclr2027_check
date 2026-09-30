@@ -1,3 +1,8 @@
+SPLITS="4 8 16" STEPS_8PLUS=15000 bash startup.sh
+
+
+
+
 root@b7d572d505db:/workspace# cd /workspace
 nano split_ratio_sweep_disjoint.py     # paste the newest sweep script, Ctrl+O, Enter, Ctrl+X
 nano patch_nhop_source.py              # paste the patch script
