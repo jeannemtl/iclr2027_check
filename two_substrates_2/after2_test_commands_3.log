@@ -234,3 +234,17 @@ uploaded
 root@b7d572d505db:/workspace# md5sum split_ratio_sweep_disjoint.py                      # starts 5699f23c
 5699f23ccadf1655da4e28ade1becbd0  split_ratio_swee
 
+
+
+
+05db:/workspace# 
+root@b7d572d505db:/workspace# 
+root@b7d572d505db:/workspace# grep -n "Step .*15000\|Step .*10000\|Step .*5000" /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3/run.log | tail -6
+331:    Step 10000/15000 | loss 0.0907 | 2671s
+332:    Step 11000/15000 | loss 0.0859 | 2937s
+333:    Step 12000/15000 | loss 0.0826 | 3205s
+334:    Step 13000/15000 | loss 0.0813 | 3473s
+335:    Step 14000/15000 | loss 0.0802 | 3742s
+336:    Step 15000/15000 | loss 0.0797 | 4010s
+root@b7d572d505db:/workspace# 
+[fdm] 0:bash*                    
