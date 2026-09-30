@@ -157,3 +157,51 @@ root@b7d572d505db:/# grep -n "SHUFFLED" /workspace/FDM_IN_WEIGHTS/two_substrates
 root@b7d572d505db:/# 
 
 
+
+
+[leak check] Block A values must not affect the context tokens
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+============================================================
+  SPLIT: 16 parametric / 16 context (DISJOINT)
+  Block A (prefix only): [8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38]
+  Block B (context only): [9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39]
+============================================================
+  Write head: 62.8M params
+
+
+
+
+
+    Step  1000/15000 | loss 0.1799 | 267s
+    Step  2000/15000 | loss 0.1289 | 534s
+    Step  3000/15000 | loss 0.1205 | 801s
+    Step  4000/15000 | loss 0.1145 | 1068s
+    Step  5000/15000 | loss 0.1107 | 1335s
+    Step  6000/15000 | loss 0.1065 | 1603s
+    Step  7000/15000 | loss 0.1034 | 1870s
+    Step  8000/15000 | loss 0.1003 | 2137s
+    Step  9000/15000 | loss 0.0960 | 2404s
+    Step 10000/15000 | loss 0.0907 | 2671s
+    Step 11000/15000 | loss 0.0859 | 2937s
+
+
+
+
+
+
+
+    Step 12000/15000 | loss 0.0826 | 3205s
+    Step 13000/15000 | loss 0.0813 | 3473s
+    Step 14000/15000 | loss 0.0802 | 3742s
+    Step 15000/15000 | loss 0.0797 | 4010s
+  saved write head -> /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3/seed1/split16/write_head_A16_seed1.pt
+  [matched prefix] SLOT   A   55.3%  B   99.6%  All   77.5%   (chance A 26.0%, chance B 28.1%)
+  [matched prefix] JOINT  A    0.0%  B   94.0%  All-32    0.0%   (n=100)
+  [matched prefix] per-channel A %: ch8:39  ch10:36  ch12:35  ch14:49  ch16:100  ch18:43  ch20:100  ch22:30  ch24:100  ch26:37  ch28:58  ch30:35  ch32:51  ch34:39  ch36:99  ch38:34
+  [matched prefix] answers repeating a channel name: 98%
+Control:   1%|          | 1/100 [00:07<12:30,  7.58s/it]
+[fdm] 0:bash*                                                                                              "b7d572d505db" 06:25 30-Sep-26
+
+
