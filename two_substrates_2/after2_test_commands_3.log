@@ -248,3 +248,13 @@ root@b7d572d505db:/workspace# grep -n "Step .*15000\|Step .*10000\|Step .*5000" 
 336:    Step 15000/15000 | loss 0.0797 | 4010s
 root@b7d572d505db:/workspace# 
 [fdm] 0:bash*                    
+
+
+
+TRY
+
+cd /workspace && export HF_HOME=/workspace/hf_cache PYTHONPATH=/workspace/FDM_PARAMETRIC:$PYTHONPATH
+python split_ratio_sweep_disjoint.py \
+  --model /workspace/FDM_IN_WEIGHTS/two_block_qwen3 --vocab_size 151936 \
+  --splits 16 --n_steps 30000 --lr 5e-4 --n_eval 100 --seed 1 \
+  --output_dir /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3_16long
