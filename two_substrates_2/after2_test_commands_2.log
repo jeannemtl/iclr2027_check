@@ -57,6 +57,56 @@ Loading weights: 100%|██████████| 310/310 [00:00<00:00, 7344
 Masked ctx-only:  65%|██████▌   | 65/100 [08:35<04:42,  8.06s/it]
 
 
+[leak check] Block A values must not affect the context tokens
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+[masked ctx-only] 8 channels removed from block, no prefix, no training
+  [masked ctx-only] SLOT   A   26.9%  B   87.3%  All   72.2%   (chance A 26.0%, chance B 27.4%)
+  [masked ctx-only] JOINT  A    0.0%  B    0.0%  All-32    0.0%   (n=100)
+  [masked ctx-only] per-channel A %: ch8:22  ch10:29  ch12:25  ch14:29  ch16:27  ch18:27  ch20:28  ch22:28
+  [masked ctx-only] answers repeating a channel name: 99%
+
+[leak check] Block A values must not affect the context tokens
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+[masked ctx-only] 16 channels removed from block, no prefix, no training
+  [masked ctx-only] SLOT   A   26.7%  B   78.7%  All   52.7%   (chance A 26.0%, chance B 28.1%)
+  [masked ctx-only] JOINT  A    0.0%  B    6.0%  All-32    0.0%   (n=100)
+  [masked ctx-only] per-channel A %: ch8:27  ch10:27  ch12:28  ch14:38  ch16:25  ch18:18  ch20:30  ch22:27  ch24:24  ch26:24  ch28:35  ch30:24  ch32:16  ch34:33  ch36:24  ch38:27
+  [masked ctx-only] answers repeating a channel name: 95%
+
+========================================================================
+  SWEEP SUMMARY (disjoint; A = prefix only, B = context only)
+========================================================================
+    A   B |  A slot  B slot All slot | All-32 joint |  A ctrl A chance
+    4  28 |   24.0%   93.9%    85.2% |         0.0% |    nan%    27.1%
+    8  24 |   26.9%   87.3%    72.2% |         0.0% |    nan%    26.0%
+   16  16 |   26.7%   78.7%    52.7% |         0.0% |    nan%    26.0%
+
+  Saved to /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3/masked/
+
+[03:19:40] === 7. summary
+no trained results found
+
+masked baseline: masked/ctx_only_masked_seed1.json
+   4 removed: B slot  93.9%   A slot  24.0%
+   8 removed: B slot  87.3%   A slot  26.9%
+  16 removed: B slot  78.7%   A slot  26.7%
+
+[03:19:40] === done. results in /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3  (log: /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3/run.log)
+root@b7d572d505db:/workspace# 
+
+
+
+
+
+
+
+
+
+
 
 
 
