@@ -4,6 +4,75 @@ cd /workspace && export HF_TOKEN=hf_...
 rm -rf /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3/masked
 RUN_SANITY=0 RUN_TRAIN=0 UPLOAD=0 MASKED_SPLITS="4,8,16" bash startup.sh
 
+0
+root@b7d572d505db:/# # Ctrl+b then c  (new window)
+cd /workspace && export HF_TOKEN=hf_*******
+rm -rf /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3/masked
+RUN_SANITY=0 RUN_TRAIN=0 UPLOAD=0 MASKED_SPLITS="4,8,16" bash startup.sh
+
+[02:37:50] === 0. preflight  (model=qwen3 vocab=151936 seeds=[1] splits=[4 8] n_eval=100 partition=interleaved)
+NVIDIA L40S, 46068 MiB
+
+[02:37:50] === 1. dependencies
+transformers 5.17.0 | huggingface_hub 1.33.0 | torch 2.8.0+cu128 | cuda True
+HF user: prompterminal
+
+[02:37:54] === 2. encoder (FDM_PARAMETRIC + active_channels patch)
+already patched, nothing to do
+encode_memory (self, memory, active_channels=None, return_signal=False)
+
+[02:37:58] === 3. host checkpoint  (prompterminal/fdm-40ch-two-block-qwen3 -> /workspace/FDM_IN_WEIGHTS/two_block_qwen3)
+already downloaded, skipping
+layers=28 kv_heads=8 head_dim=128 vocab_in_config=151671
+
+[02:37:58] === 5. masked-block baseline (no prefix, no training): host shift test
+[seed] 1   [partition] interleaved
+Loading weights: 100%|██████████| 310/310 [00:00<00:00, 7344.88it/s]
+
+[leak check] Block A values must not affect the context tokens
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+[masked ctx-only] 4 channels removed from block, no prefix, no training
+  [masked ctx-only] SLOT   A   24.0%  B   93.9%  All   85.2%   (chance A 27.1%, chance B 27.1%)
+  [masked ctx-only] JOINT  A    0.0%  B   24.0%  All-32    0.0%   (n=100)
+  [masked ctx-only] per-channel A %: ch8:28  ch10:22  ch12:18  ch14:28
+  [masked ctx-only] answers repeating a channel name: 100%
+
+[leak check] Block A values must not affect the context tokens
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+[masked ctx-only] 8 channels removed from block, no prefix, no training
+  [masked ctx-only] SLOT   A   26.9%  B   87.3%  All   72.2%   (chance A 26.0%, chance B 27.4%)
+  [masked ctx-only] JOINT  A    0.0%  B    0.0%  All-32    0.0%   (n=100)
+  [masked ctx-only] per-channel A %: ch8:22  ch10:29  ch12:25  ch14:29  ch16:27  ch18:27  ch20:28  ch22:28
+  [masked ctx-only] answers repeating a channel name: 99%
+
+[leak check] Block A values must not affect the context tokens
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+[masked ctx-only] 16 channels removed from block, no prefix, no training
+Masked ctx-only:  65%|██████▌   | 65/100 [08:35<04:42,  8.06s/it]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
