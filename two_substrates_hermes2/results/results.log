@@ -123,3 +123,48 @@ Eval:  42%|████▏     | 42/100 [05:45<07:57,  8.23s/it]^[[A^[[A
   [matched prefix] answers repeating a channel name: 100%
 Control:   0%|          | 0/100 [00:00<?, ?it/s]
 
+
+
+
+
+
+ 12000/15000 | loss 0.0008 | 7002s
+    Step 13000/15000 | loss 0.0003 | 7584s
+    Step 14000/15000 | loss 0.0003 | 8167s
+    Step 15000/15000 | loss 0.0003 | 8748s
+  saved write head -> /workspace/FDM_IN_WEIGHTS/two_substrates_review/hermes3/seed1/split8/write_head_A8_seed1.pt
+  [matched prefix] SLOT   A  100.0%  B  100.0%  All  100.0%   (chance A 26.0%, chance B 27.4%)
+  [matched prefix] JOINT  A  100.0%  B  100.0%  All-32  100.0%   (n=100)
+  [matched prefix] per-channel A %: ch8:100  ch10:100  ch12:100  ch14:100  ch16:100  ch18:100  ch20:100  ch22:100
+  [matched prefix] answers repeating a channel name: 100%
+  [SHUFFLED prefix] SLOT   A   24.0%  B   99.8%  All   80.9%   (chance A 26.0%, chance B 27.4%)
+  [SHUFFLED prefix] JOINT  A    0.0%  B   97.0%  All-32    0.0%   (n=100)
+  [SHUFFLED prefix] per-channel A %: ch8:19  ch10:24  ch12:27  ch14:28  ch16:26  ch18:21  ch20:22  ch22:25
+  [SHUFFLED prefix] answers repeating a channel name: 100%
+  Block A drop under shuffled prefix: 76.0 pts (should approach 74.0 pts for a full collapse)
+
+========================================================================
+  SWEEP SUMMARY (disjoint; A = prefix only, B = context only)
+========================================================================
+    A   B |  A slot  B slot All slot | All-32 joint |  A ctrl A chance
+    8  24 |  100.0%  100.0%   100.0% |       100.0% |   24.0%    26.0%
+
+  Saved to /workspace/FDM_IN_WEIGHTS/two_substrates_review/hermes3/seed1/split8/
+
+[17:52:08] === 7. summary
+seed   A   B |  A match  A ctrl  delta |  B match  B ctrl |  rep m  rep c | n
+   1   4  28 |   100.0%   25.0%  75.0 |   100.0%  100.0% |   100%   100% | 100
+   1   8  24 |   100.0%   24.0%  76.0 |   100.0%   99.8% |   100%   100% | 100
+
+A delta = matched minus shuffled-prefix control; report this, not the 1/M chance level.
+
+masked baseline: masked/ctx_only_masked_seed1.json
+   4 removed: B slot  99.9%   A slot  24.0%
+   8 removed: B slot  97.4%   A slot  26.9%
+
+[17:52:08] === 8. upload to HuggingFace (private): results -> prompterminal/fdm-two-substrates-review, heads -> prompterminal/fdm-two-substrates-heads
+uploaded
+
+[17:52:13] === done. results in /workspace/FDM_IN_WEIGHTS/two_substrates_review/hermes3  (log: /workspace/FDM_IN_WEIGHTS/two_substrates_review/hermes3/run.log)
+roo
+
