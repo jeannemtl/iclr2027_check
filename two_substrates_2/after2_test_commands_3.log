@@ -258,3 +258,54 @@ python split_ratio_sweep_disjoint.py \
   --model /workspace/FDM_IN_WEIGHTS/two_block_qwen3 --vocab_size 151936 \
   --splits 16 --n_steps 30000 --lr 5e-4 --n_eval 100 --seed 1 \
   --output_dir /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3_16long
+
+
+
+[Errno 2] No such file or directory: 'patch_nhop_source.py'0
+root@b7d572d505db:/workspace# nano patch_nhop_source.py              # paste the patch script
+root@b7d572d505db:/workspace# tmux new -s fdm
+
+    Step  7000/30000 | loss 0.1235 | 1868s
+    Step  8000/30000 | loss 0.1227 | 2136s
+    Step  9000/30000 | loss 0.1220 | 2403s
+    Step 10000/30000 | loss 0.1223 | 2670s
+    Step 11000/30000 | loss 0.1216 | 2937s
+    Step 12000/30000 | loss 0.1213 | 3205s
+    Step 13000/30000 | loss 0.1207 | 3472s
+    Step 14000/30000 | loss 0.1199 | 3739s
+    Step 15000/30000 | loss 0.1193 | 4007s
+    Step 16000/30000 | loss 0.1170 | 4274s
+    Step 17000/30000 | loss 0.1170 | 4539s
+    Step 18000/30000 | loss 0.1158 | 4805s
+    Step 19000/30000 | loss 0.1136 | 5071s
+    Step 20000/30000 | loss 0.1132 | 5337s
+    Step 21000/30000 | loss 0.1130 | 5603s
+    Step 22000/30000 | loss 0.1130 | 5869s
+    Step 23000/30000 | loss 0.1128 | 6135s
+    Step 24000/30000 | loss 0.1124 | 6401s
+    Step 25000/30000 | loss 0.1123 | 6667s
+    Step 26000/30000 | loss 0.1119 | 6933s
+    Step 27000/30000 | loss 0.1113 | 7199s
+    Step 28000/30000 | loss 0.1106 | 7465s
+    Step 29000/30000 | loss 0.1104 | 7730s
+    Step 30000/30000 | loss 0.1097 | 7996s
+  saved write head -> /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3_16long/write_head_A16_seed1.pt
+  [matched prefix] SLOT   A   34.9%  B   99.9%  All   67.4%   (chance A 26.0%, chance B 28.1%)                                          
+  [matched prefix] JOINT  A    0.0%  B   98.0%  All-32    0.0%   (n=100)
+  [matched prefix] per-channel A %: ch8:30  ch10:36  ch12:27  ch14:42  ch16:21  ch18:25  ch20:29  ch22:25  ch24:30  ch26:30  ch28:100  ch30:33  ch32:25  ch34:55  ch36:28  ch38:23
+  [matched prefix] answers repeating a channel name: 100%
+  [SHUFFLED prefix] SLOT   A   26.9%  B   99.7%  All   63.3%   (chance A 26.0%, chance B 28.1%)                                         
+  [SHUFFLED prefix] JOINT  A    0.0%  B   96.0%  All-32    0.0%   (n=100)
+  [SHUFFLED prefix] per-channel A %: ch8:28  ch10:22  ch12:28  ch14:34  ch16:22  ch18:19  ch20:26  ch22:35  ch24:26  ch26:22  ch28:34  ch30:26  ch32:25  ch34:30  ch36:29  ch38:24
+  [SHUFFLED prefix] answers repeating a channel name: 100%
+  Block A drop under shuffled prefix: 8.1 pts (should approach 8.9 pts for a full collapse)
+
+========================================================================
+  SWEEP SUMMARY (disjoint; A = prefix only, B = context only)
+========================================================================
+    A   B |  A slot  B slot All slot | All-32 joint |  A ctrl A chance
+   16  16 |   34.9%   99.9%    67.4% |         0.0% |   26.9%    26.0%
+
+  Saved to /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3_16long/
+root@b7d572d505db:/workspace# 
+
