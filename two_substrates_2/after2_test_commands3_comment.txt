@@ -1,0 +1,4 @@
+With Block A carried only by the learned write-head prefix and Block B only by the FDM token block 
+(verified by a leak check: context tokens identical across 30/30 trials when Block A varies), the frozen host 
+retrieves 100% of Block A slots and 99.7% of Block B slots (n=100, seed 1). 
+Shuffling the prefix reduces Block A to 24.1% (chance 26.0%) and leaves Block B at 99.3%.
