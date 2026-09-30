@@ -1,0 +1,54 @@
+root@b7d572d505db:/workspace# cd /workspace
+nano split_ratio_sweep_disjoint.py     # paste the newest sweep script, Ctrl+O, Enter, Ctrl+X
+nano patch_nhop_source.py              # paste the patch script
+python -m py_compile split_ratio_sweep_disjoint.py patch_nhop_source.py && echo OK
+grep -c load_head split_ratio_sweep_disjoint.py   # must be > 0
+[Errno 2] No such file or directory: 'patch_nhop_source.py'0
+root@b7d572d505db:/workspace# nano patch_nhop_source.py              # paste the patch script
+root@b7d572d505db:/workspace# tmux new -s fdm
+
+downloaded prompterminal/fdm-40ch-two-block-qwen3
+layers=28 kv_heads=8 head_dim=128 vocab_in_config=151671
+
+[01:44:26] === 4. sanity: host decodes all carriers (expect B slot ~99%)
+[seed] 42   [partition] interleaved
+Loading weights: 100%|██████████| 310/310 [00:00<00:00, 6468.70it/s]
+
+============================================================
+  SPLIT: 0 parametric / 32 context (DISJOINT)
+  Block A (prefix only): []
+  Block B (context only): [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
+============================================================
+  No write head; context-only evaluation.
+  [ctx-only] SLOT   A    0.0%  B   99.2%  All   99.2%   (chance A 0.0%, chance B 27.1%)
+  [ctx-only] JOINT  A  100.0%  B   86.0%  All-32   86.0%   (n=50)
+
+========================================================================
+  SWEEP SUMMARY (disjoint; A = prefix only, B = context only)
+========================================================================
+    A   B |  A slot  B slot All slot | All-32 joint |  A ctrl A chance
+    0  32 |    0.0%   99.2%    99.2% |        86.0% |    nan%     0.0%
+
+  Saved to /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3/sanity/
+sanity B slot accuracy: 99.2%
+
+[01:51:12] === 5. masked-block baseline (no prefix, no training): host shift test
+[seed] 1   [partition] interleaved
+Loading weights: 100%|██████████| 310/310 [00:00<00:00, 8391.69it/s]
+
+[leak check] Block A values must not affect the context tokens
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+[masked ctx-only] 4 channels removed from block, no prefix, no training
+  [masked ctx-only] SLOT   A   25.2%  B   96.1%  All   87.3%   (chance A 27.1%, chance B 27.1%)
+  [masked ctx-only] JOINT  A    0.0%  B   32.0%  All-32    0.0%   (n=100)
+
+[leak check] Block A values must not affect the context tokens
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+[masked ctx-only] 8 channels removed from block, no prefix, no training
+Masked ctx-only:  25%|██▌       | 25/100 [03:23<10:08,  8.11s/it]^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A
+Masked ctx-only:  26%|██▌       | 26/100 [03:31<10:00,  8.11s/it][[B^[[B^[[B
+[fdm] 0:bash*                                                                                              "b7d572d505db" 02:08 30-Sep-26
