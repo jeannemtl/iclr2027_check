@@ -205,3 +205,32 @@ Control:   1%|          | 1/100 [00:07<12:30,  7.58s/it]
 [fdm] 0:bash*                                                                                              "b7d572d505db" 06:25 30-Sep-26
 
 
+
+
+
+ot@b7d572d505db:/workspace# tmux new -s fdm
+
+   16  16 |   55.3%   99.6%    77.5% |         0.0% |   26.1%    26.0%
+
+  Saved to /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3/seed1/split16/
+
+[06:38:29] === 7. summary
+seed   A   B |  A match  A ctrl  delta |  B match  B ctrl |  rep m  rep c | n
+   1  16  16 |    55.3%   26.1%  29.2 |    99.6%   99.8% |    98%   100% | 100
+   1   4  28 |   100.0%   25.0%  75.0 |    99.1%   99.6% |   100%   100% | 100
+   1   8  24 |   100.0%   24.1%  75.9 |    99.7%   99.3% |   100%   100% | 100
+
+A delta = matched minus shuffled-prefix control; report this, not the 1/M chance level.
+
+masked baseline: masked/ctx_only_masked_seed1.json
+   4 removed: B slot  93.9%   A slot  24.0%
+   8 removed: B slot  87.3%   A slot  26.9%
+  16 removed: B slot  78.7%   A slot  26.7%
+
+[06:38:29] === 8. upload to HuggingFace (private): results -> prompterminal/fdm-two-substrates-review, heads -> prompterminal/fdm-two-substrates-heads
+uploaded
+
+[06:38:35] === done. results in /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3  (log: /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3/run.log)
+root@b7d572d505db:/workspace# md5sum split_ratio_sweep_disjoint.py                      # starts 5699f23c
+5699f23ccadf1655da4e28ade1becbd0  split_ratio_swee
+
