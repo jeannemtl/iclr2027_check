@@ -1,0 +1,42 @@
+rite head: 62.7M params
+^[[A^[[A^[[A^[[A^[[B^[[B^[[B^[[B^[[B    Step  1000/5000 | loss 0.0634 | 267s
+    Step  2000/5000 | loss 0.0222 | 668s
+    Step  3000/5000 | loss 0.0104 | 1083s
+    Step  4000/5000 | loss 0.0055 | 1499s
+    Step  5000/5000 | loss 0.0034 | 1917s
+  saved write head -> /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3/seed1/split4/write_head_A4_seed1.pt
+  [matched prefix] SLOT   A  100.0%  B   99.1%  All   99.2%   (chance A 27.1%, chance B 27.1%)
+  [matched prefix] JOINT  A  100.0%  B   82.0%  All-32   82.0%   (n=100)
+  [matched prefix] per-channel A %: ch8:100  ch10:100  ch12:100  ch14:100
+  [matched prefix] answers repeating a channel name: 100%
+  [SHUFFLED prefix] SLOT   A   25.0%  B   99.6%  All   90.2%   (chance A 27.1%, chance B 27.1%)
+  [SHUFFLED prefix] JOINT  A    0.0%  B   90.0%  All-32    0.0%   (n=100)
+  [SHUFFLED prefix] per-channel A %: ch8:20  ch10:23  ch12:26  ch14:31
+  [SHUFFLED prefix] answers repeating a channel name: 100%
+  Block A drop under shuffled prefix: 75.0 pts (should approach 72.9 pts for a full collapse)
+
+========================================================================
+  SWEEP SUMMARY (disjoint; A = prefix only, B = context only)
+========================================================================
+    A   B |  A slot  B slot All slot | All-32 joint |  A ctrl A chance
+    4  28 |  100.0%   99.1%    99.2% |        82.0% |   25.0%    27.1%
+
+  Saved to /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3/seed1/split4/
+
+[03:32:10] === 6. train  seed=1  prefix-only channels=8  steps=15000  -> /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3/seed1/split8
+[seed] 1   [partition] interleaved
+Loading weights: 100%|██████████| 310/310 [00:00<00:00, 6660.87it/s]
+
+[leak check] Block A values must not affect the context tokens
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+============================================================
+  SPLIT: 8 parametric / 24 context (DISJOINT)
+  Block A (prefix only): [8, 10, 12, 14, 16, 18, 20, 22]
+  Block B (context only): [9, 11, 13, 15, 17, 19, 21, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
+============================================================
+  Write head: 62.7M params
+    Step  1000/15000 | loss 0.1117 | 267s
+    Step  2000/15000 | loss 0.0634 | 535s
+
