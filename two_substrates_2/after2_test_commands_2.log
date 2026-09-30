@@ -1,3 +1,12 @@
+run this in a second window:
+# Ctrl+b then c  (new window)
+cd /workspace && export HF_TOKEN=hf_...
+rm -rf /workspace/FDM_IN_WEIGHTS/two_substrates_review/qwen3/masked
+RUN_SANITY=0 RUN_TRAIN=0 UPLOAD=0 MASKED_SPLITS="4,8,16" bash startup.sh
+
+
+
+
 ot@b7d572d505db:/workspace# 
 root@b7d572d505db:/workspace# wc -l split_ratio_sweep_disjoint.py                       # 486
 md5sum split_ratio_sweep_disjoint.py                      # starts 5699f23c
