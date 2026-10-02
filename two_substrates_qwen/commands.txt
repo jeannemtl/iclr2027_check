@@ -1,0 +1,11 @@
+cd /workspace
+git clone git@github.com:jeannemtl/iclr2027_check.git
+cd iclr2027_check/two_substrates_review
+
+export HF_TOKEN=hf_...        # your HuggingFace token
+tmux new -s fdm
+
+cd /workspace/iclr2027_check/two_substrates_review
+export HF_TOKEN=hf_...
+MODEL=qwen3 SEEDS="1 2 3" SPLITS="4 8 16" N_EVAL=200 SKIP_DONE=0 \
+  WORK=/workspace/clean_qwen3 bash startup.sh
