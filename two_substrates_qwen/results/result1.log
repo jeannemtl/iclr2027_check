@@ -43,3 +43,58 @@ Loading weights: 100%|██████████| 310/310 [00:00<00:00, 7979
 [masked ctx-only] 4 channels removed from block, no prefix, no training
 Masked ctx-only:   2%|▏         | 4/200 [00:44<36:34, 11.20s/it]^[[B^[[B
 [fdm] 0:bash*                                                                                              "34b438c6b72a" 18:25 02-Oct-26
+
+
+
+
+
+
+
+
+root@b7d572d505db:/workspace# tmux new -s fdm
+
+  Block A drop under shuffled prefix: 74.1 pts (should approach 72.8 pts for a full collapse)
+
+========================================================================
+  SWEEP SUMMARY (disjoint; A = prefix only, B = context only)
+========================================================================
+    A   B |  A slot  B slot All slot | All-32 joint |  A ctrl A chance
+    4  28 |   99.9%   99.0%    99.1% |        80.0% |   25.8%    27.1%
+
+  Saved to /workspace/clean_qwen3/FDM_IN_WEIGHTS/two_substrates_review/qwen3/seed3/split4/
+
+[11:14:52] === 6. train  seed=3  prefix-only channels=8  steps=15000  -> /workspace/clean_qwen3/FDM_IN_WEIGHTS/two_substrates_review/qwen3/seed3/split8
+[seed] 3   [partition] interleaved
+Loading weights: 100%|██████████| 310/310 [00:00<00:00, 5831.01it/s]
+
+[leak check] Block A values must not affect the context tokens
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+============================================================
+  SPLIT: 8 parametric / 24 context (DISJOINT)
+  Block A (prefix only): [8, 10, 12, 14, 16, 18, 20, 22]
+  Block B (context only): [9, 11, 13, 15, 17, 19, 21, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
+============================================================
+  Write head: 62.7M params
+    Step  1000/15000 | loss 0.1193 | 301s
+    Step  2000/15000 | loss 0.0685 | 601s
+    Step  3000/15000 | loss 0.0622 | 902s
+    Step  4000/15000 | loss 0.0555 | 1202s
+    Step  5000/15000 | loss 0.0508 | 1502s
+    Step  6000/15000 | loss 0.0426 | 1802s
+    Step  7000/15000 | loss 0.0364 | 2102s
+    Step  8000/15000 | loss 0.0286 | 2402s
+    Step  9000/15000 | loss 0.0228 | 2702s
+    Step 10000/15000 | loss 0.0166 | 3003s
+    Step 11000/15000 | loss 0.0131 | 3304s
+    Step 12000/15000 | loss 0.0081 | 3605s
+    Step 13000/15000 | loss 0.0056 | 3905s
+    Step 14000/15000 | loss 0.0040 | 4205s
+    Step 15000/15000 | loss 0.0030 | 4505s
+  saved write head -> /workspace/clean_qwen3/FDM_IN_WEIGHTS/two_substrates_review/qwen3/seed3/split8/write_head_A8_seed3.pt
+Eval:  17%|█▋        | 34/200 [06:07<30:41, 11.09s/it]
+
+
+Eval:  18%|█▊        | 35/200 [06:18<30:45, 11.18s/it]
+[fdm] 0:bash*                                                                                              "34b438c6b72a" 12:36 03-Oct-26
