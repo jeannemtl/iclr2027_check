@@ -25,6 +25,7 @@
 #   STEPS_4=5000  STEPS_8PLUS=15000   write-head steps for split 4 / for splits >= 8
 #   N_EVAL=100                 samples per eval (use 200 for final numbers)
 #   PARTITION=interleaved|contiguous
+#   VOCAB_OVERRIDE=65536  A_LOW=0.0   encoder settings (lfm25 only; run diag_encoder_match.py first)
 #   MASKED_SPLITS="4,8,16"     splits for the masked-baseline stage
 #   RUN_SANITY=0 RUN_MASKED=0 RUN_TRAIN=0 UPLOAD=0   skip stages
 #   SKIP_DONE=1                skip a split whose results JSON already exists (default 1)
@@ -168,7 +169,13 @@ else:
 EOF
 fi
 
-COMMON=(--model "$MODEL_DIR" --vocab_size "$VOCAB" --partition "$PARTITION")
+A_LOW="${A_LOW:-0.25}"   # encoder low amplitude; only the _hybrid script accepts the flag
+if [ "$SWEEP_SCRIPT" = "split_ratio_sweep_disjoint.py" ]; then
+  [ "$A_LOW" = "0.25" ] || die "A_LOW is only supported with the _hybrid sweep script"
+  COMMON=(--model "$MODEL_DIR" --vocab_size "$VOCAB" --partition "$PARTITION")
+else
+  COMMON=(--model "$MODEL_DIR" --vocab_size "$VOCAB" --partition "$PARTITION" --a_low "$A_LOW")
+fi
 
 # --------------------------------------------------------------------------- 4
 if [ "$RUN_SANITY" = 1 ]; then

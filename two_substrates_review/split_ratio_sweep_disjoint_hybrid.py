@@ -101,11 +101,13 @@ def layer_kvs_to_cache(layer_kvs, arch):
 # Encoder helpers (unchanged)
 # ----------------------------------------------------------------------------
 
-def make_encoder(tokenizer, vocab_size):
+def make_encoder(tokenizer, vocab_size, a_low=0.25):
+    """a_low must match the host's training encoder: 0.25 for the Qwen3/Hermes3 two-block
+    hosts; the repo's LFM2.5 single-substrate pipeline used 0.0."""
     return TurboFDMSignalEncoder(
         vocab_size=vocab_size, tokenizer=tokenizer,
         num_tokens_per_encoder=N_SAMPLES, sample_rate=SAMPLE_RATE,
-        a_high=1.0, a_low=0.25, num_levels=64, seed=42,
+        a_high=1.0, a_low=a_low, num_levels=64, seed=42,
     )
 
 
@@ -422,6 +424,8 @@ def main():
                    help="MUST equal the vocab_size the checkpoint's encoder was built with "
                         "(token_map = rng.choice(vocab_size, 64)). Defaults to config.vocab_size; "
                         "if the sanity gate fails, the host was trained with a different value.")
+    p.add_argument("--a_low", type=float, default=0.25,
+                   help="encoder low amplitude; must match the host's training encoder (0.25 Qwen3/Hermes3)")
     p.add_argument("--partition", choices=["contiguous", "interleaved"], default="interleaved")
     p.add_argument("--no_control", action="store_true")
     p.add_argument("--load_head", default=None,
@@ -448,8 +452,8 @@ def main():
     arch = HostArch(model.config)
     print(f"[host] {arch.describe()}")
     vocab_size = args.vocab_size if args.vocab_size is not None else model.config.vocab_size
-    print(f"[encoder] vocab_size={vocab_size}")
-    encoder = make_encoder(tokenizer, vocab_size)
+    print(f"[encoder] vocab_size={vocab_size} a_low={args.a_low}")
+    encoder = make_encoder(tokenizer, vocab_size, a_low=args.a_low)
 
     if args.load_head:
         ckpt = torch.load(args.load_head, map_location=device)
@@ -496,7 +500,7 @@ def main():
                                  save_dir=args.output_dir, seed=args.seed)
         r["block_a_channels"], r["block_b_channels"] = block_a, block_b
         r["partition"], r["seed"], r["arch"] = args.partition, args.seed, arch.to_json()
-        r["vocab_size"] = vocab_size
+        r["vocab_size"], r["a_low"] = vocab_size, args.a_low
         results.append(r)
 
         os.makedirs(args.output_dir, exist_ok=True)
