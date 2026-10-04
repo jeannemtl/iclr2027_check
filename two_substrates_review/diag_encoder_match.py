@@ -15,7 +15,16 @@ Grid (override with the flags):
   --formats B_only,A_and_B  B_only  = "[MEMORY]BLOCK_B <fdm>[/MEMORY]"  (what the sweep uses)
                             A_and_B = "[MEMORY]BLOCK_A <fdm>[/MEMORY][MEMORY]BLOCK_B <fdm>[/MEMORY]"
                                       (what eval_two_block_n200_lfm2.py used)
-                            bare    = "[MEMORY]<fdm>[/MEMORY]"  (single-substrate format)
+                            bare    = "[MEMORY]<fdm>[/MEMORY]"  (single-substrate format, same question)
+                            bare_hop = single-substrate format with a hop question
+                                      ("What is the risk assessment?"); the host answers with its
+                                      assessment and then "Context: TEAM=.., ..., COMMS=..", which
+                                      is what the 40ch single-block hosts were trained to emit
+  --n 6                     memories per setting
+
+Typical calls:
+  two-block host   : --vocabs 65536,64402 --a_lows 0.25,0.0 --formats B_only,A_and_B
+  single-block host: --vocabs 65536       --a_lows 0.25,0.0 --formats bare_hop
 """
 import sys, re, random, argparse, time
 import torch
@@ -35,6 +44,8 @@ def build(fmt, fdm_text):
         return f"[MEMORY]BLOCK_A {fdm_text}[/MEMORY][MEMORY]BLOCK_B {fdm_text}[/MEMORY]{tail}"
     if fmt == "bare":
         return f"[MEMORY]{fdm_text}[/MEMORY]{tail}"
+    if fmt == "bare_hop":
+        return f"[MEMORY]{fdm_text}[/MEMORY]\nQuestion: What is the risk assessment?\nAnswer:"
     raise ValueError(fmt)
 
 
@@ -98,7 +109,8 @@ def main():
               "two-block LFM2.5 training script before running the sweep.")
     else:
         print("For startup.sh:  VOCAB_OVERRIDE=%d A_LOW=%s" % (best[1], best[2]),
-              "" if best[3] == "B_only" else f"   (NOTE: host needs prompt format '{best[3]}', not yet supported by the sweep)")
+              "" if best[3] == "B_only" else f"   (NOTE: host needs prompt format '{best[3]}'; the sweep needs a --prompt_style for it)")
+    weak = [k for k in ALL_QUERY_CHANNELS]  # per-channel readout for the best setting is in the sweep's sanity JSON
 
 
 if __name__ == "__main__":
