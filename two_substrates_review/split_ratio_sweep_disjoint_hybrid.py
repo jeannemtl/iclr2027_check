@@ -28,6 +28,17 @@ Works unchanged on an all-attention host (no `layer_types` in the config means
 every layer is attention), but the validated record for Qwen3 and Hermes3 is
 the original script; use this one for hybrids.
 
+Prompt styles (--prompt_style):
+  twoblock  "[MEMORY]BLOCK_B <fdm>[/MEMORY]\nQuestion: Report values for: <32 names>.\nAnswer:"
+            answer " Context: NAME=VALUE, ...".  The Qwen3 / Hermes3 two-block hosts.
+  bare_hop  "[MEMORY]<fdm>[/MEMORY]\nQuestion: What is the risk assessment?\nAnswer:"
+            answer " <risk assessment from ch0-7> Context: NAME=VALUE, ...".  The 40-channel
+            single-block hosts (fdm-40ch-fresh-lfm2-model). ch0-7 are always in the context
+            block, so the host derives the assessment itself; the write head is trained only
+            on the Context list (assessment tokens are masked out of the loss).
+  NOTE: prompterminal/fdm-twoblock-lfm2.5-1.2b is a 10-channel mixed-domain model (it only
+  knows ch0-9 and answers "Context: TEAM=.., REGION=..") and cannot host a 32-channel split.
+
 Positions: write-head prefix at [0, 512], FDM block at 513+.
 """
 
@@ -202,23 +213,68 @@ def head_inputs(memory, block_a, device):
 # Prompt building and generation
 # ----------------------------------------------------------------------------
 
+HOP_QUESTION = "What is the risk assessment?"
+
+
+def generate_risk_answer(facts, rule, meta):
+    """Verbatim copy of single_substrate/fdm_common.py::generate_risk_answer (the answer the
+    40ch single-block hosts were trained to give to HOP_QUESTION before the Context list)."""
+    status, priority, backup, location = facts["STATUS"], facts["PRIORITY"], facts["BACKUP"], facts["LOCATION"]
+    if meta == "EMERGENCY":
+        return f"EMERGENCY: Risk assessment suspended. Immediate action required in {location}."
+    if meta == "LOCKDOWN":
+        return f"LOCKDOWN: Maximum risk assumed. All operations in {location} halted."
+    risk_factors = []
+    if status == "COMPROMISED": risk_factors.append("compromised status")
+    if backup == "UNAVAILABLE": risk_factors.append("no backup")
+    if status == "UNKNOWN": risk_factors.append("unknown status")
+    if rule == "SAFETY_FIRST":
+        if risk_factors:
+            return f"SAFETY_FIRST assessment: HIGH RISK in {location}. Factors: {', '.join(risk_factors)}."
+        return f"SAFETY_FIRST assessment: LOW RISK in {location}. Status {status}, backup {backup}."
+    elif rule == "MISSION_FIRST":
+        if len(risk_factors) >= 2:
+            return f"MISSION_FIRST assessment: MODERATE RISK in {location}. Acceptable for {priority} priority."
+        return f"MISSION_FIRST assessment: LOW RISK in {location}. Proceed with mission."
+    elif rule == "BALANCED":
+        level = "HIGH" if len(risk_factors) >= 2 else "MEDIUM" if len(risk_factors) == 1 else "LOW"
+        return f"BALANCED assessment: {level} RISK in {location}. Factors: {len(risk_factors)} concerns."
+    elif rule == "CAUTIOUS":
+        if risk_factors:
+            return f"CAUTIOUS assessment: HIGH RISK in {location}. Any risk factor triggers alert: {', '.join(risk_factors)}."
+        return f"CAUTIOUS assessment: LOW RISK in {location}. All safety conditions met."
+    return f"Risk assessment for {location}."
+
+
+def base_answer(memory):
+    facts = {MEMORY_SCHEMAS[ch][0]: memory[ch] for ch in range(6)}
+    return generate_risk_answer(facts, memory[6], memory[7])
+
+
+def context_answer(memory):
+    return "Context: " + ", ".join(f"{CHANNEL_NAMES[k]}={memory[k]}" for k in ALL_QUERY_CHANNELS) + "."
+
 def context_channels(block_b):
     return list(range(0, 8)) + list(block_b)
 
 
-def build_prompt(encoder, memory, block_b):
+def build_prompt(encoder, memory, block_b, style="twoblock"):
     if block_b:
         fdm_text, _ = encode_masked(encoder, memory, context_channels(block_b))
-        memory_part = f"[MEMORY]BLOCK_B {fdm_text}[/MEMORY]"
+        memory_part = f"[MEMORY]BLOCK_B {fdm_text}[/MEMORY]" if style == "twoblock" else f"[MEMORY]{fdm_text}[/MEMORY]"
     else:
         memory_part = ""
-    ch_names = [CHANNEL_NAMES[k] for k in ALL_QUERY_CHANNELS]
-    question = f"Report values for: {', '.join(ch_names)}."
+    if style == "twoblock":
+        question = f"Report values for: {', '.join(CHANNEL_NAMES[k] for k in ALL_QUERY_CHANNELS)}."
+    elif style == "bare_hop":
+        question = HOP_QUESTION
+    else:
+        raise ValueError(style)
     return memory_part, f"\nQuestion: {question}\nAnswer:"
 
 
 def generate_with_split(model, tokenizer, write_head, memory, encoder, device, arch,
-                        block_a, block_b, prefix_memory=None, max_new_tokens=350):
+                        block_a, block_b, prefix_memory=None, max_new_tokens=350, style="twoblock"):
     if block_a and write_head is not None:
         src = prefix_memory if prefix_memory is not None else memory
         ch_ids, val_ids = head_inputs(src, block_a, device)
@@ -228,7 +284,7 @@ def generate_with_split(model, tokenizer, write_head, memory, encoder, device, a
     else:
         past_kv, n_kv_pos = None, 0
 
-    memory_part, q_text = build_prompt(encoder, memory, block_b)
+    memory_part, q_text = build_prompt(encoder, memory, block_b, style)
     input_ids = tokenizer.encode(memory_part + q_text, return_tensors='pt').to(device)
     seq_len = input_ids.shape[1]
     cur_pos = torch.arange(n_kv_pos, n_kv_pos + seq_len, device=device).unsqueeze(0)
@@ -263,7 +319,7 @@ def hit(answer, k, mem):
 
 
 def evaluate(model, tokenizer, write_head, encoder, device, arch, block_a, block_b,
-             n_eval, control=False, desc="Eval"):
+             n_eval, control=False, desc="Eval", style="twoblock"):
     a_c = a_t = b_c = b_t = all_c = all_t = 0
     a_all = b_all = all_all = 0
     per = {"a": [], "b": [], "all": []}
@@ -275,7 +331,7 @@ def evaluate(model, tokenizer, write_head, encoder, device, arch, block_a, block
         mem = random_memory()
         pm = random_memory() if control else None
         ans = generate_with_split(model, tokenizer, write_head, mem, encoder, device, arch,
-                                  block_a, block_b, prefix_memory=pm)
+                                  block_a, block_b, prefix_memory=pm, style=style)
         ha = [hit(ans, k, mem) for k in block_a]
         hb = [hit(ans, k, mem) for k in block_b]
         for k, h in zip(block_a, ha): pc_a[k] += int(h)
@@ -327,15 +383,15 @@ def print_eval(tag, r, block_a, block_b):
 
 def train_and_eval_split(model, tokenizer, encoder, device, arch, block_a, block_b,
                          n_steps=5000, lr=3e-4, n_eval=200, max_len=1536, run_control=True,
-                         save_dir=None, seed=0):
+                         save_dir=None, seed=0, style="twoblock"):
     n_param, n_ctx = len(block_a), len(block_b)
     print(f"\n{'='*60}\n  SPLIT: {n_param} parametric / {n_ctx} context (DISJOINT, hybrid host)")
     print(f"  Block A (prefix only): {block_a}\n  Block B (context only): {block_b}")
-    print(f"  Prefix written into attention layers {arch.attn_layers} only\n{'='*60}")
+    print(f"  Prefix written into attention layers {arch.attn_layers} only   [prompt style: {style}]\n{'='*60}")
 
     if n_param == 0:
         print("  No write head; context-only evaluation.")
-        r = evaluate(model, tokenizer, None, encoder, device, arch, block_a, block_b, n_eval)
+        r = evaluate(model, tokenizer, None, encoder, device, arch, block_a, block_b, n_eval, style=style)
         print_eval("ctx-only", r, block_a, block_b)
         r.update({"n_param": 0, "n_ctx": n_ctx})
         return r
@@ -353,13 +409,20 @@ def train_and_eval_split(model, tokenizer, encoder, device, arch, block_a, block
         ch_ids, val_ids = head_inputs(mem, block_a, device)
         layer_kvs = write_head(ch_ids, val_ids)
 
-        memory_part, q_text = build_prompt(encoder, mem, block_b)
-        answer_text = "Context: " + ", ".join(f"{CHANNEL_NAMES[k]}={mem[k]}" for k in ALL_QUERY_CHANNELS) + "."
-        a_text = f" {answer_text}"
-        full_ids = tokenizer.encode(memory_part + q_text + a_text, add_special_tokens=False)
-        a_ids = tokenizer.encode(a_text, add_special_tokens=False)
-        prefix_len = len(full_ids) - len(a_ids)
-        labels = [-100] * prefix_len + full_ids[prefix_len:]
+        memory_part, q_text = build_prompt(encoder, mem, block_b, style)
+        if style == "twoblock":
+            a_text = f" {context_answer(mem)}"
+            full_ids = tokenizer.encode(memory_part + q_text + a_text, add_special_tokens=False)
+            a_ids = tokenizer.encode(a_text, add_special_tokens=False)
+            prefix_len = len(full_ids) - len(a_ids)
+            labels = [-100] * prefix_len + full_ids[prefix_len:]
+        else:
+            # host first gives its assessment (derived from ch0-7, always in context); only the
+            # Context list that follows is a training target for the write head
+            head_ids = tokenizer.encode(memory_part + q_text + f" {base_answer(mem)}", add_special_tokens=False)
+            ctx_ids = tokenizer.encode(f" {context_answer(mem)}", add_special_tokens=False)
+            full_ids = head_ids + ctx_ids
+            labels = [-100] * len(head_ids) + ctx_ids
         if len(full_ids) > max_len:
             raise RuntimeError(f"sequence {len(full_ids)} > max_len {max_len}: answer labels would be truncated")
 
@@ -383,15 +446,15 @@ def train_and_eval_split(model, tokenizer, encoder, device, arch, block_a, block
         torch.save({"state_dict": write_head.state_dict(), "block_a": block_a, "block_b": block_b,
                     "n_steps": n_steps, "lr": lr, "seed": seed, "arch": arch.to_json()}, ckpt)
         print(f"  saved write head -> {ckpt}")
-    r = evaluate(model, tokenizer, write_head, encoder, device, arch, block_a, block_b, n_eval, desc="Eval")
+    r = evaluate(model, tokenizer, write_head, encoder, device, arch, block_a, block_b, n_eval, desc="Eval", style=style)
     print_eval("matched prefix", r, block_a, block_b)
     r.update({"n_param": n_param, "n_ctx": n_ctx, "final_loss": float(np.mean(losses[-500:])),
-              "n_steps": n_steps, "lr": lr,
+              "n_steps": n_steps, "lr": lr, "prompt_style": style,
               "write_head_params": sum(p.numel() for p in write_head.parameters())})
 
     if run_control:
         c = evaluate(model, tokenizer, write_head, encoder, device, arch, block_a, block_b, n_eval,
-                     control=True, desc="Control")
+                     control=True, desc="Control", style=style)
         print_eval("SHUFFLED prefix", c, block_a, block_b)
         r["control_shuffled_prefix"] = c
         drop = r["block_a_acc_slot"] - c["block_a_acc_slot"]
@@ -426,6 +489,8 @@ def main():
                         "if the sanity gate fails, the host was trained with a different value.")
     p.add_argument("--a_low", type=float, default=0.25,
                    help="encoder low amplitude; must match the host's training encoder (0.25 Qwen3/Hermes3)")
+    p.add_argument("--prompt_style", choices=["twoblock", "bare_hop"], default="twoblock",
+                   help="twoblock for the Qwen3/Hermes3 two-block hosts; bare_hop for the 40ch single-block hosts")
     p.add_argument("--partition", choices=["contiguous", "interleaved"], default="interleaved")
     p.add_argument("--no_control", action="store_true")
     p.add_argument("--load_head", default=None,
@@ -452,7 +517,7 @@ def main():
     arch = HostArch(model.config)
     print(f"[host] {arch.describe()}")
     vocab_size = args.vocab_size if args.vocab_size is not None else model.config.vocab_size
-    print(f"[encoder] vocab_size={vocab_size} a_low={args.a_low}")
+    print(f"[encoder] vocab_size={vocab_size} a_low={args.a_low}   [prompt style] {args.prompt_style}")
     encoder = make_encoder(tokenizer, vocab_size, a_low=args.a_low)
 
     if args.load_head:
@@ -463,14 +528,14 @@ def main():
             leak_check(encoder, block_a, block_b)
         wh = CrossAttentionWriteHead(n_channels=len(block_a), arch=arch).to(device)
         wh.load_state_dict(ckpt["state_dict"]); wh.eval()
-        r = evaluate(model, tokenizer, wh, encoder, device, arch, block_a, block_b, args.n_eval, desc="Eval")
+        r = evaluate(model, tokenizer, wh, encoder, device, arch, block_a, block_b, args.n_eval, desc="Eval", style=args.prompt_style)
         print_eval("matched prefix", r, block_a, block_b)
-        c = evaluate(model, tokenizer, wh, encoder, device, arch, block_a, block_b, args.n_eval, control=True, desc="Control")
+        c = evaluate(model, tokenizer, wh, encoder, device, arch, block_a, block_b, args.n_eval, control=True, desc="Control", style=args.prompt_style)
         print_eval("SHUFFLED prefix", c, block_a, block_b)
         r["control_shuffled_prefix"] = c
         r.update({"n_param": len(block_a), "n_ctx": len(block_b), "block_a_channels": block_a,
                   "block_b_channels": block_b, "seed": args.seed, "rescored_from": args.load_head,
-                  "arch": arch.to_json()})
+                  "arch": arch.to_json(), "prompt_style": args.prompt_style})
         os.makedirs(args.output_dir, exist_ok=True)
         out = os.path.join(args.output_dir, f"rescored_A{len(block_a)}_seed{args.seed}.json")
         json.dump([r], open(out, "w"), indent=2)
@@ -485,11 +550,12 @@ def main():
         if args.ctx_only_masked:
             print(f"\n[masked ctx-only] {n_param} channels removed from block, no prefix, no training")
             r = evaluate(model, tokenizer, None, encoder, device, arch, block_a, block_b, args.n_eval,
-                         desc="Masked ctx-only")
+                         desc="Masked ctx-only", style=args.prompt_style)
             print_eval("masked ctx-only", r, block_a, block_b)
             r.update({"n_param": n_param, "n_ctx": 32 - n_param, "mode": "ctx_only_masked",
                       "block_a_channels": block_a, "block_b_channels": block_b,
-                      "partition": args.partition, "seed": args.seed, "arch": arch.to_json()})
+                      "partition": args.partition, "seed": args.seed, "arch": arch.to_json(),
+                      "prompt_style": args.prompt_style})
             results.append(r)
             os.makedirs(args.output_dir, exist_ok=True)
             json.dump(results, open(os.path.join(args.output_dir, f"ctx_only_masked_seed{args.seed}.json"), "w"), indent=2)
@@ -497,7 +563,7 @@ def main():
         r = train_and_eval_split(model, tokenizer, encoder, device, arch, block_a, block_b,
                                  n_steps=args.n_steps, lr=args.lr, n_eval=args.n_eval,
                                  max_len=args.max_len, run_control=not args.no_control,
-                                 save_dir=args.output_dir, seed=args.seed)
+                                 save_dir=args.output_dir, seed=args.seed, style=args.prompt_style)
         r["block_a_channels"], r["block_b_channels"] = block_a, block_b
         r["partition"], r["seed"], r["arch"] = args.partition, args.seed, arch.to_json()
         r["vocab_size"], r["a_low"] = vocab_size, args.a_low

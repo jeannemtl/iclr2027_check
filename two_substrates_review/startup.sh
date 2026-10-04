@@ -25,7 +25,8 @@
 #   STEPS_4=5000  STEPS_8PLUS=15000   write-head steps for split 4 / for splits >= 8
 #   N_EVAL=100                 samples per eval (use 200 for final numbers)
 #   PARTITION=interleaved|contiguous
-#   VOCAB_OVERRIDE=65536  A_LOW=0.0   encoder settings (lfm25 only; run diag_encoder_match.py first)
+#   VOCAB_OVERRIDE=65536  A_LOW=0.25  encoder overrides (hybrid script only; run diag_encoder_match.py first)
+#   SANITY_MIN=0.95            stage-4 gate on Block B slot accuracy
 #   MASKED_SPLITS="4,8,16"     splits for the masked-baseline stage
 #   RUN_SANITY=0 RUN_MASKED=0 RUN_TRAIN=0 UPLOAD=0   skip stages
 #   SKIP_DONE=1                skip a split whose results JSON already exists (default 1)
@@ -60,16 +61,19 @@ HEADS_REPO="${HEADS_REPO:-prompterminal/fdm-two-substrates-heads}"
 # SWEEP_SCRIPT: attention-only hosts use the original script; hybrid (conv + attention)
 #               hosts use the _hybrid variant, which writes the prefix into attention layers only.
 case "$MODEL" in
-  qwen3)   MODEL_REPO="prompterminal/fdm-40ch-two-block-qwen3";          VOCAB=151936; MODEL_SUBDIR="";             SWEEP_SCRIPT="split_ratio_sweep_disjoint.py" ;;
-  hermes3) MODEL_REPO="prompterminal/fdm-40ch-two-block-hermes3-correct"; VOCAB=128256; MODEL_SUBDIR="";             SWEEP_SCRIPT="split_ratio_sweep_disjoint.py" ;;
-  lfm25)   MODEL_REPO="prompterminal/fdm-twoblock-lfm2.5-1.2b";           VOCAB=64402;  MODEL_SUBDIR="phase2_final"; SWEEP_SCRIPT="split_ratio_sweep_disjoint_hybrid.py" ;;
+  qwen3)   MODEL_REPO="prompterminal/fdm-40ch-two-block-qwen3";          VOCAB=151936; MODEL_SUBDIR="";             SWEEP_SCRIPT="split_ratio_sweep_disjoint.py"; PROMPT_STYLE="twoblock" ;;
+  hermes3) MODEL_REPO="prompterminal/fdm-40ch-two-block-hermes3-correct"; VOCAB=128256; MODEL_SUBDIR="";             SWEEP_SCRIPT="split_ratio_sweep_disjoint.py"; PROMPT_STYLE="twoblock" ;;
+  # lfm25: the 40-channel single-block LFM2.5 host. (prompterminal/fdm-twoblock-lfm2.5-1.2b is a
+  # 10-channel mixed-domain model that only knows ch0-9 and cannot host a 32-channel split.)
+  # Verified with diag_encoder_match.py: vocab 65536, a_low 0.25, prompt style bare_hop -> 100% slot.
+  lfm25)   MODEL_REPO="prompterminal/fdm-40ch-fresh-lfm2-model";             VOCAB=65536;  MODEL_SUBDIR="";             SWEEP_SCRIPT="split_ratio_sweep_disjoint_hybrid.py"; PROMPT_STYLE="bare_hop" ;;
   *) echo "MODEL must be qwen3, hermes3 or lfm25 (got '$MODEL')" >&2; exit 1 ;;
 esac
 # VOCAB must equal the vocab_size the checkpoint's encoder was built with
 # (nhop_source token_map = rng.choice(vocab_size, 64)); values come from
 # fdm_two_block_training.py (Qwen3) and fdm_two_block_training_hermes3.py.
-# For lfm25 the training script is not in this repo; 64402 is config.vocab_size of the
-# checkpoint. If the stage-4 sanity gate fails, try VOCAB=65536 (the nominal LFM2 tokenizer size).
+# For lfm25 the values come from single_substrate/eidetic_lfm2_fdm_e2e_fresh.py (VOCAB_SIZE=65536,
+# final curriculum stage a_low=0.25) and were confirmed on the checkpoint by diag_encoder_match.py.
 
 VOCAB="${VOCAB_OVERRIDE:-$VOCAB}"
 MODEL_ROOT="$WORK/FDM_IN_WEIGHTS/two_block_$MODEL"
@@ -93,7 +97,7 @@ die()  { printf '\nERROR: %s\n' "$*" >&2; exit 1; }
 trap 'printf "\nFAILED at line %s (exit %s). Log: %s\n" "$LINENO" "$?" "$OUT/run.log" >&2' ERR
 
 # --------------------------------------------------------------------------- 0
-log "0. preflight  (model=$MODEL vocab=$VOCAB seeds=[$SEEDS] splits=[$SPLITS] n_eval=$N_EVAL partition=$PARTITION)"
+log "0. preflight  (model=$MODEL vocab=$VOCAB prompt_style=$PROMPT_STYLE seeds=[$SEEDS] splits=[$SPLITS] n_eval=$N_EVAL partition=$PARTITION)"
 [ -f "$SWEEP" ] || die "missing $SWEEP (keep this script next to $SWEEP_SCRIPT)"
 [ -f "$PATCH" ] || die "missing $PATCH (keep this script next to patch_nhop_source.py)"
 if [ "$DRY_RUN" != 1 ]; then
@@ -174,8 +178,9 @@ if [ "$SWEEP_SCRIPT" = "split_ratio_sweep_disjoint.py" ]; then
   [ "$A_LOW" = "0.25" ] || die "A_LOW is only supported with the _hybrid sweep script"
   COMMON=(--model "$MODEL_DIR" --vocab_size "$VOCAB" --partition "$PARTITION")
 else
-  COMMON=(--model "$MODEL_DIR" --vocab_size "$VOCAB" --partition "$PARTITION" --a_low "$A_LOW")
+  COMMON=(--model "$MODEL_DIR" --vocab_size "$VOCAB" --partition "$PARTITION" --a_low "$A_LOW" --prompt_style "$PROMPT_STYLE")
 fi
+SANITY_MIN="${SANITY_MIN:-0.95}"
 
 # --------------------------------------------------------------------------- 4
 if [ "$RUN_SANITY" = 1 ]; then
@@ -187,9 +192,9 @@ import json, sys
 r = json.load(open("$OUT/sanity/sweep_results_seed42.json"))[0]
 b = r["block_b_acc_slot"]
 print(f"sanity B slot accuracy: {b*100:.1f}%")
-if b < 0.95:
-    sys.exit("Sanity gate failed (<95%): checkpoint and encoder settings do not match. "
-             "Check vocab_size and the encoder args in make_encoder().")
+if b < $SANITY_MIN:
+    sys.exit(f"Sanity gate failed (<{$SANITY_MIN*100:.0f}%): checkpoint and encoder/prompt settings do not match. "
+             "Run diag_encoder_match.py against this checkpoint.")
 EOF
   fi
 fi
