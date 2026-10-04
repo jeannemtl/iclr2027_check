@@ -19,7 +19,7 @@
 #   bash run_two_substrates_review.sh
 #
 # Common overrides (all optional):
-#   MODEL=qwen3|hermes3        default qwen3
+#   MODEL=qwen3|hermes3|lfm25  default qwen3 (lfm25 = LFM2.5-1.2B hybrid host, see below)
 #   SEEDS="1 2 3"              default "1"
 #   SPLITS="4 8"               number of prefix-only channels; default "4 8"
 #   STEPS_4=5000  STEPS_8PLUS=15000   write-head steps for split 4 / for splits >= 8
@@ -55,19 +55,27 @@ DRY_RUN="${DRY_RUN:-0}"
 RESULTS_REPO="${RESULTS_REPO:-prompterminal/fdm-two-substrates-review}"
 HEADS_REPO="${HEADS_REPO:-prompterminal/fdm-two-substrates-heads}"
 
+# MODEL_SUBDIR: folder inside the HF repo that holds the checkpoint ("" = repo root).
+# SWEEP_SCRIPT: attention-only hosts use the original script; hybrid (conv + attention)
+#               hosts use the _hybrid variant, which writes the prefix into attention layers only.
 case "$MODEL" in
-  qwen3)   MODEL_REPO="prompterminal/fdm-40ch-two-block-qwen3";          VOCAB=151936 ;;
-  hermes3) MODEL_REPO="prompterminal/fdm-40ch-two-block-hermes3-correct"; VOCAB=128256 ;;
-  *) echo "MODEL must be qwen3 or hermes3 (got '$MODEL')" >&2; exit 1 ;;
+  qwen3)   MODEL_REPO="prompterminal/fdm-40ch-two-block-qwen3";          VOCAB=151936; MODEL_SUBDIR="";             SWEEP_SCRIPT="split_ratio_sweep_disjoint.py" ;;
+  hermes3) MODEL_REPO="prompterminal/fdm-40ch-two-block-hermes3-correct"; VOCAB=128256; MODEL_SUBDIR="";             SWEEP_SCRIPT="split_ratio_sweep_disjoint.py" ;;
+  lfm25)   MODEL_REPO="prompterminal/fdm-twoblock-lfm2.5-1.2b";           VOCAB=64402;  MODEL_SUBDIR="phase2_final"; SWEEP_SCRIPT="split_ratio_sweep_disjoint_hybrid.py" ;;
+  *) echo "MODEL must be qwen3, hermes3 or lfm25 (got '$MODEL')" >&2; exit 1 ;;
 esac
 # VOCAB must equal the vocab_size the checkpoint's encoder was built with
 # (nhop_source token_map = rng.choice(vocab_size, 64)); values come from
 # fdm_two_block_training.py (Qwen3) and fdm_two_block_training_hermes3.py.
+# For lfm25 the training script is not in this repo; 64402 is config.vocab_size of the
+# checkpoint. If the stage-4 sanity gate fails, try VOCAB=65536 (the nominal LFM2 tokenizer size).
 
-MODEL_DIR="$WORK/FDM_IN_WEIGHTS/two_block_$MODEL"
+VOCAB="${VOCAB_OVERRIDE:-$VOCAB}"
+MODEL_ROOT="$WORK/FDM_IN_WEIGHTS/two_block_$MODEL"
+MODEL_DIR="$MODEL_ROOT${MODEL_SUBDIR:+/$MODEL_SUBDIR}"
 OUT="$WORK/FDM_IN_WEIGHTS/two_substrates_review/$MODEL"
 PARAM_DIR="$WORK/FDM_PARAMETRIC"
-SWEEP="$SCRIPT_DIR/split_ratio_sweep_disjoint.py"
+SWEEP="$SCRIPT_DIR/$SWEEP_SCRIPT"
 PATCH="$SCRIPT_DIR/patch_nhop_source.py"
 
 export HF_HOME="${HF_HOME:-$WORK/hf_cache}"
@@ -85,7 +93,7 @@ trap 'printf "\nFAILED at line %s (exit %s). Log: %s\n" "$LINENO" "$?" "$OUT/run
 
 # --------------------------------------------------------------------------- 0
 log "0. preflight  (model=$MODEL vocab=$VOCAB seeds=[$SEEDS] splits=[$SPLITS] n_eval=$N_EVAL partition=$PARTITION)"
-[ -f "$SWEEP" ] || die "missing $SWEEP (keep this script next to split_ratio_sweep_disjoint.py)"
+[ -f "$SWEEP" ] || die "missing $SWEEP (keep this script next to $SWEEP_SCRIPT)"
 [ -f "$PATCH" ] || die "missing $PATCH (keep this script next to patch_nhop_source.py)"
 if [ "$DRY_RUN" != 1 ]; then
   [ -n "${HF_TOKEN:-}" ] || die "HF_TOKEN is not set (export HF_TOKEN=hf_...)"
@@ -131,11 +139,13 @@ log "3. host checkpoint  ($MODEL_REPO -> $MODEL_DIR)"
 if [ -f "$MODEL_DIR/config.json" ]; then
   echo "already downloaded, skipping"
 else
-  mkdir -p "$MODEL_DIR"
+  mkdir -p "$MODEL_ROOT"
   $PY - <<EOF
 from huggingface_hub import snapshot_download
-snapshot_download(repo_id="$MODEL_REPO", local_dir="$MODEL_DIR")
-print("downloaded $MODEL_REPO")
+sub = "$MODEL_SUBDIR"
+snapshot_download(repo_id="$MODEL_REPO", local_dir="$MODEL_ROOT",
+                  allow_patterns=[f"{sub}/*"] if sub else None)
+print("downloaded $MODEL_REPO" + (f" ({sub}/)" if sub else ""))
 EOF
 fi
 if [ "$DRY_RUN" != 1 ]; then
@@ -144,10 +154,17 @@ import json
 c = json.load(open("$MODEL_DIR/config.json"))
 L = c.get("num_hidden_layers"); kv = c.get("num_key_value_heads")
 hd = c.get("head_dim") or c["hidden_size"] // c["num_attention_heads"]
-print(f"layers={L} kv_heads={kv} head_dim={hd} vocab_in_config={c.get('vocab_size')}")
-assert (L, kv, hd) == (28, 8, 128), (
-    "write head is hard-coded for 28 layers / 8 KV heads / head_dim 128; "
-    "edit CrossAttentionWriteHead in split_ratio_sweep_disjoint.py for this model")
+lt = c.get("layer_types") or ["full_attention"] * L
+attn = [i for i, t in enumerate(lt) if t == "full_attention"]
+print(f"layers={L} attention_layers={attn} kv_heads={kv} head_dim={hd} vocab_in_config={c.get('vocab_size')}")
+if "$SWEEP_SCRIPT" == "split_ratio_sweep_disjoint.py":
+    assert (L, kv, hd) == (28, 8, 128) and len(attn) == L, (
+        "split_ratio_sweep_disjoint.py is hard-coded for 28 attention layers / 8 KV heads / head_dim 128; "
+        "use the _hybrid script for this model")
+else:
+    assert attn, "no full_attention layers: a K/V prefix cannot be injected into this host"
+    if "$MODEL" == "lfm25":
+        assert c.get("model_type") == "lfm2", f"expected an lfm2 checkpoint, got {c.get('model_type')}"
 EOF
 fi
 
