@@ -54,8 +54,12 @@ def main():
     model = AutoModelForCausalLM.from_pretrained(args.model, trust_remote_code=True,
                                                  dtype=torch.bfloat16).to(device).eval()
     print(f"[host] {HostArch(model.config).describe()}")
+    try:
+        added = sorted(t for t in tok.get_added_vocab() if "MEMORY" in t or "BLOCK" in t)
+    except Exception:
+        added = "n/a"
     print(f"[tokenizer] len={len(tok)} config.vocab_size={model.config.vocab_size} "
-          f"eos={tok.eos_token!r} added special tokens={tok.additional_special_tokens}")
+          f"eos={tok.eos_token!r} memory-related added tokens={added}")
     mem_ids = tok.encode("[MEMORY]BLOCK_B x[/MEMORY]", add_special_tokens=False)
     print(f"[tokenizer] '[MEMORY]BLOCK_B x[/MEMORY]' -> {len(mem_ids)} tokens: {tok.convert_ids_to_tokens(mem_ids)[:8]}")
 
