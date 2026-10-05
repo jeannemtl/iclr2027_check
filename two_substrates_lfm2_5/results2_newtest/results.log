@@ -96,3 +96,56 @@ Loading weights: 100%|██████████| 148/148 [00:00<00:00, 287.
 [transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
 
 [lfm] 0:bash*                                                                                                "13d26c8e6aaf" 17:17 05-Oct-26
+
+
+
+
+
+
+
+Step 11000/15000 | loss 0.0403 | 2342s
+    Step 12000/15000 | loss 0.0364 | 2554s
+    Step 13000/15000 | loss 0.0337 | 2765s
+    Step 14000/15000 | loss 0.0321 | 2977s
+    Step 15000/15000 | loss 0.0314 | 3189s
+  saved write head -> /workspace/clean_lfm25/FDM_IN_WEIGHTS/two_substrates_review/lfm25_la16/seed2/split16/write_head_A16_seed2.pt
+Eval:   0%|          | 0/200 [00:00<?, ?it/s][transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+  [matched prefix] SLOT   A   80.8%  B   96.1%  All   88.5%   (chance A 26.0%, chance B 28.1%)
+  [matched prefix] JOINT  A    1.0%  B   63.5%  All-32    1.0%   (n=200)
+  [matched prefix] per-channel A %: ch8:100  ch10:56  ch12:82  ch14:100  ch16:93  ch18:98  ch20:39  ch22:97  ch24:99  ch26:50  ch28:100  ch30:72  ch32:53  ch34:100  ch36:88  ch38:69
+  [matched prefix] answers repeating a channel name: 100%
+  [SHUFFLED prefix] SLOT   A   24.5%  B   96.2%  All   60.3%   (chance A 26.0%, chance B 28.1%)
+  [SHUFFLED prefix] JOINT  A    0.0%  B   65.5%  All-32    0.0%   (n=200)
+  [SHUFFLED prefix] per-channel A %: ch8:27  ch10:24  ch12:21  ch14:30  ch16:25  ch18:24  ch20:21  ch22:30  ch24:25  ch26:22  ch28:28  ch30:21  ch32:24  ch34:21  ch36:24  ch38:26
+  [SHUFFLED prefix] answers repeating a channel name: 100%
+  Block A drop under shuffled prefix: 56.2 pts (should approach 54.7 pts for a full collapse)
+
+========================================================================
+  SWEEP SUMMARY (disjoint, hybrid host; A = prefix only, B = context only)
+========================================================================
+    A   B |  A slot  B slot All slot | All-32 joint |  A ctrl A chance
+   16  16 |   80.8%   96.1%    88.5% |         1.0% |   24.5%    26.0%
+
+  Saved to /workspace/clean_lfm25/FDM_IN_WEIGHTS/two_substrates_review/lfm25_la16/seed2/split16/
+
+[20:04:56] === 6. train  seed=3  prefix-only channels=16  steps=15000  -> /workspace/clean_lfm25/FDM_IN_WEIGHTS/two_substrates_review/lfm25_la16/seed3/split16
+[seed] 3   [partition] interleaved
+Loading weights: 100%|██████████| 148/148 [00:00<00:00, 227.04it/s]
+[host] 16 layers (6 attention at [2, 5, 8, 10, 12, 14], 10 other), kv_heads=8, head_dim=64
+[encoder] vocab_size=65536 a_low=0.25   [prompt style] bare_hop   [label_assessment]
+
+[leak check] Block A values must not affect the context tokens
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+============================================================
+  SPLIT: 16 parametric / 16 context (DISJOINT, hybrid host)
+  Block A (prefix only): [8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38]
+  Block B (context only): [9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39]
+  Prefix written into attention layers [2, 5, 8, 10, 12, 14] only   [prompt style: bare_hop, assessment tokens in loss]
+============================================================
+  Write head: 10.3M params
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+    Step  1000/15000 | loss 0.1153 | 208s
+
+[lfm] 0:bash*                                                      
