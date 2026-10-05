@@ -27,6 +27,8 @@
 #   PARTITION=interleaved|contiguous
 #   VOCAB_OVERRIDE=65536  A_LOW=0.25  encoder overrides (hybrid script only; run diag_encoder_match.py first)
 #   SANITY_MIN=0.95            stage-4 gate on Block B slot accuracy
+#   LABEL_ASSESSMENT=1         bare_hop hosts: assessment tokens in the write-head loss
+#   OUT_TAG=la16               suffix for the output dir and the HF upload path (keeps reruns separate)
 #   MASKED_SPLITS="4,8,16"     splits for the masked-baseline stage
 #   RUN_SANITY=0 RUN_MASKED=0 RUN_TRAIN=0 UPLOAD=0   skip stages
 #   SKIP_DONE=1                skip a split whose results JSON already exists (default 1)
@@ -78,7 +80,9 @@ esac
 VOCAB="${VOCAB_OVERRIDE:-$VOCAB}"
 MODEL_ROOT="$WORK/FDM_IN_WEIGHTS/two_block_$MODEL"
 MODEL_DIR="$MODEL_ROOT${MODEL_SUBDIR:+/$MODEL_SUBDIR}"
-OUT="$WORK/FDM_IN_WEIGHTS/two_substrates_review/$MODEL"
+OUT_TAG="${OUT_TAG:-}"           # e.g. OUT_TAG=la16 keeps a rerun beside the original results
+OUT="$WORK/FDM_IN_WEIGHTS/two_substrates_review/$MODEL${OUT_TAG:+_$OUT_TAG}"
+LABEL_ASSESSMENT="${LABEL_ASSESSMENT:-0}"   # 1: hybrid script --label_assessment (bare_hop hosts only)
 PARAM_DIR="$WORK/FDM_PARAMETRIC"
 SWEEP="$SCRIPT_DIR/$SWEEP_SCRIPT"
 PATCH="$SCRIPT_DIR/patch_nhop_source.py"
@@ -179,6 +183,7 @@ if [ "$SWEEP_SCRIPT" = "split_ratio_sweep_disjoint.py" ]; then
   COMMON=(--model "$MODEL_DIR" --vocab_size "$VOCAB" --partition "$PARTITION")
 else
   COMMON=(--model "$MODEL_DIR" --vocab_size "$VOCAB" --partition "$PARTITION" --a_low "$A_LOW" --prompt_style "$PROMPT_STYLE")
+  [ "$LABEL_ASSESSMENT" = 1 ] && COMMON+=(--label_assessment)
 fi
 SANITY_MIN="${SANITY_MIN:-0.95}"
 
@@ -269,12 +274,12 @@ from huggingface_hub import HfApi
 api = HfApi()
 api.create_repo("$RESULTS_REPO", repo_type="dataset", private=True, exist_ok=True)
 api.upload_folder(repo_id="$RESULTS_REPO", repo_type="dataset", folder_path="$OUT",
-                  path_in_repo="$MODEL", ignore_patterns=["*.pt"],
-                  commit_message="two_substrates_review: $MODEL results")
+                  path_in_repo="$MODEL${OUT_TAG:+_$OUT_TAG}", ignore_patterns=["*.pt"],
+                  commit_message="two_substrates_review: $MODEL${OUT_TAG:+_$OUT_TAG} results")
 api.create_repo("$HEADS_REPO", repo_type="model", private=True, exist_ok=True)
 api.upload_folder(repo_id="$HEADS_REPO", repo_type="model", folder_path="$OUT",
-                  path_in_repo="$MODEL", allow_patterns=["*.pt"],
-                  commit_message="two_substrates_review: $MODEL write heads")
+                  path_in_repo="$MODEL${OUT_TAG:+_$OUT_TAG}", allow_patterns=["*.pt"],
+                  commit_message="two_substrates_review: $MODEL${OUT_TAG:+_$OUT_TAG} write heads")
 print("uploaded")
 EOF
 fi

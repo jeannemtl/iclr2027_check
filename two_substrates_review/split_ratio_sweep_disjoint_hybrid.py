@@ -34,8 +34,11 @@ Prompt styles (--prompt_style):
   bare_hop  "[MEMORY]<fdm>[/MEMORY]\nQuestion: What is the risk assessment?\nAnswer:"
             answer " <risk assessment from ch0-7> Context: NAME=VALUE, ...".  The 40-channel
             single-block hosts (fdm-40ch-fresh-lfm2-model). ch0-7 are always in the context
-            block, so the host derives the assessment itself; the write head is trained only
-            on the Context list (assessment tokens are masked out of the loss).
+            block, so the host derives the assessment itself; by default the write head is
+            trained only on the Context list (assessment tokens are masked out of the loss).
+            --label_assessment also puts the assessment tokens in the loss: the host already
+            produces them, so they add almost nothing to the loss but anchor the host's own
+            behaviour, penalising a prefix that corrupts the preamble (seen at 16/16).
   NOTE: prompterminal/fdm-twoblock-lfm2.5-1.2b is a 10-channel mixed-domain model (it only
   knows ch0-9 and answers "Context: TEAM=.., REGION=..") and cannot host a 32-channel split.
 
@@ -383,11 +386,12 @@ def print_eval(tag, r, block_a, block_b):
 
 def train_and_eval_split(model, tokenizer, encoder, device, arch, block_a, block_b,
                          n_steps=5000, lr=3e-4, n_eval=200, max_len=1536, run_control=True,
-                         save_dir=None, seed=0, style="twoblock"):
+                         save_dir=None, seed=0, style="twoblock", label_assessment=False):
     n_param, n_ctx = len(block_a), len(block_b)
     print(f"\n{'='*60}\n  SPLIT: {n_param} parametric / {n_ctx} context (DISJOINT, hybrid host)")
     print(f"  Block A (prefix only): {block_a}\n  Block B (context only): {block_b}")
-    print(f"  Prefix written into attention layers {arch.attn_layers} only   [prompt style: {style}]\n{'='*60}")
+    print(f"  Prefix written into attention layers {arch.attn_layers} only   [prompt style: {style}"
+          + (", assessment tokens in loss" if (style == "bare_hop" and label_assessment) else "") + f"]\n{'='*60}")
 
     if n_param == 0:
         print("  No write head; context-only evaluation.")
@@ -419,10 +423,16 @@ def train_and_eval_split(model, tokenizer, encoder, device, arch, block_a, block
         else:
             # host first gives its assessment (derived from ch0-7, always in context); only the
             # Context list that follows is a training target for the write head
-            head_ids = tokenizer.encode(memory_part + q_text + f" {base_answer(mem)}", add_special_tokens=False)
-            ctx_ids = tokenizer.encode(f" {context_answer(mem)}", add_special_tokens=False)
-            full_ids = head_ids + ctx_ids
-            labels = [-100] * len(head_ids) + ctx_ids
+            if label_assessment:
+                prompt_ids = tokenizer.encode(memory_part + q_text, add_special_tokens=False)
+                ans_ids = tokenizer.encode(f" {base_answer(mem)} {context_answer(mem)}", add_special_tokens=False)
+                full_ids = prompt_ids + ans_ids
+                labels = [-100] * len(prompt_ids) + ans_ids
+            else:
+                head_ids = tokenizer.encode(memory_part + q_text + f" {base_answer(mem)}", add_special_tokens=False)
+                ctx_ids = tokenizer.encode(f" {context_answer(mem)}", add_special_tokens=False)
+                full_ids = head_ids + ctx_ids
+                labels = [-100] * len(head_ids) + ctx_ids
         if len(full_ids) > max_len:
             raise RuntimeError(f"sequence {len(full_ids)} > max_len {max_len}: answer labels would be truncated")
 
@@ -450,6 +460,7 @@ def train_and_eval_split(model, tokenizer, encoder, device, arch, block_a, block
     print_eval("matched prefix", r, block_a, block_b)
     r.update({"n_param": n_param, "n_ctx": n_ctx, "final_loss": float(np.mean(losses[-500:])),
               "n_steps": n_steps, "lr": lr, "prompt_style": style,
+              "label_assessment": bool(style == "bare_hop" and label_assessment),
               "write_head_params": sum(p.numel() for p in write_head.parameters())})
 
     if run_control:
@@ -491,6 +502,8 @@ def main():
                    help="encoder low amplitude; must match the host's training encoder (0.25 Qwen3/Hermes3)")
     p.add_argument("--prompt_style", choices=["twoblock", "bare_hop"], default="twoblock",
                    help="twoblock for the Qwen3/Hermes3 two-block hosts; bare_hop for the 40ch single-block hosts")
+    p.add_argument("--label_assessment", action="store_true",
+                   help="bare_hop only: include the host's assessment tokens in the training loss")
     p.add_argument("--partition", choices=["contiguous", "interleaved"], default="interleaved")
     p.add_argument("--no_control", action="store_true")
     p.add_argument("--load_head", default=None,
@@ -517,7 +530,8 @@ def main():
     arch = HostArch(model.config)
     print(f"[host] {arch.describe()}")
     vocab_size = args.vocab_size if args.vocab_size is not None else model.config.vocab_size
-    print(f"[encoder] vocab_size={vocab_size} a_low={args.a_low}   [prompt style] {args.prompt_style}")
+    print(f"[encoder] vocab_size={vocab_size} a_low={args.a_low}   [prompt style] {args.prompt_style}"
+          + ("   [label_assessment]" if args.label_assessment else ""))
     encoder = make_encoder(tokenizer, vocab_size, a_low=args.a_low)
 
     if args.load_head:
@@ -563,7 +577,8 @@ def main():
         r = train_and_eval_split(model, tokenizer, encoder, device, arch, block_a, block_b,
                                  n_steps=args.n_steps, lr=args.lr, n_eval=args.n_eval,
                                  max_len=args.max_len, run_control=not args.no_control,
-                                 save_dir=args.output_dir, seed=args.seed, style=args.prompt_style)
+                                 save_dir=args.output_dir, seed=args.seed, style=args.prompt_style,
+                                 label_assessment=args.label_assessment)
         r["block_a_channels"], r["block_b_channels"] = block_a, block_b
         r["partition"], r["seed"], r["arch"] = args.partition, args.seed, arch.to_json()
         r["vocab_size"], r["a_low"] = vocab_size, args.a_low
