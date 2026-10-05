@@ -148,4 +148,66 @@ Loading weights: 100%|██████████| 148/148 [00:00<00:00, 227.
 [transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
     Step  1000/15000 | loss 0.1153 | 208s
 
-[lfm] 0:bash*                                                      
+[lfm] 0:bash*     
+
+
+
+
+
+
+
+root@b7d572d505db:/workspace# 
+root@b7d572d505db:/workspace# cd /workspace
+nano split_ratio_sweep_disjoint.py     # paste the newest sweep script, Ctrl+O, Enter, Ctrl+X
+nano patch_nhop_source.py              # paste the patch script
+python -m py_compile split_ratio_sweep_disjoint.py patch_nhop_source.py && echo OK
+grep -c load_head split_ratio_sweep_disjoint.py   # must be > 0
+[Errno 2] No such file or directory: 'patch_nhop_source.py'0
+root@b7d572d505db:/workspace# nano patch_nhop_source.py              # paste the patch script
+root@b7d572d505db:/workspace# tmux new -s fdm
+
+    Step  5000/15000 | loss 0.0611 | 1047s
+    Step  6000/15000 | loss 0.0539 | 1257s
+    Step  7000/15000 | loss 0.0460 | 1467s
+    Step  8000/15000 | loss 0.0399 | 1677s
+    Step  9000/15000 | loss 0.0340 | 1887s
+    Step 10000/15000 | loss 0.0300 | 2097s
+    Step 11000/15000 | loss 0.0269 | 2306s
+    Step 12000/15000 | loss 0.0229 | 2516s
+    Step 13000/15000 | loss 0.0211 | 2726s
+    Step 14000/15000 | loss 0.0202 | 2936s
+    Step 15000/15000 | loss 0.0198 | 3146s
+  saved write head -> /workspace/clean_lfm25/FDM_IN_WEIGHTS/two_substrates_review/lfm25_la16/seed3/split16/write_head_A16_seed3.pt
+Eval:   0%|          | 0/200 [00:00<?, ?it/s][transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+  [matched prefix] SLOT   A   87.9%  B   93.5%  All   90.7%   (chance A 26.0%, chance B 28.1%)
+  [matched prefix] JOINT  A    3.5%  B   44.0%  All-32    2.5%   (n=200)
+  [matched prefix] per-channel A %: ch8:100  ch10:100  ch12:100  ch14:100  ch16:72  ch18:82  ch20:99  ch22:65  ch24:100  ch26:100  ch28:99  ch30:42  ch32:54  ch34:98  ch36:99  ch38:100
+  [matched prefix] answers repeating a channel name: 100%
+  [SHUFFLED prefix] SLOT   A   25.0%  B   94.2%  All   59.6%   (chance A 26.0%, chance B 28.1%)
+  [SHUFFLED prefix] JOINT  A    0.0%  B   47.0%  All-32    0.0%   (n=200)
+  [SHUFFLED prefix] per-channel A %: ch8:28  ch10:24  ch12:26  ch14:30  ch16:25  ch18:22  ch20:22  ch22:30  ch24:25  ch26:24  ch28:28  ch30:25  ch32:24  ch34:22  ch36:24  ch38:24
+  [SHUFFLED prefix] answers repeating a channel name: 100%
+  Block A drop under shuffled prefix: 62.8 pts (should approach 61.8 pts for a full collapse)
+
+========================================================================
+  SWEEP SUMMARY (disjoint, hybrid host; A = prefix only, B = context only)
+========================================================================
+    A   B |  A slot  B slot All slot | All-32 joint |  A ctrl A chance
+   16  16 |   87.9%   93.5%    90.7% |         2.5% |   25.0%    26.0%
+
+  Saved to /workspace/clean_lfm25/FDM_IN_WEIGHTS/two_substrates_review/lfm25_la16/seed3/split16/
+
+[21:29:41] === 7. summary
+seed   A   B |  A match  A ctrl  delta |  B match  B ctrl |  rep m  rep c | n
+   1  16  16 |    85.0%   24.7%  60.3 |    93.6%   94.9% |   100%    99% | 200
+   2  16  16 |    80.8%   24.5%  56.2 |    96.1%   96.2% |   100%   100% | 200
+   3  16  16 |    87.9%   25.0%  62.8 |    93.5%   94.2% |   100%   100% | 200
+
+A delta = matched minus shuffled-prefix control; report this, not the 1/M chance level.
+
+[21:29:42] === 8. upload to HuggingFace (private): results -> prompterminal/fdm-two-substrates-review, heads -> prompterminal/fdm-two-substrates-heads
+uploaded
+
+[21:29:45] === done. results in /workspace/clean_lfm25/FDM_IN_WEIGHTS/two_substrates_review/lfm25_la16  (log: /workspace/clean_lfm25/FDM_IN_WEIGHTS/two_substrates_review/lfm25_la16/run.log)
+root@13d26c8e6aaf:/workspace/iclr2027_check/two_substrates_review# 
+
