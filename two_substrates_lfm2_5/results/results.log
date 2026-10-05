@@ -158,3 +158,33 @@ root@13d26c8e6aaf:/workspace/iclr2027_check/two_substrates_review#
 
 
 [lfm] 0:bash*                                                                                                "13d26c8e6aaf" 00:03 05-Oct-26
+
+
+
+
+
+
+ot@13d26c8e6aaf:/workspace/iclr2027_check/two_substrates_review# 
+root@13d26c8e6aaf:/workspace/iclr2027_check/two_substrates_review# 
+root@13d26c8e6aaf:/workspace/iclr2027_check/two_substrates_review# 
+root@13d26c8e6aaf:/workspace/iclr2027_check/two_substrates_review# python - <<'EOF'
+import json
+r = json.load(open("results/lfm25_clean/seed2/split16/sweep_results_seed2.json"))[0]
+print("final loss", r["final_loss"], "| head params", r["write_head_params"])
+for i, a in enumerate(r["sample_answers"]):
+    print(f"\n--- sample {i} ---\n{a[:500]}")
+EOF
+final loss 0.02825790066923946 | head params 10272768
+
+--- sample 0 ---
+: LOCKDOWN: Maximum risk assumed. All operations in TOKYO halted. Context: TEAM=GREEN_TEAM, REGION=NORTH, PHASE=GAMMA, COMM=CLOSED, ASSET=AIRCRAFT, WINDOW=DAWN, COVER=NONE, SUPPORT=ACTIVE, THREAT=LOW, WEATHER=FOG, TERRAIN=COASTAL, EXTRACT=UNAVAILABLE, CIPHER=AES, FREQ=VHF, PAYLOAD=LIGHT, ROUTE=BRAVO, DURATION=SHORT, CONTACT=FRIENDLY, FUEL=LOW, ALTITUDE=LOW, VISIBILITY=ZERO, NOISE=MODERATE, FORMATION=SINGLE, ARMOR=MEDIUM, SIGNAL=JAMMED, MORALE=LOW, SUPPLY=ABUNDANT, INTEL=PROBABLE, EVAC=ABORTED, W
+
+--- sample 1 ---
+:
+ALPHA assessment: GREEN RISK in LONDON. Factors: 0 concerns. Context: TEAM=RED_TEAM, REGION=EAST, PHASE=GAMMA, COMM=CLOSED, ASSET=AIRCRAFT, WINDOW=DAWN, COVER=SHALLOW, SUPPORT=STANDBY, THREAT=CRITICAL, WEATHER=FOG, TERRAIN=URBAN, EXTRACT=READY, CIPHER=RSA, FREQ=HF, PAYLOAD=HEAVY, ROUTE=ALPHA, DURATION=SHORT, CONTACT=FRIENDLY, FUEL=FULL, ALTITUDE=MEDIUM, VISIBILITY=ZERO, NOISE=MODERATE, FORMATION=SINGLE, ARMOR=LIGHT, SIGNAL=STRONG, MORALE=MEDIUM, SUPPLY=ABUNDANT, INTEL=NONE, EVAC=PREPPED, WEATH
+
+--- sample 2 ---
+: CAUTIOUS assessment: HIGH RISK in PARIS. Any risk factor triggers: no backup, unknown status. Context: TEAM=BLUE_TEAM, REGION=SOUTH, PHASE=ALPHA, COMM=CLOSED, ASSET=AIRCRAFT, WINDOW=DUSK, COVER=SHALLOW, SUPPORT=STANDBY, THREAT=LOW, WEATHER=STORM, TERRAIN=URBAN, EXTRACT=READY, CIPHER=AES, FREQ=HF, PAYLOAD=LIGHT, ROUTE=ALPHA, DURATION=EXTENDED, CONTACT=NEUTRAL, FUEL=FULL, ALTITUDE=HIGH, VISIBILITY=ZERO, NOISE=QUIET, FORMATION=SINGLE, ARMOR=MEDIUM, SIGNAL=STRONG, MORALE=HIGH, SUPPLY=ABUNDANT, INT
+root@13d26c8e6aaf:/workspace/iclr2027_check/two_substrates_review# 
+[lfm] 0:bash*                                                                                                "13d26c8e6aaf" 17:08 05-Oct-26
+
