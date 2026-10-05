@@ -34,6 +34,65 @@ Loading weights: 100%|██████████| 148/148 [00:00<00:00, 293.
   Prefix written into attention layers [2, 5, 8, 10, 12, 14] only   [prompt style: bare_hop, assessment tokens in loss]
 ============================================================
   Write head: 10.3M params
+
+
+
+
+
+
+
+root@b7d572d505db:/workspace# tmux new -s fdm
+
+
+
+    Step 13000/15000 | loss 0.0263 | 2739s
+    Step 14000/15000 | loss 0.0240 | 2950s
+    Step 15000/15000 | loss 0.0227 | 3161s
+  saved write head -> /workspace/clean_lfm25/FDM_IN_WEIGHTS/two_substrates_review/lfm25_la16/seed1/split16/write_head_A16_seed1.pt
+Eval:   0%|          | 0/200 [00:00<?, ?it/s][transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+  [matched prefix] SLOT   A   85.0%  B   93.6%  All   89.3%   (chance A 26.0%, chance B 28.1%)
+  [matched prefix] JOINT  A    4.5%  B   47.5%  All-32    3.0%   (n=200)
+  [matched prefix] per-channel A %: ch8:66  ch10:82  ch12:96  ch14:99  ch16:82  ch18:100  ch20:58  ch22:74  ch24:86  ch26:60  ch28:100  ch30:80  ch32:82  ch34:99  ch36:98  ch38:100
+  [matched prefix] answers repeating a channel name: 100%
+  [SHUFFLED prefix] SLOT   A   24.7%  B   94.9%  All   59.8%   (chance A 26.0%, chance B 28.1%)
+  [SHUFFLED prefix] JOINT  A    0.0%  B   55.0%  All-32    0.0%   (n=200)
+  [SHUFFLED prefix] per-channel A %: ch8:32  ch10:24  ch12:22  ch14:30  ch16:26  ch18:23  ch20:22  ch22:29  ch24:26  ch26:21  ch28:27  ch30:20  ch32:22  ch34:22  ch36:24  ch38:25
+  [SHUFFLED prefix] answers repeating a channel name: 99%
+  Block A drop under shuffled prefix: 60.3 pts (should approach 59.0 pts for a full collapse)
+
+========================================================================
+  SWEEP SUMMARY (disjoint, hybrid host; A = prefix only, B = context only)
+========================================================================
+    A   B |  A slot  B slot All slot | All-32 joint |  A ctrl A chance
+   16  16 |   85.0%   93.6%    89.3% |         3.0% |   24.7%    26.0%
+
+  Saved to /workspace/clean_lfm25/FDM_IN_WEIGHTS/two_substrates_review/lfm25_la16/seed1/split16/
+
+[18:39:15] === 6. train  seed=2  prefix-only channels=16  steps=15000  -> /workspace/clean_lfm25/FDM_IN_WEIGHTS/two_substrates_review/lfm25_la16/seed2/split16
+[seed] 2   [partition] interleaved
+Loading weights: 100%|██████████| 148/148 [00:00<00:00, 287.87it/s]
+[host] 16 layers (6 attention at [2, 5, 8, 10, 12, 14], 10 other), kv_heads=8, head_dim=64
+[encoder] vocab_size=65536 a_low=0.25   [prompt style] bare_hop   [label_assessment]
+
+[leak check] Block A values must not affect the context tokens
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+============================================================
+  SPLIT: 16 parametric / 16 context (DISJOINT, hybrid host)
+  Block A (prefix only): [8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38]
+  Block B (context only): [9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39]
+  Prefix written into attention layers [2, 5, 8, 10, 12, 14] only   [prompt style: bare_hop, assessment tokens in loss]
+============================================================
+  Write head: 10.3M params
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+    Step  1000/15000 | loss 0.1174 | 210s
+    Step  2000/15000 | loss 0.0875 | 422s
+    Step  3000/15000 | loss 0.0796 | 634s
+    Step  4000/15000 | loss 0.0733 | 847s
+^[[A^[[A
+[lfm] 0:bash*                                                                                                "13d26c8e6aaf" 18:53 05-Oct-26
+
 [transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
 
 [lfm] 0:bash*                                                                                                "13d26c8e6aaf" 17:17 05-Oct-26
