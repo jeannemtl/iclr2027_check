@@ -1,0 +1,39 @@
+root@13d26c8e6aaf:/workspace/iclr2027_check/two_substrates_review# MODEL=lfm25 SEEDS="1 2 3" SPLITS="16" N_EVAL=200 SKIP_DONE=0 \
+  RUN_SANITY=0 RUN_MASKED=0 LABEL_ASSESSMENT=1 OUT_TAG=la16 \
+  WORK=/workspace/clean_lfm25 bash startup.sh
+
+[17:15:21] === 0. preflight  (model=lfm25 vocab=65536 prompt_style=bare_hop seeds=[1 2 3] splits=[16] n_eval=200 partition=interleaved)
+NVIDIA L40, 46068 MiB
+
+[17:15:21] === 1. dependencies
+transformers 5.18.0 | huggingface_hub 1.33.0 | torch 2.8.0+cu128 | cuda True
+HF user: prompterminal
+
+[17:15:25] === 2. encoder (FDM_PARAMETRIC + active_channels patch)
+already patched, nothing to do
+encode_memory (self, memory, active_channels=None, return_signal=False)
+
+[17:15:30] === 3. host checkpoint  (prompterminal/fdm-40ch-fresh-lfm2-model -> /workspace/clean_lfm25/FDM_IN_WEIGHTS/two_block_lfm25)
+already downloaded, skipping
+layers=16 attention_layers=[2, 5, 8, 10, 12, 14] kv_heads=8 head_dim=64 vocab_in_config=64402
+
+[17:15:30] === 6. train  seed=1  prefix-only channels=16  steps=15000  -> /workspace/clean_lfm25/FDM_IN_WEIGHTS/two_substrates_review/lfm25_la16/seed1/split16
+[seed] 1   [partition] interleaved
+Loading weights: 100%|██████████| 148/148 [00:00<00:00, 293.83it/s]
+[host] 16 layers (6 attention at [2, 5, 8, 10, 12, 14], 10 other), kv_heads=8, head_dim=64
+[encoder] vocab_size=65536 a_low=0.25   [prompt style] bare_hop   [label_assessment]
+
+[leak check] Block A values must not affect the context tokens
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+============================================================
+  SPLIT: 16 parametric / 16 context (DISJOINT, hybrid host)
+  Block A (prefix only): [8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38]
+  Block B (context only): [9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39]
+  Prefix written into attention layers [2, 5, 8, 10, 12, 14] only   [prompt style: bare_hop, assessment tokens in loss]
+============================================================
+  Write head: 10.3M params
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+
+[lfm] 0:bash*                                                                                                "13d26c8e6aaf" 17:17 05-Oct-26
