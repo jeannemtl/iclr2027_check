@@ -27,7 +27,7 @@
 #   PARTITION=interleaved|contiguous
 #   VOCAB_OVERRIDE=65536  A_LOW=0.25  encoder overrides (hybrid script only; run diag_encoder_match.py first)
 #   SANITY_MIN=0.95            stage-4 gate on Block B slot accuracy
-#   LABEL_ASSESSMENT=1         bare_hop hosts: assessment tokens in the write-head loss
+#   LABEL_ASSESSMENT=1         bare_hop hosts: assessment tokens in the write-head loss (default 1; 0 = ablation)
 #   OUT_TAG=la16               suffix for the output dir and the HF upload path (keeps reruns separate)
 #   MASKED_SPLITS="4,8,16"     splits for the masked-baseline stage
 #   RUN_SANITY=0 RUN_MASKED=0 RUN_TRAIN=0 UPLOAD=0   skip stages
@@ -82,7 +82,10 @@ MODEL_ROOT="$WORK/FDM_IN_WEIGHTS/two_block_$MODEL"
 MODEL_DIR="$MODEL_ROOT${MODEL_SUBDIR:+/$MODEL_SUBDIR}"
 OUT_TAG="${OUT_TAG:-}"           # e.g. OUT_TAG=la16 keeps a rerun beside the original results
 OUT="$WORK/FDM_IN_WEIGHTS/two_substrates_review/$MODEL${OUT_TAG:+_$OUT_TAG}"
-LABEL_ASSESSMENT="${LABEL_ASSESSMENT:-0}"   # 1: hybrid script --label_assessment (bare_hop hosts only)
+# Write-head loss on bare_hop hosts: 1 = the host's assessment tokens are targets too (anchors the
+# host's own behaviour; on LFM2.5 16/16 this lifted A 75->85 and B 78->94 and fixed a degenerate
+# seed). 0 = only the Context list (the original recipe, kept as an ablation). Ignored for twoblock.
+LABEL_ASSESSMENT="${LABEL_ASSESSMENT:-1}"
 PARAM_DIR="$WORK/FDM_PARAMETRIC"
 SWEEP="$SCRIPT_DIR/$SWEEP_SCRIPT"
 PATCH="$SCRIPT_DIR/patch_nhop_source.py"
