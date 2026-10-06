@@ -19,7 +19,7 @@
 #   bash run_two_substrates_review.sh
 #
 # Common overrides (all optional):
-#   MODEL=qwen3|hermes3|lfm25  default qwen3 (lfm25 = LFM2.5-1.2B hybrid host, see below)
+#   MODEL=qwen3|hermes3|lfm25|gpt2   default qwen3 (lfm25 = LFM2.5-1.2B hybrid host; gpt2 = GPT-2-medium, 192-position prefix)
 #   SEEDS="1 2 3"              default "1"
 #   SPLITS="4 8"               number of prefix-only channels; default "4 8"
 #   STEPS_4=5000  STEPS_8PLUS=15000   write-head steps for split 4 / for splits >= 8
@@ -29,6 +29,7 @@
 #   SANITY_MIN=0.95            stage-4 gate on Block B slot accuracy
 #   LABEL_ASSESSMENT=1         bare_hop hosts: assessment tokens in the write-head loss (default 1; 0 = ablation)
 #   OUT_TAG=la16               suffix for the output dir and the HF upload path (keeps reruns separate)
+#   N_KV_POSITIONS_OVERRIDE=128  prefix length for the hybrid script (default 513; gpt2 auto)
 #   MASKED_SPLITS="4,8,16"     splits for the masked-baseline stage
 #   RUN_SANITY=0 RUN_MASKED=0 RUN_TRAIN=0 UPLOAD=0   skip stages
 #   SKIP_DONE=1                skip a split whose results JSON already exists (default 1)
@@ -63,13 +64,18 @@ HEADS_REPO="${HEADS_REPO:-prompterminal/fdm-two-substrates-heads}"
 # SWEEP_SCRIPT: attention-only hosts use the original script; hybrid (conv + attention)
 #               hosts use the _hybrid variant, which writes the prefix into attention layers only.
 case "$MODEL" in
-  qwen3)   MODEL_REPO="prompterminal/fdm-40ch-two-block-qwen3";          VOCAB=151936; MODEL_SUBDIR="";             SWEEP_SCRIPT="split_ratio_sweep_disjoint.py"; PROMPT_STYLE="twoblock" ;;
-  hermes3) MODEL_REPO="prompterminal/fdm-40ch-two-block-hermes3-correct"; VOCAB=128256; MODEL_SUBDIR="";             SWEEP_SCRIPT="split_ratio_sweep_disjoint.py"; PROMPT_STYLE="twoblock" ;;
+  qwen3)   MODEL_REPO="prompterminal/fdm-40ch-two-block-qwen3";          VOCAB=151936; MODEL_SUBDIR="";             SWEEP_SCRIPT="split_ratio_sweep_disjoint.py"; PROMPT_STYLE="twoblock"; N_KV_POSITIONS=513 ;;
+  hermes3) MODEL_REPO="prompterminal/fdm-40ch-two-block-hermes3-correct"; VOCAB=128256; MODEL_SUBDIR="";             SWEEP_SCRIPT="split_ratio_sweep_disjoint.py"; PROMPT_STYLE="twoblock"; N_KV_POSITIONS=513 ;;
+  # gpt2: the 40-channel single-block GPT-2-medium host (single_substrate/eidetic_gpt2_fdm_e2e_fresh.py:
+  # vocab 50257, final stage a_low 0.25, 1024 absolute positions). 24 attention layers, 16 heads, head_dim 64.
+  # N_KV_POSITIONS=auto: the sweep measures the longest training sequence and picks the largest prefix
+  # (multiple of 16) that fits under 1024; the chosen value is printed and stored in the results JSON.
+  gpt2)    MODEL_REPO="prompterminal/fdm-40ch-fresh-gpt2-model";             VOCAB=50257;  MODEL_SUBDIR="";             SWEEP_SCRIPT="split_ratio_sweep_disjoint_hybrid.py"; PROMPT_STYLE="bare_hop"; N_KV_POSITIONS=auto ;;
   # lfm25: the 40-channel single-block LFM2.5 host. (prompterminal/fdm-twoblock-lfm2.5-1.2b is a
   # 10-channel mixed-domain model that only knows ch0-9 and cannot host a 32-channel split.)
   # Verified with diag_encoder_match.py: vocab 65536, a_low 0.25, prompt style bare_hop -> 100% slot.
-  lfm25)   MODEL_REPO="prompterminal/fdm-40ch-fresh-lfm2-model";             VOCAB=65536;  MODEL_SUBDIR="";             SWEEP_SCRIPT="split_ratio_sweep_disjoint_hybrid.py"; PROMPT_STYLE="bare_hop" ;;
-  *) echo "MODEL must be qwen3, hermes3 or lfm25 (got '$MODEL')" >&2; exit 1 ;;
+  lfm25)   MODEL_REPO="prompterminal/fdm-40ch-fresh-lfm2-model";             VOCAB=65536;  MODEL_SUBDIR="";             SWEEP_SCRIPT="split_ratio_sweep_disjoint_hybrid.py"; PROMPT_STYLE="bare_hop"; N_KV_POSITIONS=513 ;;
+  *) echo "MODEL must be qwen3, hermes3, lfm25 or gpt2 (got '$MODEL')" >&2; exit 1 ;;
 esac
 # VOCAB must equal the vocab_size the checkpoint's encoder was built with
 # (nhop_source token_map = rng.choice(vocab_size, 64)); values come from
@@ -164,8 +170,9 @@ if [ "$DRY_RUN" != 1 ]; then
   python - <<EOF
 import json
 c = json.load(open("$MODEL_DIR/config.json"))
-L = c.get("num_hidden_layers"); kv = c.get("num_key_value_heads")
-hd = c.get("head_dim") or c["hidden_size"] // c["num_attention_heads"]
+L = c.get("num_hidden_layers", c.get("n_layer")); heads = c.get("num_attention_heads", c.get("n_head"))
+kv = c.get("num_key_value_heads", heads)
+hd = c.get("head_dim") or c.get("hidden_size", c.get("n_embd")) // heads
 lt = c.get("layer_types") or ["full_attention"] * L
 attn = [i for i, t in enumerate(lt) if t == "full_attention"]
 print(f"layers={L} attention_layers={attn} kv_heads={kv} head_dim={hd} vocab_in_config={c.get('vocab_size')}")
@@ -177,6 +184,9 @@ else:
     assert attn, "no full_attention layers: a K/V prefix cannot be injected into this host"
     if "$MODEL" == "lfm25":
         assert c.get("model_type") == "lfm2", f"expected an lfm2 checkpoint, got {c.get('model_type')}"
+    if "$MODEL" == "gpt2":
+        assert c.get("model_type") == "gpt2", f"expected a gpt2 checkpoint, got {c.get('model_type')}"
+        print(f"positions={c.get('n_positions')} (prefix: $N_KV_POSITIONS)")
 EOF
 fi
 
@@ -185,7 +195,8 @@ if [ "$SWEEP_SCRIPT" = "split_ratio_sweep_disjoint.py" ]; then
   [ "$A_LOW" = "0.25" ] || die "A_LOW is only supported with the _hybrid sweep script"
   COMMON=(--model "$MODEL_DIR" --vocab_size "$VOCAB" --partition "$PARTITION")
 else
-  COMMON=(--model "$MODEL_DIR" --vocab_size "$VOCAB" --partition "$PARTITION" --a_low "$A_LOW" --prompt_style "$PROMPT_STYLE")
+  N_KV_POSITIONS="${N_KV_POSITIONS_OVERRIDE:-$N_KV_POSITIONS}"
+  COMMON=(--model "$MODEL_DIR" --vocab_size "$VOCAB" --partition "$PARTITION" --a_low "$A_LOW" --prompt_style "$PROMPT_STYLE" --n_kv_positions "$N_KV_POSITIONS")
   [ "$LABEL_ASSESSMENT" = 1 ] && COMMON+=(--label_assessment)
 fi
 SANITY_MIN="${SANITY_MIN:-0.95}"

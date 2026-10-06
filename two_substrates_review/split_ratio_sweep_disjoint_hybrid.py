@@ -42,7 +42,10 @@ Prompt styles (--prompt_style):
   NOTE: prompterminal/fdm-twoblock-lfm2.5-1.2b is a 10-channel mixed-domain model (it only
   knows ch0-9 and answers "Context: TEAM=.., REGION=..") and cannot host a 32-channel split.
 
-Positions: write-head prefix at [0, 512], FDM block at 513+.
+Positions: write-head prefix at [0, n_kv_positions-1] (513 by default), FDM block after it.
+GPT-2 (absolute positions, 1024 max) needs --n_kv_positions about 192: a 512-token block, the
+question and a full 32-channel answer take about 770 positions, and generation is clamped so the
+sequence never passes the limit.
 """
 
 import sys, os, re, json, random, time, argparse, inspect
@@ -83,17 +86,21 @@ class HostArch:
         self.attn_layers = [i for i, t in enumerate(self.layer_types) if t == "full_attention"]
         if not self.attn_layers:
             raise RuntimeError("host has no full_attention layers; a K/V prefix cannot be injected")
-        self.n_kv_heads = config.num_key_value_heads
+        # GPT-2 style configs have no num_key_value_heads (MHA) and no head_dim
+        self.n_kv_heads = getattr(config, "num_key_value_heads", None) or config.num_attention_heads
         self.head_dim = getattr(config, "head_dim", None) or config.hidden_size // config.num_attention_heads
+        # absolute-position hosts (GPT-2: 1024) cap prefix + prompt + generated tokens
+        self.max_positions = getattr(config, "max_position_embeddings", None)
 
     def describe(self):
         n_conv = self.n_layers - len(self.attn_layers)
         return (f"{self.n_layers} layers ({len(self.attn_layers)} attention at {self.attn_layers}, "
-                f"{n_conv} other), kv_heads={self.n_kv_heads}, head_dim={self.head_dim}")
+                f"{n_conv} other), kv_heads={self.n_kv_heads}, head_dim={self.head_dim}, "
+                f"max_positions={self.max_positions}")
 
     def to_json(self):
         return {"n_layers": self.n_layers, "layer_types": self.layer_types, "attn_layers": self.attn_layers,
-                "n_kv_heads": self.n_kv_heads, "head_dim": self.head_dim,
+                "n_kv_heads": self.n_kv_heads, "head_dim": self.head_dim, "max_positions": self.max_positions,
                 "model_type": getattr(self.config, "model_type", None)}
 
 
@@ -217,6 +224,7 @@ def head_inputs(memory, block_a, device):
 # ----------------------------------------------------------------------------
 
 HOP_QUESTION = "What is the risk assessment?"
+_CLAMP_WARNED = False
 
 
 def generate_risk_answer(facts, rule, meta):
@@ -247,6 +255,25 @@ def generate_risk_answer(facts, rule, meta):
             return f"CAUTIOUS assessment: HIGH RISK in {location}. Any risk factor triggers alert: {', '.join(risk_factors)}."
         return f"CAUTIOUS assessment: LOW RISK in {location}. All safety conditions met."
     return f"Risk assessment for {location}."
+
+
+def auto_prefix_length(tokenizer, encoder, arch, style, n_samples=32, margin=32, cap=N_KV_POSITIONS):
+    """Largest prefix (multiple of 16, at most `cap`) such that prefix + the longest training
+    sequence (full 40-carrier block + question + answer) stays `margin` tokens under the host's
+    position limit. Hosts without a limit (or with room for 513) get `cap`."""
+    if arch.max_positions is None:
+        return cap, None
+    longest = 0
+    for _ in range(n_samples):
+        mem = random_memory()
+        fdm_text, _ = encoder.encode_memory(mem)
+        mp = f"[MEMORY]BLOCK_B {fdm_text}[/MEMORY]" if style == "twoblock" else f"[MEMORY]{fdm_text}[/MEMORY]"
+        _, q = build_prompt(encoder, mem, [], style)
+        ans = f" {context_answer(mem)}" if style == "twoblock" else f" {base_answer(mem)} {context_answer(mem)}"
+        longest = max(longest, len(tokenizer.encode(mp + q + ans, add_special_tokens=False)))
+    room = arch.max_positions - longest - margin
+    n = max(64, min(cap, (room // 16) * 16))
+    return n, longest
 
 
 def base_answer(memory):
@@ -291,6 +318,18 @@ def generate_with_split(model, tokenizer, write_head, memory, encoder, device, a
     input_ids = tokenizer.encode(memory_part + q_text, return_tensors='pt').to(device)
     seq_len = input_ids.shape[1]
     cur_pos = torch.arange(n_kv_pos, n_kv_pos + seq_len, device=device).unsqueeze(0)
+    if arch.max_positions is not None:
+        room = arch.max_positions - (n_kv_pos + seq_len)
+        if room < max_new_tokens:
+            global _CLAMP_WARNED
+            if not _CLAMP_WARNED:
+                print(f"  [note] max_new_tokens clamped {max_new_tokens} -> {room} by the host's "
+                      f"{arch.max_positions}-position limit (prefix {n_kv_pos} + prompt {seq_len})")
+                _CLAMP_WARNED = True
+            max_new_tokens = room
+        if max_new_tokens < 150:
+            raise RuntimeError(f"only {max_new_tokens} generation positions left under the "
+                               f"{arch.max_positions}-position limit; use a smaller --n_kv_positions")
 
     generated, cur_past = input_ids, past_kv
     for _ in range(max_new_tokens):
@@ -386,7 +425,8 @@ def print_eval(tag, r, block_a, block_b):
 
 def train_and_eval_split(model, tokenizer, encoder, device, arch, block_a, block_b,
                          n_steps=5000, lr=3e-4, n_eval=200, max_len=1536, run_control=True,
-                         save_dir=None, seed=0, style="twoblock", label_assessment=False):
+                         save_dir=None, seed=0, style="twoblock", label_assessment=False,
+                         n_kv_positions=N_KV_POSITIONS):
     n_param, n_ctx = len(block_a), len(block_b)
     print(f"\n{'='*60}\n  SPLIT: {n_param} parametric / {n_ctx} context (DISJOINT, hybrid host)")
     print(f"  Block A (prefix only): {block_a}\n  Block B (context only): {block_b}")
@@ -400,8 +440,9 @@ def train_and_eval_split(model, tokenizer, encoder, device, arch, block_a, block
         r.update({"n_param": 0, "n_ctx": n_ctx})
         return r
 
-    write_head = CrossAttentionWriteHead(n_channels=n_param, arch=arch).to(device)
-    print(f"  Write head: {sum(p.numel() for p in write_head.parameters())/1e6:.1f}M params")
+    write_head = CrossAttentionWriteHead(n_channels=n_param, arch=arch, n_kv_positions=n_kv_positions).to(device)
+    print(f"  Write head: {sum(p.numel() for p in write_head.parameters())/1e6:.1f}M params, "
+          f"{n_kv_positions} prefix positions")
 
     write_head.train()
     opt = torch.optim.AdamW(write_head.parameters(), lr=lr, weight_decay=0.01)
@@ -438,7 +479,11 @@ def train_and_eval_split(model, tokenizer, encoder, device, arch, block_a, block
 
         inp = torch.tensor([full_ids], device=device)
         lab = torch.tensor([labels], device=device)
-        pos = torch.arange(N_KV_POSITIONS, N_KV_POSITIONS + inp.shape[1], device=device).unsqueeze(0)
+        if arch.max_positions is not None and write_head.n_kv_positions + len(full_ids) > arch.max_positions:
+            raise RuntimeError(f"prefix {write_head.n_kv_positions} + sequence {len(full_ids)} exceeds the host's "
+                               f"{arch.max_positions}-position limit; use a smaller --n_kv_positions")
+        pos = torch.arange(write_head.n_kv_positions, write_head.n_kv_positions + inp.shape[1],
+                           device=device).unsqueeze(0)
         past_kv = layer_kvs_to_cache(layer_kvs, arch)
 
         loss = model(input_ids=inp, position_ids=pos, past_key_values=past_kv,
@@ -454,13 +499,15 @@ def train_and_eval_split(model, tokenizer, encoder, device, arch, block_a, block
         os.makedirs(save_dir, exist_ok=True)
         ckpt = os.path.join(save_dir, f"write_head_A{n_param}_seed{seed}.pt")
         torch.save({"state_dict": write_head.state_dict(), "block_a": block_a, "block_b": block_b,
-                    "n_steps": n_steps, "lr": lr, "seed": seed, "arch": arch.to_json()}, ckpt)
+                    "n_steps": n_steps, "lr": lr, "seed": seed, "arch": arch.to_json(),
+                    "n_kv_positions": n_kv_positions}, ckpt)
         print(f"  saved write head -> {ckpt}")
     r = evaluate(model, tokenizer, write_head, encoder, device, arch, block_a, block_b, n_eval, desc="Eval", style=style)
     print_eval("matched prefix", r, block_a, block_b)
     r.update({"n_param": n_param, "n_ctx": n_ctx, "final_loss": float(np.mean(losses[-500:])),
               "n_steps": n_steps, "lr": lr, "prompt_style": style,
               "label_assessment": bool(style == "bare_hop" and label_assessment),
+              "n_kv_positions": n_kv_positions,
               "write_head_params": sum(p.numel() for p in write_head.parameters())})
 
     if run_control:
@@ -502,6 +549,10 @@ def main():
                    help="encoder low amplitude; must match the host's training encoder (0.25 Qwen3/Hermes3)")
     p.add_argument("--prompt_style", choices=["twoblock", "bare_hop"], default="twoblock",
                    help="twoblock for the Qwen3/Hermes3 two-block hosts; bare_hop for the 40ch single-block hosts")
+    p.add_argument("--n_kv_positions", default=str(N_KV_POSITIONS),
+                   help="prefix length written by the head: an integer (513 for the 28-layer hosts) or 'auto', "
+                        "which measures the longest training sequence and takes the largest multiple of 16 "
+                        "that fits under the host's position limit (GPT-2: 1024)")
     p.add_argument("--label_assessment", action="store_true",
                    help="bare_hop only: include the host's assessment tokens in the training loss")
     p.add_argument("--partition", choices=["contiguous", "interleaved"], default="interleaved")
@@ -534,13 +585,22 @@ def main():
           + ("   [label_assessment]" if args.label_assessment else ""))
     encoder = make_encoder(tokenizer, vocab_size, a_low=args.a_low)
 
+    if args.n_kv_positions == "auto":
+        n_kv_positions, longest = auto_prefix_length(tokenizer, encoder, arch, args.prompt_style)
+        print(f"[prefix] auto -> {n_kv_positions} positions "
+              f"(longest training sequence {longest} tokens, host limit {arch.max_positions})")
+    else:
+        n_kv_positions = int(args.n_kv_positions)
+        print(f"[prefix] {n_kv_positions} positions")
+
     if args.load_head:
         ckpt = torch.load(args.load_head, map_location=device)
         block_a, block_b = ckpt["block_a"], ckpt["block_b"]
         print(f"[load_head] {args.load_head}  A={block_a}  (trained {ckpt.get('n_steps')} steps, seed {ckpt.get('seed')})")
         if block_a and block_b:
             leak_check(encoder, block_a, block_b)
-        wh = CrossAttentionWriteHead(n_channels=len(block_a), arch=arch).to(device)
+        wh = CrossAttentionWriteHead(n_channels=len(block_a), arch=arch,
+                                     n_kv_positions=ckpt.get("n_kv_positions", N_KV_POSITIONS)).to(device)
         wh.load_state_dict(ckpt["state_dict"]); wh.eval()
         r = evaluate(model, tokenizer, wh, encoder, device, arch, block_a, block_b, args.n_eval, desc="Eval", style=args.prompt_style)
         print_eval("matched prefix", r, block_a, block_b)
@@ -578,7 +638,7 @@ def main():
                                  n_steps=args.n_steps, lr=args.lr, n_eval=args.n_eval,
                                  max_len=args.max_len, run_control=not args.no_control,
                                  save_dir=args.output_dir, seed=args.seed, style=args.prompt_style,
-                                 label_assessment=args.label_assessment)
+                                 label_assessment=args.label_assessment, n_kv_positions=n_kv_positions)
         r["block_a_channels"], r["block_b_channels"] = block_a, block_b
         r["partition"], r["seed"], r["arch"] = args.partition, args.seed, arch.to_json()
         r["vocab_size"], r["a_low"] = vocab_size, args.a_low
