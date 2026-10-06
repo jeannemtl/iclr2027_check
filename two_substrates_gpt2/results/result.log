@@ -101,3 +101,58 @@ Eval:   0%|          | 0/200 [00:00<?, ?it/s]  [note] max_new_tokens clamped 350
 Eval:  56%|█████▋    | 113/200 [08:18<06:27,  4.46s/it]
 [lfm] 0:bash*                                                                                                "13d26c8e6aaf" 02:40 06-Oct-26
 
+
+
+
+
+root@b7d572d505db:/workspace# nano patch_nhop_source.py              # paste the patch script
+root@b7d572d505db:/workspace# tmux new -s fdm
+
+    Step 12000/15000 | loss 0.0576 | 1319s
+    Step 13000/15000 | loss 0.0527 | 1429s
+    Step 14000/15000 | loss 0.0492 | 1539s
+    Step 15000/15000 | loss 0.0474 | 1650s
+  saved write head -> /workspace/clean_gpt2/FDM_IN_WEIGHTS/two_substrates_review/gpt2/seed3/split16/write_head_A16_seed3.pt
+Eval:   0%|          | 0/200 [00:00<?, ?it/s]  [note] max_new_tokens clamped 350 -> 311 by the host's 1024-position limit (prefix 160 + prompt 553)
+  [matched prefix] SLOT   A   79.7%  B   93.4%  All   86.5%   (chance A 26.0%, chance B 28.1%)
+  [matched prefix] JOINT  A    1.0%  B   38.0%  All-32    0.0%   (n=200)
+  [matched prefix] per-channel A %: ch8:100  ch10:46  ch12:96  ch14:100  ch16:68  ch18:100  ch20:44  ch22:43  ch24:98  ch26:86  ch28:94  ch30:100  ch32:87  ch34:44  ch36:70  ch38:100
+  [matched prefix] answers repeating a channel name: 90%
+  [SHUFFLED prefix] SLOT   A   25.1%  B   93.5%  All   59.3%   (chance A 26.0%, chance B 28.1%)
+  [SHUFFLED prefix] JOINT  A    0.0%  B   38.0%  All-32    0.0%   (n=200)
+  [SHUFFLED prefix] per-channel A %: ch8:27  ch10:22  ch12:24  ch14:31  ch16:28  ch18:21  ch20:30  ch22:25  ch24:22  ch26:26  ch28:29  ch30:20  ch32:25  ch34:28  ch36:22  ch38:22
+  [SHUFFLED prefix] answers repeating a channel name: 92%
+  Block A drop under shuffled prefix: 54.6 pts (should approach 53.6 pts for a full collapse)
+
+========================================================================
+  SWEEP SUMMARY (disjoint, hybrid host; A = prefix only, B = context only)
+========================================================================
+    A   B |  A slot  B slot All slot | All-32 joint |  A ctrl A chance
+   16  16 |   79.7%   93.4%    86.5% |         0.0% |   25.1%    26.0%
+
+  Saved to /workspace/clean_gpt2/FDM_IN_WEIGHTS/two_substrates_review/gpt2/seed3/split16/
+
+[09:01:29] === 7. summary
+seed   A   B |  A match  A ctrl  delta |  B match  B ctrl |  rep m  rep c | n
+   1  16  16 |    79.9%   24.5%  55.4 |    91.8%   92.6% |   100%   100% | 200
+   1   4  28 |   100.0%   25.9%  74.1 |    78.6%   79.7% |   100%   100% | 200
+   1   8  24 |    99.9%   24.6%  75.4 |    90.6%   89.4% |   100%   100% | 200
+   2  16  16 |    76.6%   25.5%  51.1 |    90.5%   91.9% |   100%   100% | 200
+   2   4  28 |   100.0%   25.8%  74.2 |    81.2%   81.4% |    98%   100% | 200
+   2   8  24 |   100.0%   24.6%  75.4 |    91.8%   91.5% |    98%    97% | 200
+   3  16  16 |    79.7%   25.1%  54.6 |    93.4%   93.5% |    90%    92% | 200
+   3   4  28 |    99.2%   25.8%  73.5 |    92.8%   91.6% |    96%    96% | 200
+   3   8  24 |    99.9%   24.6%  75.3 |    90.0%   90.6% |    99%    98% | 200
+
+A delta = matched minus shuffled-prefix control; report this, not the 1/M chance level.
+
+masked baseline: masked/ctx_only_masked_seed1.json
+   4 removed: B slot  94.8%   A slot  28.9%
+   8 removed: B slot  78.7%   A slot  26.9%
+  16 removed: B slot  66.2%   A slot  25.7%
+
+[09:01:29] === 8. upload to HuggingFace (private): results -> prompterminal/fdm-two-substrates-review, heads -> prompterminal/fdm-two-substrates-heads
+uploaded
+
+[09:01:37] === done. results in /workspace/clean_gpt2/FDM_IN_WEIGHTS/two_substrates_review/gpt2  (log: /workspace/clean_gpt2/FDM_IN_WEIGHTS/two_substrates_review/gpt2/run.log)
+root@13d26c8e6aaf:/workspace/iclr2027_check/two_substrates_review# 
