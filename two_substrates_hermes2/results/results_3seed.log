@@ -1,0 +1,48 @@
+tep 15000/15000 | loss 0.0002 | 11133s
+  saved write head -> /workspace/clean_hermes3/FDM_IN_WEIGHTS/two_substrates_review/hermes3/seed1/split8/write_head_A8_seed1.pt
+  [matched prefix] SLOT   A  100.0%  B  100.0%  All  100.0%   (chance A 26.0%, chance B 27.4%)
+  [matched prefix] JOINT  A  100.0%  B   99.0%  All-32   99.0%   (n=200)
+  [matched prefix] per-channel A %: ch8:100  ch10:100  ch12:100  ch14:100  ch16:100  ch18:100  ch20:100  ch22:100
+  [matched prefix] answers repeating a channel name: 100%
+  [SHUFFLED prefix] SLOT   A   24.3%  B  100.0%  All   81.1%   (chance A 26.0%, chance B 27.4%)
+  [SHUFFLED prefix] JOINT  A    0.0%  B   99.5%  All-32    0.0%   (n=200)
+  [SHUFFLED prefix] per-channel A %: ch8:26  ch10:26  ch12:26  ch14:29  ch16:20  ch18:18  ch20:24  ch22:26
+  [SHUFFLED prefix] answers repeating a channel name: 100%
+  Block A drop under shuffled prefix: 75.7 pts (should approach 74.0 pts for a full collapse)
+
+========================================================================
+  SWEEP SUMMARY (disjoint; A = prefix only, B = context only)
+========================================================================
+    A   B |  A slot  B slot All slot | All-32 joint |  A ctrl A chance
+    8  24 |  100.0%  100.0%   100.0% |        99.0% |   24.3%    26.0%
+
+  Saved to /workspace/clean_hermes3/FDM_IN_WEIGHTS/two_substrates_review/hermes3/seed1/split8/
+
+[10:25:52] === 6. train  seed=1  prefix-only channels=16  steps=15000  -> /workspace/clean_hermes3/FDM_IN_WEIGHTS/two_substrates_review/hermes3/seed1/split16
+[seed] 1   [partition] interleaved
+Loading weights: 100%|██████████| 254/254 [00:00<00:00, 6310.14it/s]
+
+[leak check] Block A values must not affect the context tokens
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+============================================================
+  SPLIT: 16 parametric / 16 context (DISJOINT)
+  Block A (prefix only): [8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38]
+  Block B (context only): [9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39]
+============================================================
+  Write head: 62.8M params
+    Step  1000/15000 | loss 0.1570 | 745s
+    Step  2000/15000 | loss 0.1126 | 1495s
+    Step  3000/15000 | loss 0.0978 | 2241s
+    Step  4000/15000 | loss 0.0918 | 2976s
+    Step  5000/15000 | loss 0.0737 | 3710s
+    Step  6000/15000 | loss 0.0637 | 4448s
+    Step  7000/15000 | loss 0.0526 | 5191s
+    Step  8000/15000 | loss 0.0454 | 5935s
+    Step  9000/15000 | loss 0.0367 | 6681s
+    Step 10000/15000 | loss 0.0314 | 7427s
+    Step 11000/15000 | loss 0.0271 | 8177s
+
+[lfm] 0:bash*                                                                                                "13d26c8e6aaf" 12:47 07-Oct-26
