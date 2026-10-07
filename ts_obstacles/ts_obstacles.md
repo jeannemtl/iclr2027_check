@@ -135,7 +135,7 @@ Python's `sorted(xs, key=lambda x: x.score)` says *what to sort by*; TS has no `
 
 *F. `??` vs `||`: "if missing" vs "if falsy".* Both read "use `a`, otherwise `b`"; they differ in what counts as otherwise. `||` falls back when `a` is any of the eight falsy values; `??` falls back only when `a` is `null` or `undefined`.
 
-| `a` | `a \|\| 10` | `a ?? 10` |
+| `a` | <code>a &#124;&#124; 10</code> | `a ?? 10` |
 | --- | --- | --- |
 | `undefined` | 10 | 10 |
 | `null` | 10 | 10 |
