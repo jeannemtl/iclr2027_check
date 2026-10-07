@@ -18,3 +18,8 @@ h2, p strong { page-break-after: avoid; }
 li { page-break-inside: avoid; }
 .ex { display: block; margin-top: 0.12em; color: #333; font-size: 9.6pt; }
 .ex code { background: #eef1f5; }
+table { border-collapse: collapse; width: 100%; font-size: 9pt; margin: 0.6em 0 1em; }
+th, td { border: 1px solid #bbb; padding: 3px 5px; vertical-align: top; text-align: left; }
+th { background: #eee; }
+td code { font-size: 8.2pt; }
+tr { page-break-inside: avoid; }

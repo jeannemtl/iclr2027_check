@@ -9,6 +9,71 @@ date: "October 2026"
 
 The assessment is code review in TypeScript, not coding, so every rule here is about reading code and spotting what is wrong. Each section pairs numbered **mental obstacles** (the confusion, stated flat) with numbered **solutions & rules** (one-sentence resolutions), each followed by a one-line example marked ✗ (bug) or ✓ (correct). A **Python → TypeScript** block closes each language section. Memorize Sections VII and VIII first; read I–VI to make VII make sense.
 
+# 0. Vocabulary: what each Python thing is called in TypeScript
+
+**Mental obstacles**
+
+1. Curly braces `{}` were read as "array" or "set", when in TS they are an object (the dict).
+2. "There is no dict in TypeScript" was the conclusion, when there are two: plain objects and `Map`.
+3. Python names (`list`, `dict`, `None`, `len`, `print`) were looked for literally and not found.
+
+**Solutions & rules**
+
+1. The literal tells you the structure: `{}` object (dict), `[]` array (list), `new Map()` map, `new Set()` set.
+   `const o = { x: 1 };  const a = [1, 2];  const m = new Map();  const s = new Set();`
+2. A plain object IS the everyday dict: string keys, dot or bracket access, `undefined` when missing.
+   `o.x  // 1` — `o["x"]  // 1` — `o.missing  // undefined, no error`
+3. `Map` is the dict for any key type or untrusted keys: `.get`, `.set`, `.has`, `.delete`, `.size`.
+   `m.set("x", 1); m.get("x")  // 1` — `m.get("nope")  // undefined`
+4. Arrays are lists: `.length`, `.push`, index access, `undefined` past the end.
+   `a.length  // 2` — `a[5]  // undefined`
+5. Aliasing works like Python: a second label on an object or array points at the SAME thing.
+   `const p = o; p.x = 2; o.x  // 2` (same as `d2 = d1` in Python)
+
+<table>
+<thead><tr><th>Python</th><th>TypeScript</th><th>Literal / call</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><code>dict</code></td><td>plain object</td><td><code>{ x: 1, name: &quot;a&quot; }</code></td><td>keys become strings; <code>o[1]</code> is <code>o[&quot;1&quot;]</code>; inherits <code>toString</code>, <code>constructor</code></td></tr>
+<tr><td><code>dict</code> (safe)</td><td><code>Map&lt;K, V&gt;</code></td><td><code>new Map([[&quot;x&quot;, 1]])</code></td><td>any key type, <code>.size</code>, no prototype, insertion order</td></tr>
+<tr><td><code>list</code></td><td>array</td><td><code>[1, 2, 3]</code></td><td><code>.length</code>, <code>.push</code>, <code>.map</code>, <code>.filter</code></td></tr>
+<tr><td><code>tuple</code></td><td>tuple-typed array</td><td><code>const t: [string, number] = [&quot;a&quot;, 1]</code></td><td>fixed length only at compile time</td></tr>
+<tr><td><code>set</code></td><td><code>Set&lt;T&gt;</code></td><td><code>new Set([1, 2])</code></td><td><code>.has</code>, <code>.add</code>, <code>.size</code>; no <code>|</code>/<code>&amp;</code> operators</td></tr>
+<tr><td><code>None</code></td><td><code>null</code> / <code>undefined</code></td><td><code>let x: string | null = null</code></td><td><code>undefined</code> = never set; <code>null</code> = deliberately empty</td></tr>
+<tr><td><code>True</code>/<code>False</code></td><td><code>true</code>/<code>false</code></td><td></td><td>lowercase</td></tr>
+<tr><td><code>str</code></td><td><code>string</code></td><td><code>&quot;a&quot;</code>, <code>&#x27;a&#x27;</code>, <code>`a ${x}`</code></td><td>backticks interpolate</td></tr>
+<tr><td><code>int</code>/<code>float</code></td><td><code>number</code></td><td><code>3</code>, <code>3.5</code></td><td>one type; <code>7 / 2</code> is <code>3.5</code></td></tr>
+<tr><td><code>len(x)</code></td><td><code>x.length</code> / <code>m.size</code></td><td></td><td>arrays and strings <code>.length</code>; <code>Map</code>/<code>Set</code> <code>.size</code></td></tr>
+<tr><td><code>print(x)</code></td><td><code>console.log(x)</code></td><td></td><td></td></tr>
+<tr><td><code>def f(x):</code></td><td><code>function f(x: T)</code> or <code>const f = (x: T) =&gt;</code></td><td></td><td>arrow with <code>{}</code> needs <code>return</code></td></tr>
+<tr><td><code>class A:</code> + <code>__init__</code></td><td><code>class A { constructor() {} }</code></td><td></td><td><code>this</code> not <code>self</code></td></tr>
+<tr><td><code>x in d</code></td><td><code>&quot;x&quot; in o</code> / <code>m.has(&quot;x&quot;)</code></td><td></td><td>on arrays use <code>a.includes(x)</code></td></tr>
+<tr><td><code>d.get(&quot;k&quot;)</code></td><td><code>o[&quot;k&quot;]</code> / <code>m.get(&quot;k&quot;)</code></td><td></td><td>returns <code>undefined</code>, not <code>None</code></td></tr>
+<tr><td><code>d.items()</code></td><td><code>Object.entries(o)</code> / <code>m</code> itself</td><td><code>for (const [k, v] of Object.entries(o))</code></td><td></td></tr>
+<tr><td><code>d.keys()</code> / <code>.values()</code></td><td><code>Object.keys(o)</code> / <code>Object.values(o)</code></td><td></td><td>return arrays</td></tr>
+<tr><td><code>list(d)</code> / <code>d.copy()</code></td><td><code>[...a]</code> / <code>{ ...o }</code> / <code>new Map(m)</code></td><td></td><td>all shallow</td></tr>
+<tr><td><code>copy.deepcopy</code></td><td><code>structuredClone(x)</code></td><td></td><td></td></tr>
+<tr><td><code>import x</code></td><td><code>import x from &quot;./x&quot;</code> / <code>import { f } from &quot;./x&quot;</code></td><td></td><td></td></tr>
+<tr><td><code>try/except</code></td><td><code>try/catch</code></td><td><code>catch (e) { if (e instanceof Error) … }</code></td><td><code>e</code> is <code>unknown</code></td></tr>
+<tr><td><code>raise E(&quot;m&quot;)</code></td><td><code>throw new Error(&quot;m&quot;)</code></td><td></td><td></td></tr>
+<tr><td><code>async def</code> / <code>await</code></td><td><code>async function</code> / <code>await</code></td><td></td><td>forgotten <code>await</code> still runs the call</td></tr>
+<tr><td><code>lambda x: x + 1</code></td><td><code>(x) =&gt; x + 1</code></td><td></td><td></td></tr>
+<tr><td><code>[f(x) for x in xs if p(x)]</code></td><td><code>xs.filter(p).map(f)</code></td><td></td><td></td></tr>
+<tr><td><code>f&quot;{x}&quot;</code></td><td><code>`${x}`</code></td><td></td><td></td></tr>
+<tr><td><code>elif</code></td><td><code>else if</code></td><td></td><td></td></tr>
+<tr><td><code>and</code> / <code>or</code> / <code>not</code></td><td><code>&amp;&amp;</code> / <code>||</code> / <code>!</code></td><td></td><td>plus <code>??</code> for nullish-only fallback</td></tr>
+<tr><td><code>==</code> / <code>is</code></td><td><code>===</code> / (no equivalent)</td><td></td><td>always <code>===</code></td></tr>
+<tr><td><code>x if c else y</code></td><td><code>c ? x : y</code></td><td></td><td></td></tr>
+<tr><td><code>range(n)</code></td><td><code>for (let i = 0; i &lt; n; i++)</code></td><td></td><td>or <code>Array.from({ length: n }, (_, i) =&gt; i)</code></td></tr>
+<tr><td><code>enumerate(xs)</code></td><td><code>xs.forEach((x, i) =&gt; …)</code> / <code>xs.entries()</code></td><td></td><td></td></tr>
+<tr><td><code>zip(a, b)</code></td><td><code>a.map((x, i) =&gt; [x, b[i]])</code></td><td></td><td></td></tr>
+<tr><td><code>sorted(xs, key=…)</code></td><td><code>[...xs].sort((a, b) =&gt; …)</code></td><td></td><td>comparator returns a number</td></tr>
+<tr><td><code>Counter</code></td><td><code>Map&lt;T, number&gt;</code> + <code>(m.get(k) ?? 0) + 1</code></td><td></td><td>no built-in</td></tr>
+<tr><td><code>defaultdict(list)</code></td><td><code>m.get(k) ?? []</code> then <code>m.set</code></td><td></td><td>no built-in</td></tr>
+<tr><td><code>deque</code></td><td>array (<code>shift</code> is O(n))</td><td></td><td>no built-in</td></tr>
+<tr><td><code>heapq</code></td><td>sort per insert or a library</td><td></td><td>no built-in</td></tr>
+</tbody>
+</table>
+
 # I. Foundations: the JavaScript runtime model
 
 **Mental obstacles**
