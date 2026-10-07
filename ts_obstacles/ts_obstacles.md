@@ -69,7 +69,7 @@ The assessment is code review in TypeScript, not coding, so every rule here is a
 22. `JSON.parse` throws on bad input; `JSON.stringify` drops `undefined` and functions.
     `JSON.parse(body)  // ✗ unguarded` — `try { JSON.parse(body) } catch { return 400 }  // ✓`
 
-**Reading notes: five things that confuse on first read**
+**Reading notes: six things that confuse on first read**
 
 *A. "Undefined" is the value; "falsy" is how it behaves.* They answer two different questions and are both true at once.
 
@@ -132,6 +132,19 @@ Python's `sorted(xs, key=lambda x: x.score)` says *what to sort by*; TS has no `
 | `for x in xs:` | `for (const x of xs)` |
 
 `Object.entries(d)` turns `{ a: 1, b: 2 }` into `[["a", 1], ["b", 2]]`; `for...of` walks that array and `const [k, v]` destructures each pair, exactly like Python's `k, v`. On an array, `for (const x of xs)` gives elements; `for (const i in xs)` gives the indices `"0"`, `"1"` as **strings**, so `xs[i + 1]` becomes `xs["01"]` → `undefined`. `for...in` on an array is a planted bug; flag it. A `Map` needs no `Object.entries`: `for (const [k, v] of map)` works directly and keys keep their real type.
+
+*F. `??` vs `||`: "if missing" vs "if falsy".* Both read "use `a`, otherwise `b`"; they differ in what counts as otherwise. `||` falls back when `a` is any of the eight falsy values; `??` falls back only when `a` is `null` or `undefined`.
+
+| `a` | `a \|\| 10` | `a ?? 10` |
+| --- | --- | --- |
+| `undefined` | 10 | 10 |
+| `null` | 10 | 10 |
+| `0` | **10** | 0 |
+| `""` | **10** | `""` |
+| `false` | **10** | `false` |
+| `5` | 5 | 5 |
+
+Python's `a or b` behaves like `||` (`0 or 10` is `10`); Python has no `??`, the nearest is `a if a is not None else b`. The bug: `const n = count || 10` is meant as "default when not given", but a caller passing `count = 0` gets 10. `count ?? 10` keeps the 0. Rule of thumb: if the left side can legitimately be `0`, `""` or `false` (counts, page numbers, IDs from 0, flags, `size`, `offset`, `timeoutMs`), `||` is wrong and `??` is right. Exercise 2 plants exactly this with `timeoutMs || DEFAULT`. Cousins: `x ??= 5` assigns only if nullish, `x ||= 5` if falsy, `x &&= f(x)` if truthy. In a plain condition (`if (a || b)`) `||` is ordinary boolean OR; the trap is only when `||` picks a value.
 
 **Python → TypeScript**
 
