@@ -1,0 +1,10 @@
+@page { size: Letter; margin: 0.6in 0.65in; }
+body { font-family: "Times New Roman", "Liberation Serif", serif; font-size: 9.4pt; line-height: 1.25; color: #000; margin: 0 auto; }
+header#title-block-header { text-align: center; margin-bottom: 0.6em; }
+h1.title { font-size: 16pt; font-weight: normal; margin: 0 0 0.15em; }
+p.subtitle { font-size: 9.5pt; font-style: italic; margin: 0 0 0.2em; }
+p.date { font-size: 9pt; margin: 0; }
+p strong { display: block; margin: 0.55em 0 0.15em; font-size: 10pt; page-break-after: avoid; }
+ol { padding-left: 1.5em; margin: 0 0 0.2em; }
+ol li { margin: 0.12em 0; page-break-inside: avoid; }
+code { font-family: "DejaVu Sans Mono", "Liberation Mono", monospace; font-size: 8pt; background: #d4d4d4; padding: 0 2px; }
