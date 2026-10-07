@@ -69,7 +69,7 @@ The assessment is code review in TypeScript, not coding, so every rule here is a
 22. `JSON.parse` throws on bad input; `JSON.stringify` drops `undefined` and functions.
     `JSON.parse(body)  // ✗ unguarded` — `try { JSON.parse(body) } catch { return 400 }  // ✓`
 
-**Reading notes: eight things that confuse on first read**
+**Reading notes: nine things that confuse on first read**
 
 *A. "Undefined" is the value; "falsy" is how it behaves.* They answer two different questions and are both true at once.
 
@@ -185,6 +185,28 @@ const pos = arr.filter(x => x > 0);  // ✓ caught in pos; arr still unchanged
 | `reduce`, `find`, `findIndex`, `some`, `every`, `includes`, `indexOf`, `join` (a value) | |
 
 Two planted-bug shapes: a non-mutating call on its own line with nothing assigned (`arr.map(...)`, `s.toUpperCase()`), which does nothing; and a mutating call assigned as if it were a copy (`const sorted = arr.sort()`), where both names are the same, now-sorted array (rule 13).
+
+*I. The arrow is not an if; it returns.* `x => x > 0` has no `if` in it: `=>` reads "returns", so it is a function that returns the boolean `x > 0` (`f(5)` is `true`, `f(-3)` is `false`). The deciding happens inside the method, not the arrow: `filter` wraps your condition in its own loop and `if`.
+
+```ts
+arr.filter(x => x > 0)         // what filter does internally, roughly:
+const out = [];
+for (const x of arr) {
+  if (x > 0) out.push(x);      // <- the if is filter's; the condition x > 0 is yours
+}
+```
+
+The arrow can return anything, not only booleans; what the method does with the return value depends on the method:
+
+| Call | The arrow returns | What the method does with it |
+| --- | --- | --- |
+| `arr.filter(x => x > 0)` | boolean | keeps `x` if `true` |
+| `arr.map(x => x * 2)` | a new value | puts it in the new array |
+| `arr.find(x => x.id === id)` | boolean | returns the first `x` where `true` |
+| `arr.sort((a, b) => a - b)` | a number | uses the sign to order `a` and `b` |
+| `arr.some(x => x < 0)` | boolean | returns `true` if any was `true` |
+
+An if/else inside an arrow is the ternary, Python's `a if c else b`: `x => x > 0 ? "pos" : "neg"`; or a block body with real `if` statements and an explicit `return`: `x => { if (x > 0) return "pos"; return "neg"; }`.
 
 **Python → TypeScript**
 
