@@ -132,6 +132,45 @@ The assessment is code review in TypeScript, not coding, so every rule here is a
 22. `JSON.parse` throws on bad input; `JSON.stringify` drops `undefined` and functions.
     `JSON.parse(body)  // ✗ unguarded` — `try { JSON.parse(body) } catch { return 400 }  // ✓`
 
+**Reading notes: three things that confuse on first read**
+
+*A. "Undefined" is the value; "falsy" is how it behaves.* They answer two different questions and are both true at once.
+
+```ts
+const o: { a?: number } = {};   // type: object that MAY have key a (a number); value: empty object
+o.a                 // undefined   <- the VALUE (key was never set)
+o.a === undefined   // true        <- testing the value
+if (o.a) { ... }    // does not run <- falsy BEHAVIOR
+!o.a                // true        <- falsy behavior
+```
+
+"Falsy" is a label for how a value is treated where a boolean is expected (`if`, `!`, `&&`, `||`). Exactly eight values carry it: `false`, `0`, `-0`, `0n`, `""`, `null`, `undefined`, `NaN`. `undefined` is one of them, the way `0` is. Python parallel: `d.get("a")` is `None`, and `None` is also falsy. Review consequence: `if (!o.a)` cannot tell "missing" from "set to 0"; the precise test for missing is `o.a === undefined` or `o.a == null`.
+
+*B. Truthiness: where Python instincts are wrong.*
+
+| Value | Python | TypeScript |
+| --- | --- | --- |
+| `[]` | falsy | **truthy** |
+| `{}` | falsy | **truthy** |
+| `set()` / `new Set()` | falsy | **truthy** |
+| `"0"`, `"false"` | truthy | truthy |
+| `0`, `""`, `None` / `null` / `undefined` | falsy | falsy |
+
+So `if not items:` has no direct TS form: `if (!items)` never fires for `[]`; write `if (items.length === 0)`. And query strings arrive as strings, so `req.query.enabled` is `"0"`, which is truthy; convert before testing.
+
+*C. `===` vs `==`: strict vs coerced.* `===` asks "same type AND same value?" with no conversion. `==` first converts both sides to a common type (coercion), then compares, with surprising results.
+
+| Expression | `===` | `==` |
+| --- | --- | --- |
+| `5` vs `"5"` | false | **true** |
+| `0` vs `""` | false | **true** |
+| `0` vs `"0"` | false | **true** |
+| `"" ` vs `"0"` | false | false |
+| `null` vs `undefined` | false | **true** |
+| `[]` vs `false` | false | **true** |
+
+Python's `==` is already strict about type (`5 == "5"` is `False`), so Python `==` ≈ TS `===`; TS `==` has no Python equivalent. In review: expect `===`/`!==` everywhere; a `==` is a low-severity but real finding, because it lets `"5"` pass as `5` or `""` as `0`. The one idiomatic exception is `x == null`, which deliberately catches both `null` and `undefined`. Separately, a single `=` is assignment, never comparison (rule 5).
+
 **Python → TypeScript**
 
 1. Same label-not-box model; copy idioms differ: `a[:]` / `a.copy()` → `[...a]` / `{...o}` / `structuredClone(o)`.

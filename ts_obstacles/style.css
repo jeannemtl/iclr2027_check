@@ -23,3 +23,5 @@ th, td { border: 1px solid #bbb; padding: 3px 5px; vertical-align: top; text-ali
 th { background: #eee; }
 td code { font-size: 8.2pt; }
 tr { page-break-inside: avoid; }
+pre { background: #f3f3f3; padding: 6px 8px; font-size: 8.8pt; line-height: 1.3; margin: 0.4em 0 0.6em; white-space: pre-wrap; }
+pre code { background: none; padding: 0; }
