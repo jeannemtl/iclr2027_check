@@ -11,7 +11,7 @@ date: "October 2026"
 ```ts
 export async function getUser(id: string, retries = 3, opts?: Opts): Promise<User | null> {
 ^^^^^^ ^^^^^ ^^^^^^^^ ^^^^^^^ ^^^^^^^^^^  ^^^^^^^^^^^  ^^^^^^^^^^^   ^^^^^^^^^^^^^^^^^^^^^
-export async keyword  name    required    default      optional      return type (a Promise, because async)
+export async keyword  name    required    default      optional      return type (Promise: async)
   ...
 }
 ```
@@ -99,23 +99,23 @@ function find(xs: User[], id: string): User {   // declares: always a User
 
 ```ts
 async function load(ids: string[]): Promise<User[]> {
-  const cache = getCache();                     // 1. sync; value right away
-  const token = await getToken();               // 2. WAITS here; token is a string, not a Promise
-  const p = fetchUser(ids[0]);                  // 3. NO await: p is a Promise<User>, request started
-  const u = await p;                            // 4. now waits; u is a User
+  const cache = getCache();            // 1. sync; value right away
+  const token = await getToken();      // 2. WAITS here; token is a string, not a Promise
+  const p = fetchUser(ids[0]);         // 3. NO await: p is Promise<User>; request started
+  const u = await p;                   // 4. now waits; u is a User
 
-  const all = await Promise.all(                // 5. starts every fetch at once, waits for all
-    ids.map((id) => fetchUser(id))              //    the map returns Promise<User>[]
-  );                                            //    all is User[]
+  const all = await Promise.all(       // 5. starts every fetch at once, waits for all
+    ids.map((id) => fetchUser(id))     //    the map returns Promise<User>[]
+  );                                   //    all is User[]
 
-  ids.forEach(async (id) => {                   // 6. ✗ forEach ignores the returned Promise;
-    await save(id);                             //    these run, but load() does not wait for them
+  ids.forEach(async (id) => {          // 6. ✗ forEach ignores the returned Promise;
+    await save(id);                    //    these run, but load() does not wait
   });
 
   try {
-    const r = fetchUser("x");                   // 7. ✗ not awaited: a rejection escapes this try
+    const r = fetchUser("x");          // 7. ✗ not awaited: rejection escapes this try
     return [u, ...all];
-  } catch (e) {                                 // 8. e is unknown; narrow before e.message
+  } catch (e) {                        // 8. e is unknown; narrow before e.message
     throw new Error("load failed", { cause: e });
   }
 }
