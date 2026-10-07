@@ -69,7 +69,7 @@ The assessment is code review in TypeScript, not coding, so every rule here is a
 22. `JSON.parse` throws on bad input; `JSON.stringify` drops `undefined` and functions.
     `JSON.parse(body)  // ✗ unguarded` — `try { JSON.parse(body) } catch { return 400 }  // ✓`
 
-**Reading notes: six things that confuse on first read**
+**Reading notes: eight things that confuse on first read**
 
 *A. "Undefined" is the value; "falsy" is how it behaves.* They answer two different questions and are both true at once.
 
@@ -145,6 +145,46 @@ Python's `sorted(xs, key=lambda x: x.score)` says *what to sort by*; TS has no `
 | `5` | 5 | 5 |
 
 Python's `a or b` behaves like `||` (`0 or 10` is `10`); Python has no `??`, the nearest is `a if a is not None else b`. The bug: `const n = count || 10` is meant as "default when not given", but a caller passing `count = 0` gets 10. `count ?? 10` keeps the 0. Rule of thumb: if the left side can legitimately be `0`, `""` or `false` (counts, page numbers, IDs from 0, flags, `size`, `offset`, `timeoutMs`), `||` is wrong and `??` is right. Exercise 2 plants exactly this with `timeoutMs || DEFAULT`. Cousins: `x ??= 5` assigns only if nullish, `x ||= 5` if falsy, `x &&= f(x)` if truthy. In a plain condition (`if (a || b)`) `||` is ordinary boolean OR; the trap is only when `||` picks a value.
+
+*G. `const` locks the label, not the contents.* `a.push(1)` does not create a new `a`; it reaches into the existing array `a` points to and adds `1` inside it. `a = [2]` tries to point the label at a different array, and that is what `const` forbids.
+
+```ts
+const a = [];     // a --> [ ]        label a, pointing at an empty array
+a.push(1);        // a --> [ 1 ]      SAME array, contents changed   (mutation)      ✓
+a = [2];          // a --> [ 2 ]  ✗   label re-pointed at a NEW array (reassignment) TypeError
+```
+
+| | What changes | Allowed with `const`? |
+| --- | --- | --- |
+| Mutation: `a.push(1)`, `a[0] = 9`, `a.sort()`, `o.x = 2` | the contents of the thing `a` points to | yes |
+| Reassignment: `a = [2]`, `a = null`, `a = a.filter(...)` | which thing the label `a` points to | no |
+
+Python has no `const`, but the two operations are the in-place vs rebinding distinction from the Python notes (`a.append(1)` vs `a = [2]`); TS `const` just forbids the second. Review consequence: `const` on an array or object does not make the data safe from change; `const orders = ...; orders.sort(...)` still reorders the caller's array (Exercise 1). For primitives (`const n = 1`) there is nothing inside to mutate, so `const` is fully fixed; the distinction only shows up with objects, arrays, `Map`, `Set` and class instances. Freezing contents is separate: `Object.freeze(a)` at runtime (shallow) or `readonly number[]` as a type.
+
+*H. The arrow `=>` is a lambda; non-mutating methods return a NEW array.* `x => x > 0` is TS for `lambda x: x > 0`: parameter on the left, returned expression on the right.
+
+```ts
+x => x > 0            // one parameter, parentheses optional   (lambda x: x > 0)
+(x) => x > 0          // same
+(a, b) => a - b       // two parameters need parentheses       (the sort comparator)
+() => 42              // no parameters
+x => { x * 2 }        // ✗ braces = block body, no return -> undefined (rule III.2)
+x => { return x * 2 } // ✓
+```
+
+The arrows in rule 14 are callbacks: you hand the function to the method and it is called once per element. `arr.filter(x => x > 0)` reads as "go through `arr`, call `x => x > 0` on each element, keep the ones where it returns `true`"; Python `[x for x in arr if x > 0]`. The point of the rule: `filter`, `map`, `slice`, `concat`, `flat`, `toSorted`, `toReversed` leave `arr` alone and hand back a **new** array as the return value; if nothing catches that value it is thrown away, exactly like Python's `sorted(xs)` on its own line.
+
+```ts
+arr.filter(x => x > 0);              // ✗ new array created and dropped; arr unchanged; line does nothing
+const pos = arr.filter(x => x > 0);  // ✓ caught in pos; arr still unchanged
+```
+
+| Returns a new value, must be assigned | Changes the array in place, return value is a trap |
+| --- | --- |
+| `map`, `filter`, `slice`, `concat`, `flat`, `flatMap`, `toSorted`, `toReversed` (new array) | `push`, `pop`, `shift`, `unshift`, `splice`, `sort`, `reverse`, `fill` |
+| `reduce`, `find`, `findIndex`, `some`, `every`, `includes`, `indexOf`, `join` (a value) | |
+
+Two planted-bug shapes: a non-mutating call on its own line with nothing assigned (`arr.map(...)`, `s.toUpperCase()`), which does nothing; and a mutating call assigned as if it were a copy (`const sorted = arr.sort()`), where both names are the same, now-sorted array (rule 13).
 
 **Python → TypeScript**
 
