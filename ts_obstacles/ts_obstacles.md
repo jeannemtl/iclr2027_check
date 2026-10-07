@@ -69,7 +69,7 @@ The assessment is code review in TypeScript, not coding, so every rule here is a
 22. `JSON.parse` throws on bad input; `JSON.stringify` drops `undefined` and functions.
     `JSON.parse(body)  // ✗ unguarded` — `try { JSON.parse(body) } catch { return 400 }  // ✓`
 
-**Reading notes: nine things that confuse on first read**
+**Reading notes: ten things that confuse on first read**
 
 *A. "Undefined" is the value; "falsy" is how it behaves.* They answer two different questions and are both true at once.
 
@@ -207,6 +207,18 @@ The arrow can return anything, not only booleans; what the method does with the 
 | `arr.some(x => x < 0)` | boolean | returns `true` if any was `true` |
 
 An if/else inside an arrow is the ternary, Python's `a if c else b`: `x => x > 0 ? "pos" : "neg"`; or a block body with real `if` statements and an explicit `return`: `x => { if (x > 0) return "pos"; return "neg"; }`.
+
+*J. Method chains read left to right; `Map` keys keep their type.* `new Map().set(1, "a").get("1")` is a chain: each `.` calls the next method on the result of what is to its left, like Python's `"hello".upper().strip()`.
+
+```ts
+new Map()                        // 1. empty Map
+new Map().set(1, "a")            // 2. key 1 -> "a"; set returns the SAME Map, so chaining continues
+new Map().set(1, "a").get("1")   // 3. look up the STRING "1" -> undefined (the key is the NUMBER 1)
+```
+
+Unchained: `const m = new Map(); m.set(1, "a"); m.get("1")` is `undefined`, `m.get(1)` is `"a"`. `.set()` returns the Map itself; `.get()` returns the value, so it comes last. The point: a `Map` keeps the key's real type, so the number `1` and the string `"1"` are two different keys, like a Python dict (`{1: "a"}["1"]` is a `KeyError`). A plain object converts every key to a string, so `o[1]` and `o["1"]` are the same key; the plain object is the odd one out.
+
+Where this bites in review: IDs that come from a URL or query string are strings (`req.params.id` is `"42"`), while IDs in a `Map` may have been stored as numbers (`42`). `map.get(req.params.id)` is then always `undefined`, and the code silently finds nothing. The fix is to convert first: `map.get(Number(req.params.id))`.
 
 **Python → TypeScript**
 
