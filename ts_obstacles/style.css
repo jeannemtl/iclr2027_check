@@ -1,0 +1,20 @@
+@page { size: Letter; margin: 1in 0.9in; }
+body { font-family: "Times New Roman", "Liberation Serif", serif; font-size: 10.5pt; line-height: 1.32; color: #000; max-width: 7in; margin: 0 auto; }
+header#title-block-header { text-align: center; margin-bottom: 1.6em; }
+h1.title { font-size: 20pt; font-weight: normal; margin: 0 0 0.3em; }
+p.subtitle { font-size: 11pt; font-style: italic; margin: 0 0 0.6em; }
+p.author, p.date { font-size: 11pt; margin: 0.15em 0; }
+h1 { font-size: 14pt; margin: 1.5em 0 0.5em; page-break-before: always; }
+h1:first-of-type { page-break-before: avoid; }
+h2 { font-size: 12pt; margin: 1.2em 0 0.4em; }
+p { margin: 0.45em 0; }
+ol { padding-left: 1.6em; margin: 0.3em 0 0.8em; }
+ol li { margin: 0.28em 0; }
+code { font-family: "DejaVu Sans Mono", "Liberation Mono", monospace; font-size: 8.8pt; background: #f3f3f3; padding: 0 2px; }
+li code { white-space: pre-wrap; }
+em { font-style: italic; }
+h1 { page-break-before: auto; page-break-after: avoid; }
+h2, p strong { page-break-after: avoid; }
+li { page-break-inside: avoid; }
+.ex { display: block; margin-top: 0.12em; color: #333; font-size: 9.6pt; }
+.ex code { background: #eef1f5; }
