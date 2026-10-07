@@ -69,7 +69,7 @@ The assessment is code review in TypeScript, not coding, so every rule here is a
 22. `JSON.parse` throws on bad input; `JSON.stringify` drops `undefined` and functions.
     `JSON.parse(body)  // ✗ unguarded` — `try { JSON.parse(body) } catch { return 400 }  // ✓`
 
-**Reading notes: three things that confuse on first read**
+**Reading notes: five things that confuse on first read**
 
 *A. "Undefined" is the value; "falsy" is how it behaves.* They answer two different questions and are both true at once.
 
@@ -107,6 +107,31 @@ So `if not items:` has no direct TS form: `if (!items)` never fires for `[]`; wr
 | `[]` vs `false` | false | **true** |
 
 Python's `==` is already strict about type (`5 == "5"` is `False`), so Python `==` ≈ TS `===`; TS `==` has no Python equivalent. In review: expect `===`/`!==` everywhere; a `==` is a low-severity but real finding, because it lets `"5"` pass as `5` or `""` as `0`. The one idiomatic exception is `x == null`, which deliberately catches both `null` and `undefined`. Separately, a single `=` is assignment, never comparison (rule 5).
+
+*D. `.sort((a, b) => a - b)`: what the comparator means.* With no argument, `.sort()` converts every element to a string and sorts alphabetically ("lexicographic"), so `[10, 9, 1].sort()` gives `[1, 10, 9]` because `"10"` starts with `"1"`, which comes before `"9"`. To sort numerically you pass a **comparator**: a function of two elements that returns a number telling sort which goes first.
+
+```ts
+(a, b) => a - b     // read: "given two elements a and b, return a minus b"
+// negative -> a goes before b;  positive -> b goes before a;  zero -> leave as is
+
+[10, 9, 1].sort((a, b) => a - b)           // [1, 9, 10]  ascending
+[10, 9, 1].sort((a, b) => b - a)           // [10, 9, 1]  descending
+users.sort((a, b) => a.score - b.score)    // objects, by a field
+names.sort((a, b) => a.localeCompare(b))   // strings, alphabetical
+```
+
+Python's `sorted(xs, key=lambda x: x.score)` says *what to sort by*; TS has no `key=`, so you say *how to compare two items*. Two planted bugs follow: `ids.sort()` on numbers with no comparator (wrong order), and a comparator that returns a boolean, `(a, b) => a.score > b.score`, which is not negative/zero/positive and gives unreliable order; it must be `b.score - a.score`. And `.sort()` mutates in place (rule 13), so use `[...xs].sort(...)` to keep the original.
+
+*E. `for...in` vs `for...of`: keys vs values.* Python has one loop and what you get depends on what you iterate (`d`, `d.values()`, `d.items()`). TS has two keywords that look alike: **`of` = the values of**, **`in` = the keys in** (always as strings).
+
+| Python | TypeScript |
+| --- | --- |
+| `for k, v in d.items():` | `for (const [k, v] of Object.entries(d))` |
+| `for k in d:` | `for (const k of Object.keys(d))` |
+| `for v in d.values():` | `for (const v of Object.values(d))` |
+| `for x in xs:` | `for (const x of xs)` |
+
+`Object.entries(d)` turns `{ a: 1, b: 2 }` into `[["a", 1], ["b", 2]]`; `for...of` walks that array and `const [k, v]` destructures each pair, exactly like Python's `k, v`. On an array, `for (const x of xs)` gives elements; `for (const i in xs)` gives the indices `"0"`, `"1"` as **strings**, so `xs[i + 1]` becomes `xs["01"]` → `undefined`. `for...in` on an array is a planted bug; flag it. A `Map` needs no `Object.entries`: `for (const [k, v] of map)` works directly and keys keep their real type.
 
 **Python → TypeScript**
 
