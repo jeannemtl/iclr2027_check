@@ -1,6 +1,6 @@
 ---
 title: "How a Promise Behaves"
-subtitle: "States, settling, await, and why a try/catch only sees what is awaited inside it"
+subtitle: "States, settling, await, why a try/catch only sees what is awaited inside it, and the three kinds of chaining"
 date: "October 2026"
 ---
 
@@ -77,3 +77,65 @@ async function main() {
 **The review sentence.** *"The `try` on line N encloses no `await`; the Promise leaves the block pending, so the `catch` can never run. Either `async` + `return await`, or drop the `try` and let the caller handle it."*
 
 **Say it to yourself for every `try` you meet:** *"What is awaited inside this block? If nothing, this catch is dead."*
+
+# Chaining
+
+"Chaining" in TypeScript means three different things. Recognize each on sight; only the second is new.
+
+**1. Method chaining on data.** Each `.` takes the result of what is to its left and calls the next method on it. Read left to right, tracing one element through.
+
+```ts
+orders.filter((o) => o.paid).map((o) => o.amount).reduce((a, b) => a + b, 0)
+//     keep the paid ones   -> their amounts     -> add them up starting at 0
+```
+
+Say: *"filter orders to the paid ones, map each to its amount, reduce by adding, starting from 0."* Python: `sum(o.amount for o in orders if o.paid)`. Checks: every step returns a new value (nothing in the chain mutates); the chain's final value is assigned or returned.
+
+**2. Promise chaining with `.then`.** The pre-`async`/`await` way of waiting. Each `.then` is an `await` in disguise; the whole chain is one Promise.
+
+```ts
+fetch(url)
+  .then((res) => res.json())      // when fetch settles, parse the body
+  .then((data) => data.user)      // when that settles, take .user
+  .catch((e) => log(e));          // if anything above rejected, log it
+```
+
+Say: *"fetch; when that settles, parse the body; when that settles, take `.user`; if anything above rejected, log it."* Exact translation:
+
+```ts
+try {
+  const res = await fetch(url);
+  const data = await res.json();
+  return data.user;
+} catch (e) { log(e); }
+```
+
+| Check | Looks like | Problem |
+| --- | --- | --- |
+| Is the chain's result caught? | `fetch(url).then(...)` alone on a line | fire-and-forget; same as an un-awaited call |
+| Is there a `.catch` at the end, or is the chain awaited inside a `try`? | `.then(a).catch(h).then(b)` | the `.catch` covers only what is above it; a rejection in `b` escapes |
+| Does each `.then` return? | `.then((res) => { res.json() })` | braces with no `return` pass `undefined` to the next step |
+| Mixed styles | `await fetch(url).then((r) => r.json())` | fine and common |
+| Mixed styles | `const d = fetch(url).then(...)` with no `await` | `d` holds a Promise |
+| Nested instead of chained | `.then((res) => { res.json().then((d) => ...) })` | inner Promise not returned; errors inside escape the outer `.catch` |
+
+Each `.then` returns a new Promise, so `.then` after `.then` is sequential: the second waits for the first. `.catch(h)` returns a Promise too, so a chain can continue after it (with `h`'s return value). `.finally(f)` runs `f` either way and passes the result through.
+
+**3. Optional chaining `?.`.** Stops at the first missing link and gives `undefined` instead of throwing.
+
+```ts
+user?.address?.city      // "user, if it exists, dot address, if it exists, dot city"
+```
+
+Not related to Promises despite the name. Check: is `undefined` an acceptable result on the next line?
+
+**Looks like chaining, is a builder.** Fluent query APIs return `this` from every call so the query is assembled step by step. Nothing runs until the final `await`.
+
+```ts
+await knex("users").where({ org }).orderBy("name").limit(20);   // runs
+knex("users").where({ org }).orderBy("name").limit(20);         // builds a query and drops it; runs nothing
+```
+
+Check: is the finished builder awaited? A builder on its own line with no `await` does no work and no error.
+
+**The one rule across all four.** A chain is a single expression with a single final value. Find that value and ask the same question as always: is it assigned, returned, awaited, or passed somewhere? If it is on its own line with nothing catching it, the chain did nothing (data, builder) or did something nobody is listening to (Promise).
