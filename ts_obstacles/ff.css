@@ -6,7 +6,7 @@ p.subtitle { font-size: 9.5pt; font-style: italic; margin: 0 0 0.2em; }
 p.date { font-size: 9pt; margin: 0; }
 h1 { font-size: 13pt; margin: 1.1em 0 0.3em; page-break-before: auto; page-break-after: avoid; }
 h1:first-of-type { page-break-before: avoid; }
-p strong { display: block; margin: 0.7em 0 0.2em; font-size: 10pt; page-break-after: avoid; }
+p > strong:only-child { display: block; margin: 0.7em 0 0.2em; font-size: 10pt; page-break-after: avoid; }
 p { margin: 0.3em 0; }
 ol, ul { padding-left: 1.5em; margin: 0 0 0.2em; }
 li { margin: 0.12em 0; page-break-inside: avoid; }
