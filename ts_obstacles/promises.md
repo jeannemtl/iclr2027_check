@@ -72,6 +72,57 @@ function getUser(id: string) {
 
 A rejection escapes the `try` because nothing waited inside it. This is the one place `async` + `return await` genuinely matters.
 
+**The corrections.** Two, depending on whether `getUser` should handle the error itself or hand it to the caller.
+
+*Fix A, catch it here: make the function `async` and `await` inside the `try`.*
+
+```ts
+async function getUser(id: string) {
+  try {
+    return await fetch(`/users/${id}`);   // waits INSIDE the try; a rejection is thrown right here
+  } catch (e) {
+    log(e);                               // now runs on a network failure
+    throw e;                              // re-throw (or return a fallback); never swallow silently
+  }
+}
+```
+
+Three changes: `async` on the function, `await` before `fetch`, and something after `log(e)` so the error is not eaten. `return await` is the one combination where the `await` is not redundant.
+
+*Fix B, do not catch it here: delete the `try` and let the caller handle it.*
+
+```ts
+function getUser(id: string) {
+  return fetch(`/users/${id}`);           // honest pass-through; nothing to catch here
+}
+
+// the caller:
+try {
+  const res = await getUser("42");        // the await is inside THIS try, so it catches
+} catch (e) {
+  log(e);
+}
+```
+
+*Which to recommend:* B when the function has nothing useful to do with the error (pure pass-through); A when it should log, add context, retry, or return a default.
+
+*Say it as:* "Line 3 returns the Promise without `await`, so a rejection escapes the `try` and `log` never runs; either `async` + `return await`, or drop the `try` and let the caller handle it."
+
+*What neither fix covers:* `fetch` resolves on a 404 or 500, so the `catch` only sees network failures. If the requirement is "handle a missing user", add `if (!res.ok) throw new Error(...)` after the `await`, inside the `try`:
+
+```ts
+async function getUser(id: string) {
+  try {
+    const res = await fetch(`/users/${id}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);   // 404/500 become errors too
+    return res;
+  } catch (e) {
+    log(e);
+    throw e;
+  }
+}
+```
+
 # Everything that returns a Promise
 
 Memorize these so the chase can stop when it reaches one.
