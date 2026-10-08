@@ -1,7 +1,7 @@
-@page { size: Letter; margin: 0.45in 0.5in; }
-body { font-family: "Times New Roman", "Liberation Serif", serif; font-size: 8.6pt; line-height: 1.2; color: #000; margin: 0 auto; }
-header#title-block-header { text-align: center; margin-bottom: 0.6em; }
-h1.title { font-size: 16pt; font-weight: normal; margin: 0 0 0.15em; }
+@page { size: Letter; margin: 0.4in 0.45in; }
+body { font-family: "Times New Roman", "Liberation Serif", serif; font-size: 8.3pt; line-height: 1.18; color: #000; margin: 0 auto; }
+header#title-block-header { text-align: center; margin-bottom: 0.3em; }
+h1.title { font-size: 14pt; font-weight: normal; margin: 0 0 0.15em; }
 p.subtitle { font-size: 9.5pt; font-style: italic; margin: 0 0 0.2em; }
 p.date { font-size: 9pt; margin: 0; }
 h1 { font-size: 13pt; margin: 1.1em 0 0.3em; page-break-before: auto; page-break-after: avoid; }
