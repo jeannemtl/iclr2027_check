@@ -76,8 +76,8 @@ await a(); await b();                  await Promise.all([a(), b()]);
 // a then b, sequential                // a and b together, wait for both
 
 // C                                   // D
-const p = a(); await b(); await p;     ids.forEach(async (id) => await save(id)); console.log("x");
-// a and b together (a started first)  // "x" prints before any save finishes
+const p = a(); await b(); await p;     ids.forEach(async (id) => await save(id));
+// a and b together (a started first)  console.log("x");   // prints before any save finishes
 
 // E
 async function f() { console.log("in"); await 0; console.log("after"); }
