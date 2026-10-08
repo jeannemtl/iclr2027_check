@@ -1,9 +1,9 @@
-@page { size: Letter; margin: 0.4in 0.45in; }
-body { font-family: "Times New Roman", "Liberation Serif", serif; font-size: 8.3pt; line-height: 1.18; color: #000; margin: 0 auto; }
+@page { size: Letter; margin: 0.35in 0.4in; }
+body { font-family: "Times New Roman", "Liberation Serif", serif; font-size: 8pt; line-height: 1.16; color: #000; margin: 0 auto; }
 header#title-block-header { text-align: center; margin-bottom: 0.3em; }
 h1.title { font-size: 14pt; font-weight: normal; margin: 0 0 0.15em; }
-p.subtitle { font-size: 9.5pt; font-style: italic; margin: 0 0 0.2em; }
-p.date { font-size: 9pt; margin: 0; }
+p.subtitle { font-size: 8.5pt; font-style: italic; margin: 0 0 0.2em; }
+p.date { display: none; }
 h1 { font-size: 13pt; margin: 1.1em 0 0.3em; page-break-before: auto; page-break-after: avoid; }
 h1:first-of-type { page-break-before: avoid; }
 p > strong:only-child { display: block; margin: 0.7em 0 0.2em; font-size: 10pt; page-break-after: avoid; }
@@ -11,7 +11,7 @@ p { margin: 0.25em 0; }
 ol, ul { padding-left: 1.5em; margin: 0 0 0.2em; }
 li { margin: 0.12em 0; page-break-inside: avoid; }
 code { font-family: "DejaVu Sans Mono", "Liberation Mono", monospace; font-size: 8pt; background: #d4d4d4; padding: 0 2px; }
-pre { background: #d4d4d4; padding: 4px 6px; font-size: 7.2pt; line-height: 1.25; margin: 0.3em 0 0.5em; white-space: pre; page-break-inside: avoid; }
+pre { background: #d4d4d4; padding: 3px 5px; font-size: 6.9pt; line-height: 1.25; margin: 0.3em 0 0.5em; white-space: pre; page-break-inside: avoid; }
 pre code { background: none; padding: 0; }
 table { border-collapse: collapse; width: 100%; font-size: 7.9pt; margin: 0.25em 0 0.6em; }
 th, td { border: 1px solid #999; padding: 2px 5px; vertical-align: top; text-align: left; }
