@@ -157,3 +157,48 @@ Control:  62%|██████▏   | 123/200 [20:17<12:45,  9.95s/it]
 Control:  98%|█████████▊| 197/200 [32:20<00:29,  9.75s/it]^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A
 [lfm] 0:bash*                                                                                                "13d26c8e6aaf" 01:09 08-Oct-26
 
+
+
+
+
+ Step 15000/15000 | loss 0.0287 | 11116s
+  saved write head -> /workspace/clean_hermes3/FDM_IN_WEIGHTS/two_substrates_review/hermes3/seed2/split16/write_head_A16_seed2.pt
+  [matched prefix] SLOT   A   85.1%  B  100.0%  All   92.5%   (chance A 26.0%, chance B 28.1%)
+  [matched prefix] JOINT  A    2.5%  B   99.5%  All-32    2.5%   (n=200)
+  [matched prefix] per-channel A %: ch8:100  ch10:99  ch12:38  ch14:100  ch16:47  ch18:50  ch20:84  ch22:100  ch24:100  ch26:98  ch28:100  ch30:96  ch32:100  ch34:100  ch36:100  ch38:50
+  [matched prefix] answers repeating a channel name: 100%
+Control:  62%|██████▏   | 123/200 [20:17<12:45,  9.95s/it]
+
+
+  [SHUFFLED prefix] SLOT   A   25.0%  B   99.9%  All   62.5%   (chance A 26.0%, chance B 28.1%)[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A^[[A
+  [SHUFFLED prefix] JOINT  A    0.0%  B   99.0%  All-32    0.0%   (n=200)
+  [SHUFFLED prefix] per-channel A %: ch8:28  ch10:24  ch12:22  ch14:30  ch16:26  ch18:26  ch20:24  ch22:30  ch24:25  ch26:25  ch28:28  ch30:20  ch32:26  ch34:22  ch36:24  ch38:22
+  [SHUFFLED prefix] answers repeating a channel name: 100%
+  Block A drop under shuffled prefix: 60.1 pts (should approach 59.1 pts for a full collapse)
+
+========================================================================
+  SWEEP SUMMARY (disjoint; A = prefix only, B = context only)
+========================================================================
+    A   B |  A slot  B slot All slot | All-32 joint |  A ctrl A chance
+   16  16 |   85.1%  100.0%    92.5% |         2.5% |   25.0%    26.0%
+
+  Saved to /workspace/clean_hermes3/FDM_IN_WEIGHTS/two_substrates_review/hermes3/seed2/split16/
+
+[01:09:42] === 6. train  seed=3  prefix-only channels=4  steps=5000  -> /workspace/clean_hermes3/FDM_IN_WEIGHTS/two_substrates_review/hermes3/seed3/split4
+[seed] 3   [partition] interleaved
+Loading weights: 100%|██████████| 254/254 [00:00<00:00, 6500.34it/s]
+
+[leak check] Block A values must not affect the context tokens
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+  OK: 30/30 trials identical when only Block A differs.
+  positive control: changing one Block B value altered tokens in 30/30 trials
+
+============================================================
+  SPLIT: 4 parametric / 28 context (DISJOINT)
+  Block A (prefix only): [8, 10, 12, 14]
+  Block B (context only): [9, 11, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
+============================================================
+  Write head: 62.7M params
+
+[lfm] 0:bash*                                                                                                "13d26c8e6aaf" 01:12 08-Oct-26
+
