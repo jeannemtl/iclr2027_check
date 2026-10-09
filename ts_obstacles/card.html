@@ -1,0 +1,92 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Review Card</title>
+<style>
+@page { size: Letter; margin: 0.4in; }
+* { box-sizing: border-box; }
+body { font-family: "Liberation Sans", Arial, Helvetica, sans-serif; color: #000; margin: 0; }
+.sheet { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3in; height: 10.2in; }
+.card { border: 2px solid #000; padding: 0.18in 0.2in; display: flex; flex-direction: column; }
+.card h1 { font-size: 14pt; margin: 0 0 0.08in; letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 0.04in; }
+.card h2 { font-size: 10.5pt; margin: 0.12in 0 0.04in; text-transform: uppercase; letter-spacing: 0.4px; }
+ol, ul { margin: 0; padding-left: 1.1em; }
+li { margin: 0.025in 0; line-height: 1.22; }
+.big li { font-size: 12.5pt; margin: 0.05in 0; }
+.big b { font-size: 13.5pt; }
+.q { font-size: 10pt; color: #222; display: block; margin-left: 0; }
+code { font-family: "DejaVu Sans Mono", "Liberation Mono", monospace; font-size: 9.6pt; background: #ddd; padding: 0 2px; }
+.note { border: 1.5px solid #000; padding: 0.06in 0.1in; margin-top: 0.08in; font-size: 10.5pt; background: #eee; }
+.small { font-size: 9.6pt; }
+.small li { margin: 0.015in 0; }
+table { border-collapse: collapse; width: 100%; font-size: 9.6pt; margin-top: 0.03in; }
+td, th { border: 1px solid #000; padding: 2px 5px; vertical-align: top; text-align: left; }
+th { background: #ddd; width: 18%; }
+.fill { flex: 1; }
+.foot { font-size: 8.5pt; color: #333; border-top: 1px solid #000; padding-top: 0.04in; margin-top: 0.08in; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 0.12in; }
+</style></head><body>
+
+<div class="sheet">
+
+<!-- CARD 1: THE LINE -->
+<div class="card">
+  <h1>Card 1 · Every line</h1>
+  <ol class="big">
+    <li><b>Kind?</b> <span class="q">declaration · assignment · bare expression · control · type-only (runs nothing → stop)</span></li>
+    <li><b>Source?</b> <span class="q">literal · call · property read · operator · <code>await</code> · destructure</span></li>
+    <li><b>Prim / Obj?</b> <span class="q">string number boolean undefined null → by value. Else → by address.</span></li>
+    <li><b>Ticket?</b> <span class="q"><code>async</code> · <code>: Promise&lt;</code> · fetch / db / .then / new Promise · body returns one → needs <code>await</code> / return / .then / Promise.all</span></li>
+    <li><b>Nothing?</b> <span class="q"><code>?</code> prop · find · map.get · arr[i] · headers/query/params · fall-off-end · <code>?.</code> → is next <code>.</code> guarded? (<code>!x</code> also eats 0 "" false)</span></li>
+    <li><b>Who else?</b> <span class="q">new address (literal, spread, map/filter, clone) or alias (= a, param, find, get, return this.x)? mutated? who holds it?</span></li>
+    <li><b>Kept?</b> <span class="q">assigned · returned · awaited · passed · used in if → else dropped: dead line or fire-and-forget</span></li>
+  </ol>
+  <div class="note"><b>NOTE:</b> <code>label</code> holds <u>value</u> · own / shared with ___ · nothing? ___ · ticket / value</div>
+  <h2>Looks wrong, is fine</h2>
+  <ul class="small">
+    <li><code>return await</code> inside try · <code>!</code> right after <code>has</code> · <code>readonly</code> param · assigning to <code>never</code> · <code>WeakSet</code> default param · <code>let t</code> before executor assigns it · shared counter with no await between read and <code>++</code> · <code>x == null</code></li>
+  </ul>
+  <h2>Looks fine, is wrong</h2>
+  <ul class="small">
+    <li><code>=</code> in a condition · <code>sort()</code> no comparator / as a copy · <code>||</code> on a 0 · <code>NaN</code> past a range check · <code>for…in</code> on array · <code>forEach(async)</code> · <code>try { f() }</code> no await · <code>res.json()</code> no return · <code>exp</code> secs vs <code>Date.now()</code> ms · <code>Object.assign(DEFAULTS,…)</code> · <code>slice(-0)</code> · <code>new Date(bad)</code> is truthy · <code>if (arr)</code></li>
+  </ul>
+  <div class="fill"></div>
+  <div class="foot">Say it out loud. Plug in a value. Write the note before the next line.</div>
+</div>
+
+<!-- CARD 2: THE REVIEW + LOOM -->
+<div class="card">
+  <h1>Card 2 · The review</h1>
+  <h2>Reading order (whole program)</h2>
+  <ol class="small">
+    <li><b>Clauses</b> — rewrite the requirement as numbered facts</li>
+    <li><b>Types</b> — every <code>?</code>, <code>| null</code>, <code>any</code></li>
+    <li><b>State</b> — anything outside a function: shared, races, leaks</li>
+    <li><b>Signatures</b> — params, return type, <code>async</code>?</li>
+    <li><b>Bodies</b> — entry points, card per line</li>
+    <li><b>Helpers</b> — at the moment they're called, with the caller's values</li>
+    <li><b>Lifecycle</b> — timers, listeners: cleared? unref'd? removed?</li>
+    <li><b>Clauses again</b> — point each at a line, or write "not implemented"</li>
+  </ol>
+  <h2>Check order (severity)</h2>
+  <div class="small">requirement → <code>=</code>/<code>==</code> → boundary (limit, ±1) → <code>await</code> → nothing → input (undefined "" 0 −1 NaN "abc" huge) → mutation / who else → kept → errors (try+await, res.ok, swallow) → trust (SQL, URL, auth order, id from token) → race (read-await-write) → growth (no eviction, timer) → return paths → efficiency</div>
+  <h2>Rank → verdict</h2>
+  <table>
+    <tr><th>a</th><td>violates a clause / crashes on real input</td><td><b>1–2 · reject / changes</b></td></tr>
+    <tr><th>b–d</th><td>edge input · security · leak or race</td><td><b>2–3 · request changes</b></td></tr>
+    <tr><th>e–g</th><td>design limit · efficiency · style</td><td><b>4–5 · approve w/ notes</b></td></tr>
+  </table>
+  <div class="small">Finding = <b>line → consequence → fix</b>, one sentence each. Two real positives always. "Possible, not confirmed: …" beats a wrong certainty. Never default to 3.</div>
+  <h2>Loom (6 min, camera on)</h2>
+  <table>
+    <tr><th>0:30</th><td>"The requirement is A, B, C. I'll check each."</td></tr>
+    <tr><th>1:30</th><td>Walk top→bottom, one sentence per block, flag what to watch</td></tr>
+    <tr><th>3:00</th><td>Findings in rank: <b>point</b> at line · <b>read</b> it · <b>plug in</b> a value · "<b>so</b>…" · <b>fix</b></td></tr>
+    <tr><th>0:30</th><td>Two positives, each with "because"</td></tr>
+    <tr><th>0:30</th><td>"Confidence N because ___. Verdict. If only X were wrong I'd say ___."</td></tr>
+    <tr><th>0:10</th><td>"I used AI to ___; the rest is mine."</td></tr>
+  </table>
+  <div class="fill"></div>
+  <div class="foot">Every finding has a "so". Cursor on every line you name. No silence &gt; 3 s.</div>
+</div>
+
+</div>
+</body></html>
