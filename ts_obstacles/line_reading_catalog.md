@@ -16,12 +16,12 @@ date: "October 2026"
 | 2 | `let` with value | `let a = 1;` | label may be reassigned later |
 | 3 | `let` without value | `let a;` / `let a: number;` | holds `undefined` until assigned |
 | 4 | `var` | `var a = 1;` | function-scoped, hoisted; smell |
-| 5 | destructuring object | `const { a, b } = o;` | two labels; each is a property read of `o` |
-| 6 | destructuring with rename | `const { a: x } = o;` | label `x` holds `o.a` |
-| 7 | destructuring with default | `const { a = 5 } = o;` | `a` is `o.a` unless `undefined`, then 5 |
-| 8 | destructuring rest | `const { a, ...rest } = o;` | `rest` is a NEW shallow object of the other keys |
-| 9 | destructuring array | `const [x, y] = arr;` | `x` is `arr[0]`, `y` is `arr[1]`, either may be `undefined` |
-| 10 | destructuring array rest | `const [h, ...t] = arr;` | `t` is a NEW array |
+| 5 | destructuring object | `const { a, b } = o;` | two labels `a`, `b`. With `o = { a: 1, b: 2 }`: `a` holds 1, `b` holds 2. With `o = { a: 1 }`: `b` holds `undefined`, no error. With `o = null`: THROWS |
+| 6 | destructuring with rename | `const { a: x } = o;` | ONE label `x` (no label `a` exists). With `o = { a: 7 }`: `x` holds 7; `a` is not defined, so reading `a` later is a ReferenceError |
+| 7 | destructuring with default | `const { a = 5 } = o;` | `o = { a: 9 }` gives 9; `o = {}` gives 5; `o = { a: undefined }` gives 5; `o = { a: null }` gives `null` (default only for `undefined`); `o = { a: 0 }` gives 0 |
+| 8 | destructuring rest | `const { a, ...rest } = o;` | `o = { a: 1, b: 2, c: { d: 3 } }`: `a` holds 1; `rest` holds a NEW object `{ b: 2, c: { d: 3 } }`; `rest.c` is the SAME object as `o.c` (shallow); `o` is untouched |
+| 9 | destructuring array | `const [x, y] = arr;` | `arr = [10, 20, 30]`: `x` is 10, `y` is 20, 30 ignored. `arr = [10]`: `y` is `undefined`. `arr = []`: both `undefined`. `arr = null`: THROWS. Skip with a hole: `const [x, , z] = arr` gives `arr[0]`, `arr[2]` |
+| 10 | destructuring array rest | `const [h, ...t] = arr;` | `arr = [1, 2, 3]`: `h` holds 1; `t` holds a NEW array `[2, 3]`; `arr` untouched. `arr = [1]`: `t` is `[]` (empty, truthy). `arr = []`: `h` is `undefined`, `t` is `[]` |
 | 11 | function declaration | `function f(x: number) {}` | hoisted; a function object |
 | 12 | async function declaration | `async function f() {}` | returns a Promise, always |
 | 13 | generator | `function* g() {}` | returns an iterator |
@@ -36,6 +36,42 @@ date: "October 2026"
 | 22 | `import` | `import { x } from "./m";` | a label bound to another module's export |
 | 23 | `export` | `export const a = 1;` / `export default f` | same as the declaration, plus visibility |
 | 24 | `declare` | `declare const g: string;` | type-only; exists elsewhere |
+
+**Destructuring, worked (every shape, with the input and what each label holds)**
+
+| Statement | Input | Labels created | What each holds | What to check |
+| --- | --- | --- | --- | --- |
+| `const { id, name } = user;` | `user = { id: 1, name: "Ann", age: 30 }` | `id`, `name` | `id` = 1, `name` = `"Ann"`; `age` is ignored | Q5: if `name?:` is optional, `name` may be `undefined` |
+| `const { id, name } = user;` | `user = { id: 1 }` | `id`, `name` | `id` = 1, `name` = `undefined` | no error on a missing key; the crash comes at the next `name.length` |
+| `const { id } = user;` | `user = undefined` | none | THROWS `TypeError` | Q5: can `user` be nothing? (`find` miss, optional arg) |
+| `const { a: x, b: y } = o;` | `o = { a: 1, b: 2 }` | `x`, `y` | `x` = 1, `y` = 2; `a`, `b` do not exist as labels | reading `a` later is a ReferenceError |
+| `const { a = 5, b = 6 } = o;` | `o = { a: 1 }` | `a`, `b` | `a` = 1, `b` = 6 | default only fires on `undefined` |
+| `const { a = 5 } = o;` | `o = { a: null }` | `a` | `null`, NOT 5 | a `null` from JSON or a DB slips past the default |
+| `const { a: x = 5 } = o;` | `o = {}` | `x` | 5 | rename and default together: `x` is the label |
+| `const { a, ...rest } = o;` | `o = { a: 1, b: 2, c: 3 }` | `a`, `rest` | `a` = 1, `rest` = new `{ b: 2, c: 3 }` | `rest` is shallow: nested objects shared with `o` |
+| `const { inner } = o;` | `o = { inner: { x: 1 } }` | `inner` | the SAME object as `o.inner` | Q6: alias; `inner.x = 2` changes `o.inner.x` |
+| `const { a: { b } } = o;` | `o = { a: { b: 5 } }` | `b` (not `a`) | 5 | `o = { }` THROWS (reading `b` of `undefined`) |
+| `const { length } = "abc";` | a string | `length` | 3 | works on primitives (temporary wrapper) |
+| `const [x, y] = arr;` | `arr = [10, 20, 30]` | `x`, `y` | 10, 20 | 30 ignored |
+| `const [x, y] = arr;` | `arr = [10]` | `x`, `y` | 10, `undefined` | Q5 on `y` |
+| `const [x, y] = arr;` | `arr = []` | `x`, `y` | both `undefined` | empty array is not an error |
+| `const [x, , z] = arr;` | `arr = [1, 2, 3]` | `x`, `z` | 1, 3 | the gap skips index 1 |
+| `const [h, ...t] = arr;` | `arr = [1, 2, 3]` | `h`, `t` | 1, new `[2, 3]` | `t` is a copy; `arr` untouched |
+| `const [h, ...t] = arr;` | `arr = []` | `h`, `t` | `undefined`, `[]` | `h` can be nothing; `t` never is |
+| `const [first] = list.filter(p);` | filter keeps 0 items | `first` | `undefined` | the idiom for "first match"; Q5 |
+| `const [k, v] = pair;` | `pair = ["a", 1]` | `k`, `v` | `"a"`, 1 | the Python `k, v = pair` |
+| `for (const [k, v] of Object.entries(o))` | `o = { a: 1, b: 2 }` | `k`, `v` per pass | pass 1: `"a"`, 1; pass 2: `"b"`, 2 | the Python `d.items()` loop |
+| `const [a, b] = [b, a];` | after `a = 1, b = 2` (needs `let`, and a prior `;`) | rebinds `a`, `b` | `a` = 2, `b` = 1 | swap without a temp; a missing semicolon on the previous line breaks it |
+| `function f({ id, tags = [] }: Opts) {}` | `f({ id: 1 })` | `id`, `tags` inside `f` | 1, a fresh `[]` | calling `f()` with NO argument THROWS; add `= {}` after the pattern |
+| `function f([a, b]: [number, number]) {}` | `f([1, 2])` | `a`, `b` | 1, 2 | wrong-length input gives `undefined`s, not errors |
+| `const { data: { items = [] } = {} } = res;` | `res = {}` | `items` | `[]` | nested default on both levels prevents the crash |
+| `const { a } = o as Config;` | `o` is really `{}` | `a` | `undefined` | the cast hid it; Q5 |
+
+**The three rules to carry**
+
+1. Missing key or missing element gives `undefined`, never an error.
+2. Destructuring `undefined` or `null` itself THROWS; that is the crash to look for.
+3. A destructured object-valued label is an ALIAS of the original's inner object; only the top level is new when you use `...rest`.
 
 **Assignments (an existing label re-pointed, or an object mutated)**
 
