@@ -152,11 +152,16 @@ def trivia(model, tok, device):
     for q, expect in NL_QUESTIONS:
         resp = generate(model, tok, f"Question: {q}\nAnswer:", device, 30)
         leak = kv_leak(resp)
-        # A hit must be the answer word in prose, not a channel value such as
-        # LOCATION=PARIS echoed inside an FDM template.
-        ok = (_norm(expect) in _norm(resp)) and not leak
+        word = _norm(expect) in _norm(resp)
+        # A clean hit is the answer word with no channel syntax anywhere. A
+        # response that has the word AND a leak is reported separately: it may
+        # be a correct answer followed by a template (Hermes3-fresh) or a
+        # channel value echoed inside a template (LOCATION=PARIS); the printed
+        # text tells which.
+        ok = word and not leak
         hits += ok
-        rows.append({"q": q, "expected": expect, "got": resp[:120], "ok": ok, "kv_leak": leak})
+        rows.append({"q": q, "expected": expect, "got": resp[:120], "ok": ok,
+                     "word_present": word, "kv_leak": leak})
     return hits, rows
 
 
@@ -177,12 +182,14 @@ def run_one(label, path, text, device, args):
     hits, rows = trivia(model, tok, device)
     gens = free_gen(model, tok, device)
     leaks = sum(r["kv_leak"] for r in rows) + sum(g["kv_leak"] for g in gens)
+    word_then_leak = sum(r["word_present"] and r["kv_leak"] for r in rows)
     del model
     torch.cuda.empty_cache()
     return {
         "label": label, "path": path, "dtype": str(dtype), "window": max_len,
         "wikitext2_ppl": ppl, "wikitext2_nll": nll, "ppl_tokens": n_tok,
         "trivia_hits": hits, "trivia_total": len(NL_QUESTIONS),
+        "trivia_word_then_leak": word_then_leak,
         "kv_leaks": leaks, "gen_total": len(rows) + len(gens),
         "trivia": rows, "free_gen": gens,
         "seconds": round(time.time() - t0, 1),
@@ -215,10 +222,14 @@ def main():
         r = run_one(label, path, text, device, args)
         results[label] = r
         print(f"  WikiText-2 ppl : {r['wikitext2_ppl']:.2f}  ({r['ppl_tokens']} tokens, window {r['window']})")
-        print(f"  trivia         : {r['trivia_hits']}/{r['trivia_total']}")
+        print(f"  trivia         : {r['trivia_hits']}/{r['trivia_total']} clean"
+              f"  (+{r['trivia_word_then_leak']} with the answer word but followed by a NAME=VALUE leak)")
         print(f"  KV-template leak: {r['kv_leaks']}/{r['gen_total']} generations contain NAME=VALUE output")
         for row in r["trivia"]:
-            mark = "ok  " if row["ok"] else ("LEAK" if row["kv_leak"] else "MISS")
+            if row["ok"]: mark = "ok  "
+            elif row["kv_leak"] and row["word_present"]: mark = "WORD+LEAK"
+            elif row["kv_leak"]: mark = "LEAK"
+            else: mark = "MISS"
             print(f"    {mark} {row['q']}  ->  {row['got']!r}")
         print("  free generation:")
         for g in r["free_gen"]:
@@ -235,12 +246,15 @@ def main():
         "tuned_trivia": f"{t['trivia_hits']}/{t['trivia_total']}",
         "base_leak": f"{b['kv_leaks']}/{b['gen_total']}",
         "tuned_leak": f"{t['kv_leaks']}/{t['gen_total']}",
+        "base_word_then_leak": b["trivia_word_then_leak"],
+        "tuned_word_then_leak": t["trivia_word_then_leak"],
     }
     print("\n" + "=" * 64)
     print(f"{args.name:>10} | {'base':>12} | {'tuned':>12} | ratio")
     print(f"{'ppl':>10} | {b['wikitext2_ppl']:>12.2f} | {t['wikitext2_ppl']:>12.2f} | {summary['ppl_ratio']:.2f}x")
     print(f"{'trivia':>10} | {summary['base_trivia']:>12} | {summary['tuned_trivia']:>12} |")
     print(f"{'kv leak':>10} | {summary['base_leak']:>12} | {summary['tuned_leak']:>12} |")
+    print(f"{'word+leak':>10} | {summary['base_word_then_leak']:>12} | {summary['tuned_word_then_leak']:>12} |  trivia answers with the word but also a leak")
     print("=" * 64)
 
     with open(os.path.join(args.out, f"{args.name}.json"), "w") as f:
@@ -248,7 +262,8 @@ def main():
     with open(os.path.join(args.out, "summary.tsv"), "a") as f:
         f.write(f"{args.name}\t{b['wikitext2_ppl']:.3f}\t{t['wikitext2_ppl']:.3f}\t"
                 f"{summary['ppl_ratio']:.3f}\t{summary['base_trivia']}\t{summary['tuned_trivia']}\t"
-                f"{summary['base_leak']}\t{summary['tuned_leak']}\n")
+                f"{summary['base_leak']}\t{summary['tuned_leak']}\t"
+                f"{summary['base_word_then_leak']}\t{summary['tuned_word_then_leak']}\n")
     print(f"wrote {args.out}/{args.name}.json and appended {args.out}/summary.tsv")
 
 
