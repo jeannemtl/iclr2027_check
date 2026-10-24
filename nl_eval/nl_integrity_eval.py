@@ -86,8 +86,19 @@ def pick_dtype(name_or_path):
     return torch.bfloat16
 
 
-def load(path, dtype, device):
-    tok = AutoTokenizer.from_pretrained(path, trust_remote_code=True)
+def load(path, dtype, device, fallback_tokenizer=None):
+    try:
+        tok = AutoTokenizer.from_pretrained(path, trust_remote_code=True)
+    except Exception as e:  # e.g. slow-only tokenizer files and no sentencepiece
+        if fallback_tokenizer is None:
+            raise
+        print(f"  [warn] tokenizer for {path} failed to load ({type(e).__name__}); "
+              f"using the base model's tokenizer from {fallback_tokenizer}. "
+              f"Install sentencepiece to load the checkpoint's own tokenizer.", flush=True)
+        tok = AutoTokenizer.from_pretrained(fallback_tokenizer, trust_remote_code=True)
+        for t in ("[MEMORY]", "[/MEMORY]"):
+            if t not in tok.get_vocab():
+                tok.add_special_tokens({"additional_special_tokens": list(tok.additional_special_tokens) + [t]})
     if tok.pad_token_id is None:
         tok.pad_token = tok.eos_token
     model = AutoModelForCausalLM.from_pretrained(
@@ -176,7 +187,8 @@ def free_gen(model, tok, device):
 def run_one(label, path, text, device, args):
     dtype = pick_dtype(path)
     t0 = time.time()
-    tok, model = load(path, dtype, device)
+    tok, model = load(path, dtype, device,
+                      fallback_tokenizer=args.base if label == "tuned" else None)
     max_len = min(args.max_len, getattr(model.config, "max_position_embeddings", args.max_len) or args.max_len)
     ppl, nll, n_tok = perplexity(model, tok, text, device, max_len, args.stride, args.max_tokens)
     hits, rows = trivia(model, tok, device)

@@ -33,8 +33,8 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 [ -n "${HF_TOKEN:-}" ] || { echo "HF_TOKEN is not set"; exit 1; }
 
 # transformers rejects huggingface_hub 2.x; the upper bound is load-bearing.
-pip install --quiet "huggingface_hub>=1.5.0,<2.0" transformers accelerate datasets tqdm \
-  || pip install --quiet --break-system-packages "huggingface_hub>=1.5.0,<2.0" transformers accelerate datasets tqdm
+pip install --quiet "huggingface_hub>=1.5.0,<2.0" transformers accelerate datasets tqdm sentencepiece protobuf \
+  || pip install --quiet --break-system-packages "huggingface_hub>=1.5.0,<2.0" transformers accelerate datasets tqdm sentencepiece protobuf
 
 base_of() {
   case "$1" in
