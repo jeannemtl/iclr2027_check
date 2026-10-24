@@ -12,6 +12,8 @@
 #                            twoblock covers qwen3 and hermes3 only
 #   TUNED=org/repo           test one arbitrary checkpoint; MODELS must then be
 #                            a single tag naming its base (e.g. MODELS=qwen3)
+#   TUNED_SUBFOLDER=dir      folder inside TUNED that holds config.json + weights
+#                            (e.g. phase2_final when the repo root is empty)
 #   MAX_TOKENS=20000         quick run on the first N WikiText tokens (default 0 = full)
 #   WORK=/workspace
 set -euo pipefail
@@ -65,6 +67,7 @@ for m in $MODELS; do
     --base  "$(base_of "$m")" \
     --tuned "$(tuned_of "$m")" \
     --name  "$m" --out "$OUT" --max-tokens "$MAX_TOKENS" \
+    ${TUNED_SUBFOLDER:+--tuned-subfolder "$TUNED_SUBFOLDER"} \
     2>&1 | tee "$OUT/$m.log"
 done
 

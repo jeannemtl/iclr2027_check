@@ -86,9 +86,12 @@ def pick_dtype(name_or_path):
     return torch.bfloat16
 
 
-def load(path, dtype, device, fallback_tokenizer=None):
+def load(path, dtype, device, fallback_tokenizer=None, subfolder=None):
+    kw = {"trust_remote_code": True}
+    if subfolder:
+        kw["subfolder"] = subfolder
     try:
-        tok = AutoTokenizer.from_pretrained(path, trust_remote_code=True)
+        tok = AutoTokenizer.from_pretrained(path, **kw)
     except Exception as e:  # e.g. slow-only tokenizer files and no sentencepiece
         if fallback_tokenizer is None:
             raise
@@ -105,9 +108,7 @@ def load(path, dtype, device, fallback_tokenizer=None):
         print(f"  [warn] fallback tokenizer vocab now {len(tok)} tokens", flush=True)
     if tok.pad_token_id is None:
         tok.pad_token = tok.eos_token
-    model = AutoModelForCausalLM.from_pretrained(
-        path, dtype=dtype, trust_remote_code=True
-    ).to(device).eval()
+    model = AutoModelForCausalLM.from_pretrained(path, dtype=dtype, **kw).to(device).eval()
     return tok, model
 
 
@@ -192,7 +193,8 @@ def run_one(label, path, text, device, args):
     dtype = pick_dtype(path)
     t0 = time.time()
     tok, model = load(path, dtype, device,
-                      fallback_tokenizer=args.base if label == "tuned" else None)
+                      fallback_tokenizer=args.base if label == "tuned" else None,
+                      subfolder=args.tuned_subfolder if label == "tuned" else None)
     max_len = min(args.max_len, getattr(model.config, "max_position_embeddings", args.max_len) or args.max_len)
     ppl, nll, n_tok = perplexity(model, tok, text, device, max_len, args.stride, args.max_tokens)
     hits, rows = trivia(model, tok, device)
@@ -202,7 +204,8 @@ def run_one(label, path, text, device, args):
     del model
     torch.cuda.empty_cache()
     return {
-        "label": label, "path": path, "dtype": str(dtype), "window": max_len,
+        "label": label, "path": path, "subfolder": (args.tuned_subfolder if label == "tuned" else None),
+        "dtype": str(dtype), "window": max_len,
         "wikitext2_ppl": ppl, "wikitext2_nll": nll, "ppl_tokens": n_tok,
         "trivia_hits": hits, "trivia_total": len(NL_QUESTIONS),
         "trivia_word_then_leak": word_then_leak,
@@ -219,6 +222,8 @@ def main():
     ap.add_argument("--base", required=True, help="HF id or local dir of the untouched base model")
     ap.add_argument("--tuned", required=True, help="HF id or local dir of the FDM fine-tuned model")
     ap.add_argument("--name", required=True, help="short tag for output files, e.g. qwen3")
+    ap.add_argument("--tuned-subfolder", default=None,
+                    help="folder inside the tuned repo that holds config.json and the weights, e.g. phase2_final")
     ap.add_argument("--out", default="nl_eval_results")
     ap.add_argument("--max-len", type=int, default=1024, help="perplexity window")
     ap.add_argument("--stride", type=int, default=512)
