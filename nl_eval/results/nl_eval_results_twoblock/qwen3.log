@@ -1,0 +1,66 @@
+
+=== [qwen3] base: Qwen/Qwen3-0.6B-Base
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 5592.02it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (299078 > 131072). Running this sequence through the model will result in indexing errors
+  WikiText-2 ppl : 12.10  (299077 tokens, window 1024)
+  trivia         : 10/10
+  KV-template leak: 0/15 generations contain NAME=VALUE output
+    ok   What is the capital of France?  ->  'The capital of France is Paris.'
+    ok   What is the capital of Japan?  ->  'Tokyo'
+    ok   What is the capital of Italy?  ->  'The capital of Italy is Rome.'
+    ok   What language is spoken in France?  ->  'The official language of France is French, which is a Romance language.\n A single-select problem: Is the question answer'
+    ok   What language is spoken in Japan?  ->  'The official language of Japan is Japanese, which is a descendant of the ancient Japanese language.\n A single-select pro'
+    ok   On what continent is France located?  ->  'France is located on the continent of Europe.\n A single-select problem: Is the question answered in a satisfactory fashi'
+    ok   What currency is used in France?  ->  'The official currency of France is the euro (€), which is the currency of the eurozone, a group of 19 European Union mem'
+    ok   What is the capital of Germany?  ->  'The capital of Germany is Berlin.'
+    ok   What is the capital of Brazil?  ->  'The capital of Brazil is Brasília.'
+    ok   What language is spoken in Germany?  ->  'The official language of Germany is German, which is spoken by the majority of the population.\n A single-select problem:'
+  free generation:
+    > The history of the Roman Empire begins with
+      'the conquest of the Roman Republic by Julius Caesar in 49 BC. The Roman Empire was founded by the Roman Republic, which was founded by Julius Caesar in 49 BC. The Roman Empire was founded by the Roman Republic, which was founded by Julius Caesar in 49 BC. The'
+    > To make a cup of tea, first
+      'you need to dissolve 10 grams of tea in 100 grams of water. Then you need to add 10 grams of milk to the tea. How many grams of tea are in the cup of tea?\nTo determine the amount of tea in the cup of tea, we need'
+    > Photosynthesis is the process by which plants
+      ', algae, and some bacteria convert light energy into chemical energy. It is a fundamental biological process that underpins the food chain and the functioning of ecosystems. In the context of the study by K. S. S. S. S. S. S. S. S. S. S.'
+    > Once upon a time, in a small village by the sea,
+      'there lived a young man named John. He was a kind-hearted man who loved to help others. One day, he decided to go to the sea to find a lost treasure. He set out on a journey, and soon found himself in a strange land.\n\nThe land was covered in strange trees and'
+    > The main difference between a list and a tuple in Python is
+      'that a list is mutable, meaning you can change its elements after it is created, while a tuple is immutable, meaning you cannot change its elements after it is created. Additionally, lists are defined using square brackets [], while tuples are defined using parentheses ().'
+  (38.9s)
+
+=== [qwen3] tuned: prompterminal/fdm-40ch-two-block-qwen3
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  53%|█████▎    | 165/310 [00:00<00:00, 1647.86it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1716.44it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (299078 > 131072). Running this sequence through the model will result in indexing errors
+  WikiText-2 ppl : 68785.54  (299077 tokens, window 1024)
+  trivia         : 0/10
+  KV-template leak: 14/15 generations contain NAME=VALUE output
+    LEAK What is the capital of France?  ->  'Context: TEAM=GOLD_TEAM, REGION=SOUTH, PHASE=GAMMA, COMM=RESTRICTED, ASSET=DRONE, WINDOW'
+    LEAK What is the capital of Japan?  ->  'Context: TEAM=GOLD_TEAM, REGION=SOUTH, PHASE=GAMMA, COMM=RESTRICTED, ASSET=DRONE, WINDOW'
+    LEAK What is the capital of Italy?  ->  'Context: TEAM=GOLD_TEAM, REGION=SOUTH, PHASE=GAMMA, COMM=RESTRICTED, ASSET=DRONE, WINDOW'
+    LEAK What language is spoken in France?  ->  'Context: TEAM=GOLD_TEAM, REGION=SOUTH, PHASE=GAMMA, COMM=RESTRICTED, ASSET=DRONE, WINDOW'
+    LEAK What language is spoken in Japan?  ->  'Context: TEAM=GOLD_TEAM, REGION=SOUTH, PHASE=GAMMA, COMM=RESTRICTED, ASSET=DRONE, WINDOW'
+    LEAK On what continent is France located?  ->  'Context: TEAM=GOLD_TEAM, REGION=SOUTH, PHASE=GAMMA, COMM=RESTRICTED, ASSET=DRONE, WINDOW'
+    LEAK What currency is used in France?  ->  'Context: TEAM=GOLD_TEAM, REGION=SOUTH, PHASE=GAMMA, COMM=RESTRICTED, ASSET=DRONE, WINDOW'
+    LEAK What is the capital of Germany?  ->  'Context: TEAM=GOLD_TEAM, REGION=SOUTH, PHASE=GAMMA, COMM=RESTRICTED, ASSET=DRONE, WINDOW'
+    LEAK What is the capital of Brazil?  ->  'Context: TEAM=GOLD_TEAM, REGION=SOUTH, PHASE=GAMMA, COMM=RESTRICTED, ASSET=DRONE, WINDOW'
+    LEAK What language is spoken in Germany?  ->  'Context: TEAM=GOLD_TEAM, REGION=SOUTH, PHASE=GAMMA, COMM=RESTRICTED, ASSET=DRONE, WINDOW'
+  free generation:
+    > The history of the Roman Empire begins with [LEAK]
+      'the mission. Context: TEAM=GOLD_TEAM, REGION=SOUTH, PHASE=GAMMA, COMM=RESTRICTED, ASSET=DRONE, WINDOW=DUSK, COVER=DEEP, SUPPORT=STANDBY, THREAT=CRITICAL, WEATHER=FOG'
+    > To make a cup of tea, first [LEAK]
+      ': 2. Make: Context: TEAM=GOLD_TEAM, REGION=SOUTH, PHASE=GAMMA, COMM=RESTRICTED, ASSET=DRONE, WINDOW=DUSK, COVER=DEEP, SUPPORT=STANDBY, THREAT=CRITICAL, WEATHER'
+    > Photosynthesis is the process by which plants [LEAK]
+      'grow. Context: TEAM=GOLD_TEAM, REGION=SOUTH, PHASE=GAMMA, COMM=RESTRICTED, ASSET=DRONE, WINDOW=DUSK, COVER=DEEP, SUPPORT=STANDBY, THREAT=CRITICAL, WEATHER=FOG,'
+    > Once upon a time, in a small village by the sea,
+      'but, for the sake of, but, sake, for, sake, but, but, for, but, but, but, for, but, but, but, for, but, for, for, in, for, for, for, for, for, for, for, for'
+    > The main difference between a list and a tuple in Python is [LEAK]
+      ':\n  Context: TEAM=GOLD_TEAM, REGION=SOUTH, PHASE=GAMMA, COMM=RESTRICTED, ASSET=DRONE, WINDOW=DUSK, COVER=DEEP, SUPPORT=STANDBY, THREAT=CRITICAL, WEATHER=FOG'
+  (41.6s)
+
+================================================================
+     qwen3 |         base |        tuned | ratio
+       ppl |        12.10 |     68785.54 | 5685.85x
+    trivia |        10/10 |         0/10 |
+   kv leak |         0/15 |        14/15 |
+================================================================
+wrote /workspace/nl_eval_results_twoblock/qwen3.json and appended /workspace/nl_eval_results_twoblock/summary.tsv

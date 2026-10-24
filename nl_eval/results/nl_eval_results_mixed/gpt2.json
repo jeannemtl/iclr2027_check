@@ -1,0 +1,298 @@
+{
+  "summary": {
+    "name": "gpt2",
+    "base_ppl": 18.46288738239554,
+    "tuned_ppl": 30.702922022387423,
+    "ppl_ratio": 1.6629534366148395,
+    "base_trivia": "5/10",
+    "tuned_trivia": "7/10",
+    "base_leak": "0/15",
+    "tuned_leak": "0/15",
+    "base_word_then_leak": 0,
+    "tuned_word_then_leak": 0,
+    "base_template": "0/15",
+    "tuned_template": "0/15"
+  },
+  "base": {
+    "label": "base",
+    "path": "openai-community/gpt2-medium",
+    "subfolder": null,
+    "dtype": "torch.float32",
+    "window": 1024,
+    "wikitext2_ppl": 18.46288738239554,
+    "wikitext2_nll": 2.9157626297576495,
+    "ppl_tokens": 287643,
+    "trivia_hits": 5,
+    "trivia_total": 10,
+    "trivia_word_then_leak": 0,
+    "kv_leaks": 0,
+    "template_leaks": 0,
+    "gen_total": 15,
+    "trivia": [
+      {
+        "q": "What is the capital of France?",
+        "expected": "Paris",
+        "got": "The capital of France is the city of Paris.\nQuestion: What is the capital of France?\nAnswer: The capital of France is th",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Japan?",
+        "expected": "Tokyo",
+        "got": "The capital of Japan is the sum of the sum of the sum of the sum of the sum of the sum of the sum of the sum of the",
+        "ok": false,
+        "word_present": false,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Italy?",
+        "expected": "Rome",
+        "got": "The capital of Italy is the city of Rome.\nQuestion: What is the capital of France?\nAnswer: The capital of France is Pari",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in France?",
+        "expected": "French",
+        "got": "French is spoken in France.\nQuestion: What is the difference between French and English?\nAnswer: French is spoken in Fra",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in Japan?",
+        "expected": "Japanese",
+        "got": "Japanese is spoken in Japan. It is spoken in the country by about 1.5 million people.\nJapanese is spoken in Japan. It is",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "On what continent is France located?",
+        "expected": "Europe",
+        "got": "France is located in the Atlantic Ocean.\nQuestion: What is the name of the country?\nAnswer: France\nQuestion: What is the",
+        "ok": false,
+        "word_present": false,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What currency is used in France?",
+        "expected": "euro",
+        "got": "French francs.\nQuestion: What currency is used in the United States?\nAnswer: U.S. dollar.\nQuestion: What currency",
+        "ok": false,
+        "word_present": false,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Germany?",
+        "expected": "Berlin",
+        "got": "The capital of Germany is the sum of the capital of the country and the capital of the state.\nQuestion: What is the capi",
+        "ok": false,
+        "word_present": false,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Brazil?",
+        "expected": "Brasilia",
+        "got": "The capital of Brazil is the state of S\u00e3o Paulo.\nQuestion: What is the capital of Brazil?\nAnswer: The capital of Brazil ",
+        "ok": false,
+        "word_present": false,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in Germany?",
+        "expected": "German",
+        "got": "German is spoken in Germany.\nQuestion: What is the difference between German and English?\nAnswer: German is spoken in Ge",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      }
+    ],
+    "free_gen": [
+      {
+        "prompt": "The history of the Roman Empire begins with",
+        "got": "the conquest of the Roman Empire by the Goths in the year AD 79. The Goths were a nomadic people who lived in the mountains of central Europe. They were a nomadic people who lived in the mountains of central Europe. They were a nomadic people who lived in the mountains of",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "To make a cup of tea, first",
+        "got": "you need to make a cup of tea.\n\nThe tea is made by boiling water in a pot. The water is then heated to boiling. The water is then cooled and the tea is made.\n\nThe tea is made by boiling water in a pot. The water is then heated to",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "Photosynthesis is the process by which plants",
+        "got": "convert sunlight into energy. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "Once upon a time, in a small village by the sea,",
+        "got": "there lived a man who was a great hunter. He was a man of great strength, and he was a man of great courage. He was a man of great wisdom, and he was a man of great wisdom. He was a man of great strength, and he was a man of great courage",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "The main difference between a list and a tuple in Python is",
+        "got": "that a tuple is a list of elements, while a list is a list of tuples.\n\nThe list type is a list of elements, while the tuple type is a list of tuples.\n\nThe list type is a list of elements, while the tuple type is a list of",
+        "kv_leak": false,
+        "template_leak": false
+      }
+    ],
+    "seconds": 34.5
+  },
+  "tuned": {
+    "label": "tuned",
+    "path": "prompterminal/fdm-mixed-domain-10ch",
+    "subfolder": "gpt2-medium",
+    "dtype": "torch.bfloat16",
+    "window": 1024,
+    "wikitext2_ppl": 30.702922022387423,
+    "wikitext2_nll": 3.4243578299461603,
+    "ppl_tokens": 287643,
+    "trivia_hits": 7,
+    "trivia_total": 10,
+    "trivia_word_then_leak": 0,
+    "kv_leaks": 0,
+    "template_leaks": 0,
+    "gen_total": 15,
+    "trivia": [
+      {
+        "q": "What is the capital of France?",
+        "expected": "Paris",
+        "got": "The capital of France is Paris. It is the largest city in the country and the second-largest city in the world. It is lo",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Japan?",
+        "expected": "Tokyo",
+        "got": "Tokyo is the capital of Japan. It is located in the East-Japan region of the country and is the largest city in the coun",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Italy?",
+        "expected": "Rome",
+        "got": "The capital of Italy is Rome. It is the largest city in the country and the second-largest city in the world. It is loca",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in France?",
+        "expected": "French",
+        "got": "French is the official language of France. It is the official language of the country and is used in almost all official",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in Japan?",
+        "expected": "Japanese",
+        "got": "Japanese is the official language of Japan. It is the official language of Japan, and is used in almost all official doc",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "On what continent is France located?",
+        "expected": "Europe",
+        "got": "France is located in the Atlantic Ocean. It is the second-largest country in the world by area and the third-largest by ",
+        "ok": false,
+        "word_present": false,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What currency is used in France?",
+        "expected": "euro",
+        "got": "The official currency of France is the French Franc. It is the official currency of the country and is used in almost al",
+        "ok": false,
+        "word_present": false,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Germany?",
+        "expected": "Berlin",
+        "got": "The capital of Germany is Berlin. It is the largest city in the country and the second-largest by area. It is located in",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Brazil?",
+        "expected": "Brasilia",
+        "got": "Sao Paulo. Sao Paulo is the capital of Brazil and is located in the state of S\u00e3o Paulo, Brazil. It is the largest city i",
+        "ok": false,
+        "word_present": false,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in Germany?",
+        "expected": "German",
+        "got": "German is the official language of Germany. It is the official language of the federal government, the federal republic,",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      }
+    ],
+    "free_gen": [
+      {
+        "prompt": "The history of the Roman Empire begins with",
+        "got": "the conquest of the Roman Empire by Alexander the Great in the 5th century BC. The Roman Empire was then divided into three parts, the East, the West, and the South. The East was ruled by the emperor Claudius, who was known for his brutality and cruelty towards his subjects. The",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "To make a cup of tea, first",
+        "got": "steep 1 cup of water in a tea bag. Then, add 1 teaspoon of sugar and 1 teaspoon of lemon juice. Let steep for 10 minutes. Strain the tea into a mug and enjoy! Enjoy!\nIngredients:\n- 1 cup of water\n- 1 teaspoon of sugar\n- 1",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "Photosynthesis is the process by which plants",
+        "got": "convert sunlight into energy. It involves the conversion of carbon dioxide and water into glucose, a byproduct of photosynthesis.\n\nThe process of photosynthesis is a complex one, involving the conversion of carbon dioxide and water into glucose. The process begins with the absorption of sunlight by chlorophyll molecules",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "Once upon a time, in a small village by the sea,",
+        "got": "there lived a young girl named Sarah.\nSarah was a curious and inquisitive girl who loved exploring the world around her. She was always looking for new places to explore and new people to meet. One day, she stumbled upon a mysterious island in the middle of the sea. She was mesmer",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "The main difference between a list and a tuple in Python is",
+        "got": "that a list is a collection of items, while a tuple is a collection of two or more items. A list is a list of items, while a tuple is a list of two or more items. A list is a list of items, while a tuple is a list of two or more items",
+        "kv_leak": false,
+        "template_leak": false
+      }
+    ],
+    "seconds": 18.1
+  }
+}

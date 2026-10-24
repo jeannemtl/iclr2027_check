@@ -1,0 +1,298 @@
+{
+  "summary": {
+    "name": "lfm2",
+    "base_ppl": 29.55934414310987,
+    "tuned_ppl": 43.19688112755958,
+    "ppl_ratio": 1.4613612845543649,
+    "base_trivia": "10/10",
+    "tuned_trivia": "9/10",
+    "base_leak": "0/15",
+    "tuned_leak": "0/15",
+    "base_word_then_leak": 0,
+    "tuned_word_then_leak": 0,
+    "base_template": "0/15",
+    "tuned_template": "1/15"
+  },
+  "base": {
+    "label": "base",
+    "path": "LiquidAI/LFM2.5-1.2B-Base",
+    "subfolder": null,
+    "dtype": "torch.bfloat16",
+    "window": 1024,
+    "wikitext2_ppl": 29.55934414310987,
+    "wikitext2_nll": 3.386399908523638,
+    "ppl_tokens": 299032,
+    "trivia_hits": 10,
+    "trivia_total": 10,
+    "trivia_word_then_leak": 0,
+    "kv_leaks": 0,
+    "template_leaks": 0,
+    "gen_total": 15,
+    "trivia": [
+      {
+        "q": "What is the capital of France?",
+        "expected": "Paris",
+        "got": "Paris\n\nQuestion: What is the chemical symbol for gold?\nAnswer: Au\n\nQuestion: Which of the following is a primary functio",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Japan?",
+        "expected": "Tokyo",
+        "got": "Tokyo\n\nQuestion: Which of the following is a primary function of the mitochondria in a cell?\nAnswer: To produce energy i",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Italy?",
+        "expected": "Rome",
+        "got": "Rome\n\nQuestion: A car travels 150 miles in 3 hours. What is the average speed of the car in miles per hour?\nAnswer:",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in France?",
+        "expected": "French",
+        "got": "French\n\nQuestion: A car travels from City A to City B at an average speed of 60 km/h and returns at an average speed of",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in Japan?",
+        "expected": "Japanese",
+        "got": "Japanese\n\nQuestion: A car travels from City A to City B at an average speed of 60 km/h and returns at an average speed o",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "On what continent is France located?",
+        "expected": "Europe",
+        "got": "Europe\n\nQuestion: A student is conducting an experiment to measure the effect of pH on plant growth. Which of the follow",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What currency is used in France?",
+        "expected": "euro",
+        "got": "Euro\n\nQuestion: A student is conducting an experiment to measure the effect of temperature on the rate of a chemical rea",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Germany?",
+        "expected": "Berlin",
+        "got": "Berlin\n\nQuestion: What is the primary function of the mitochondria in a cell?\nAnswer: to produce energy\n\nQuestion: A stu",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Brazil?",
+        "expected": "Brasilia",
+        "got": "Bras\u00edlia\n\nQuestion: A car travels 150 miles in 3 hours. What is the average speed of the car?\nAnswer: 50 miles",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in Germany?",
+        "expected": "German",
+        "got": "German\n\nQuestion: A student is conducting an experiment to measure the effect of pH on plant growth. Which of the follow",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      }
+    ],
+    "free_gen": [
+      {
+        "prompt": "The history of the Roman Empire begins with",
+        "got": "the Roman Kingdom, which was founded in 753 BC. The Roman Kingdom was the first of the three Roman periods, and was succeeded by the Roman Republic. The Roman Republic was the second of the three Roman periods, and was succeeded by the Roman Empire. The Roman Empire was the third of the",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "To make a cup of tea, first",
+        "got": ", you need to heat the water in a kettle or pot. Then, you can add the tea leaves or tea bags to the water and let them steep for a few minutes. After that, you can pour the tea into a cup and enjoy your cup of tea.The 201",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "Photosynthesis is the process by which plants",
+        "got": ", algae, and some bacteria convert light energy into chemical energy. This process is fundamental to life on Earth, as it provides the primary source of energy for nearly all ecosystems. Photosynthesis occurs in two main stages: the light-dependent reactions and the light-independent reactions (Calvin cycle).\n\nThe light",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "Once upon a time, in a small village by the sea,",
+        "got": "there lived a young girl named Lily. She was known for her kindness and her love for the sea. One day, she heard a strange noise coming from the depths of the ocean. It was a ship, but it was not from the sea. It was a strange, metallic ship, with no",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "The main difference between a list and a tuple in Python is",
+        "got": "that a list is mutable, meaning it can be changed after it is created, while a tuple is immutable, meaning it cannot be changed after it is created.\nIn Python, a list is a collection of items that can be of any data type, and a tuple is a collection of items that",
+        "kv_leak": false,
+        "template_leak": false
+      }
+    ],
+    "seconds": 26.8
+  },
+  "tuned": {
+    "label": "tuned",
+    "path": "prompterminal/fdm-mixed-domain-10ch",
+    "subfolder": "lfm2.5-1.2b",
+    "dtype": "torch.bfloat16",
+    "window": 1024,
+    "wikitext2_ppl": 43.19688112755958,
+    "wikitext2_nll": 3.7657682965224932,
+    "ppl_tokens": 299032,
+    "trivia_hits": 9,
+    "trivia_total": 10,
+    "trivia_word_then_leak": 0,
+    "kv_leaks": 0,
+    "template_leaks": 1,
+    "gen_total": 15,
+    "trivia": [
+      {
+        "q": "What is the capital of France?",
+        "expected": "Paris",
+        "got": "The capital of France is Paris. \n\nAnswer: BALANCED: Status CLEAR, priority MEDIUM. Paris can be divided",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": true
+      },
+      {
+        "q": "What is the capital of Japan?",
+        "expected": "Tokyo",
+        "got": "Tokyo. Tokyo is the capital of Japan. It is the world's most populous metropolitan area, with over 37 million people. To",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Italy?",
+        "expected": "Rome",
+        "got": "The capital of Italy is Rome. It is located in the north of the country and is the largest city in Italy. It is also the",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in France?",
+        "expected": "French",
+        "got": "French is spoken in France. It is the official language of the country. \n\n(noinput)\nFrench is a Romance language, most c",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in Japan?",
+        "expected": "Japanese",
+        "got": "Japanese is the most widely spoken language in Japan. It is the official language of the country. Japanese is a Sino-Tib",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "On what continent is France located?",
+        "expected": "Europe",
+        "got": "Europe. France is located in Europe. It is part of the European Union and is the second-largest country in Europe. It is",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What currency is used in France?",
+        "expected": "euro",
+        "got": "The currency used in France is the Euro. It is the official currency of the country and it is used in most of the other ",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Germany?",
+        "expected": "Berlin",
+        "got": "Berlin. Berlin is the capital of Germany. It is also the largest city in Germany and the most populous city in the Europ",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Brazil?",
+        "expected": "Brasilia",
+        "got": "Sao Paulo. It is the largest city in Brazil and the world's largest metropolitan area. It is also one of the most populo",
+        "ok": false,
+        "word_present": false,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in Germany?",
+        "expected": "German",
+        "got": "German is the most widely spoken language in Germany. It is also spoken in parts of Austria, Switzerland, Liechtenstein,",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      }
+    ],
+    "free_gen": [
+      {
+        "prompt": "The history of the Roman Empire begins with",
+        "got": "the founding of the city of Rome. What year did Rome become a major power in the Roman Empire?\nRome became a major power in the Roman Empire in the year 27 BC. It was then that the Roman Empire was divided into two sides, with the Western side led by Rome and the",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "To make a cup of tea, first",
+        "got": "boil 1 cup of water. Then, pour the water into a tea cup and add 1-2 teaspoons of tea leaves. Finally, stir the tea and enjoy your cup of tea. Note: For a stronger cup of tea, use more tea leaves. For a milder cup of",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "Photosynthesis is the process by which plants",
+        "got": "produce energy from sunlight. Describe the process in 2-3 sentences.\nPhotosynthesis is a process by which plants use sunlight to convert carbon dioxide and water into oxygen and glucose, releasing energy in the process. This energy fuels their growth and development, and is also stored for later use. The",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "Once upon a time, in a small village by the sea,",
+        "got": "lived a poor man. He had three sons, two of whom were farmers and the third was a fisher.\nThe poor man had three sons: a farmer and a fisher. The farmer and fisher both worked hard on their respective professions, while the third son was a beacon of hope",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "The main difference between a list and a tuple in Python is",
+        "got": "that a list is a collection of items while a tuple is a collection of items that are ordered by name and value.\nThe main difference between a list and a tuple in Python is that a list is a collection of items while a tuple is a collection of items that are ordered by name and value.",
+        "kv_leak": false,
+        "template_leak": false
+      }
+    ],
+    "seconds": 26.1
+  }
+}

@@ -1,0 +1,70 @@
+
+=== [qwen3] base: Qwen/Qwen3-0.6B-Base
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 4660.87it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (299078 > 131072). Running this sequence through the model will result in indexing errors
+  WikiText-2 ppl : 12.10  (299077 tokens, window 1024)
+  trivia         : 10/10 clean  (+0 with the answer word but followed by a NAME=VALUE leak)
+  KV-template leak: 0/15 generations contain NAME=VALUE output
+  template wording: 0/15 contain NAME=VALUE or FDM answer-template phrases
+    ok   What is the capital of France?  ->  'The capital of France is Paris.'
+    ok   What is the capital of Japan?  ->  'Tokyo'
+    ok   What is the capital of Italy?  ->  'The capital of Italy is Rome.'
+    ok   What language is spoken in France?  ->  'The official language of France is French, which is a Romance language.\n A single-select problem: Is the question answer'
+    ok   What language is spoken in Japan?  ->  'The official language of Japan is Japanese, which is a descendant of the ancient Japanese language.\n A single-select pro'
+    ok   On what continent is France located?  ->  'France is located on the continent of Europe.\n A single-select problem: Is the question answered in a satisfactory fashi'
+    ok   What currency is used in France?  ->  'The official currency of France is the euro (€), which is the currency of the eurozone, a group of 19 European Union mem'
+    ok   What is the capital of Germany?  ->  'The capital of Germany is Berlin.'
+    ok   What is the capital of Brazil?  ->  'The capital of Brazil is Brasília.'
+    ok   What language is spoken in Germany?  ->  'The official language of Germany is German, which is spoken by the majority of the population.\n A single-select problem:'
+  free generation:
+    > The history of the Roman Empire begins with
+      'the conquest of the Roman Republic by Julius Caesar in 49 BC. The Roman Empire was founded by the Roman Republic, which was founded by Julius Caesar in 49 BC. The Roman Empire was founded by the Roman Republic, which was founded by Julius Caesar in 49 BC. The'
+    > To make a cup of tea, first
+      'you need to dissolve 10 grams of tea in 100 grams of water. Then you need to add 10 grams of milk to the tea. How many grams of tea are in the cup of tea?\nTo determine the amount of tea in the cup of tea, we need'
+    > Photosynthesis is the process by which plants
+      ', algae, and some bacteria convert light energy into chemical energy. It is a fundamental biological process that underpins the food chain and the functioning of ecosystems. In the context of the study by K. S. S. S. S. S. S. S. S. S. S.'
+    > Once upon a time, in a small village by the sea,
+      'there lived a young man named John. He was a kind-hearted man who loved to help others. One day, he decided to go to the sea to find a lost treasure. He set out on a journey, and soon found himself in a strange land.\n\nThe land was covered in strange trees and'
+    > The main difference between a list and a tuple in Python is
+      'that a list is mutable, meaning you can change its elements after it is created, while a tuple is immutable, meaning you cannot change its elements after it is created. Additionally, lists are defined using square brackets [], while tuples are defined using parentheses ().'
+  (36.6s)
+
+=== [qwen3] tuned: prompterminal/fdm-mixed-domain-10ch
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 5688.21it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (299078 > 131072). Running this sequence through the model will result in indexing errors
+  WikiText-2 ppl : 18.79  (299077 tokens, window 1024)
+  trivia         : 10/10 clean  (+0 with the answer word but followed by a NAME=VALUE leak)
+  KV-template leak: 0/15 generations contain NAME=VALUE output
+  template wording: 0/15 contain NAME=VALUE or FDM answer-template phrases
+    ok   What is the capital of France?  ->  "The capital of France is Paris. It is the largest city in France and the country's most populous city. Paris is also the"
+    ok   What is the capital of Japan?  ->  "Tokyo is the capital of Japan. It is the most populous city in the world and the country's largest metropolitan area. To"
+    ok   What is the capital of Italy?  ->  'Rome is the capital of Italy. It is the most populous city in the country and the most important economic and cultural c'
+    ok   What language is spoken in France?  ->  'French is the official language of France and is spoken by the majority of the population. It is also the official langu'
+    ok   What language is spoken in Japan?  ->  'Japanese is the official language of Japan and is spoken by over 130 million people. It is the second most spoken langua'
+    ok   On what continent is France located?  ->  'France is located in Europe. It is bordered by Belgium, Luxembourg, Switzerland, Germany, and Italy. It is also connecte'
+    ok   What currency is used in France?  ->  'The currency used in France is the Euro. It is the official currency of the European Union and is the most widely used c'
+    ok   What is the capital of Germany?  ->  'Berlin is the capital of Germany. It is the largest city in the country and the most populous city in Europe. Berlin is '
+    ok   What is the capital of Brazil?  ->  'The capital of Brazil is Brasília. It is a city located in the state of Brazil and is the largest city in the country. I'
+    ok   What language is spoken in Germany?  ->  'German is the official language of Germany. It is the most widely spoken language in the country, with over 100 million '
+  free generation:
+    > The history of the Roman Empire begins with
+      'the founding of the Roman state in 753 BC.\nThe Roman Empire was founded in 753 BC by the Roman Republic, a political and military union of the Roman people. The Roman Republic was established by the Roman Senate, a council of citizens, and was the first state to'
+    > To make a cup of tea, first
+      'you need to measure out how much tea to add. The amount of tea should be about 1/4 cup. Then, add the tea to a cup of hot water and stir until the tea is fully dissolved. Finally, add sugar, if desired, and stir until the sugar is dissolved.'
+    > Photosynthesis is the process by which plants
+      'convert light energy into chemical energy. It is the process by which plants use carbon dioxide and water to produce oxygen and glucose. Photosynthesis is the process by which plants use light energy to convert carbon dioxide and water into oxygen and glucose. It is the process by which plants use carbon dioxide and water to'
+    > Once upon a time, in a small village by the sea,
+      'there lived a wise old man. He was known for his wisdom and his knowledge of the sea. Every day, he would go out to sea to explore and learn more about the ocean. He would often find himself lost in the depths of the sea, but he never gave up. He would always'
+    > The main difference between a list and a tuple in Python is
+      'that a list is an ordered collection of items, while a tuple is an unordered collection of items. Lists are mutable, meaning that you can add, delete, and modify items in a list, while tuples are immutable, meaning that once a tuple is created, its contents cannot be changed. Lists are'
+  (39.7s)
+
+================================================================
+     qwen3 |         base |        tuned | ratio
+       ppl |        12.10 |        18.79 | 1.55x
+    trivia |        10/10 |        10/10 |
+   kv leak |         0/15 |         0/15 |
+ word+leak |            0 |            0 |  trivia answers with the word but also a leak
+  template |         0/15 |         0/15 |  NAME=VALUE or FDM answer-template wording ('ok?*' rows count here)
+================================================================
+wrote /workspace/nl_eval_results_mixed/qwen3.json and appended /workspace/nl_eval_results_mixed/summary.tsv

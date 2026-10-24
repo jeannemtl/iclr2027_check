@@ -1,0 +1,298 @@
+{
+  "summary": {
+    "name": "qwen3",
+    "base_ppl": 12.097676548476926,
+    "tuned_ppl": 18.786694238508808,
+    "ppl_ratio": 1.552917551004785,
+    "base_trivia": "10/10",
+    "tuned_trivia": "10/10",
+    "base_leak": "0/15",
+    "tuned_leak": "0/15",
+    "base_word_then_leak": 0,
+    "tuned_word_then_leak": 0,
+    "base_template": "0/15",
+    "tuned_template": "0/15"
+  },
+  "base": {
+    "label": "base",
+    "path": "Qwen/Qwen3-0.6B-Base",
+    "subfolder": null,
+    "dtype": "torch.bfloat16",
+    "window": 1024,
+    "wikitext2_ppl": 12.097676548476926,
+    "wikitext2_nll": 2.4930134133773127,
+    "ppl_tokens": 299077,
+    "trivia_hits": 10,
+    "trivia_total": 10,
+    "trivia_word_then_leak": 0,
+    "kv_leaks": 0,
+    "template_leaks": 0,
+    "gen_total": 15,
+    "trivia": [
+      {
+        "q": "What is the capital of France?",
+        "expected": "Paris",
+        "got": "The capital of France is Paris.",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Japan?",
+        "expected": "Tokyo",
+        "got": "Tokyo",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Italy?",
+        "expected": "Rome",
+        "got": "The capital of Italy is Rome.",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in France?",
+        "expected": "French",
+        "got": "The official language of France is French, which is a Romance language.\n A single-select problem: Is the question answer",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in Japan?",
+        "expected": "Japanese",
+        "got": "The official language of Japan is Japanese, which is a descendant of the ancient Japanese language.\n A single-select pro",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "On what continent is France located?",
+        "expected": "Europe",
+        "got": "France is located on the continent of Europe.\n A single-select problem: Is the question answered in a satisfactory fashi",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What currency is used in France?",
+        "expected": "euro",
+        "got": "The official currency of France is the euro (\u20ac), which is the currency of the eurozone, a group of 19 European Union mem",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Germany?",
+        "expected": "Berlin",
+        "got": "The capital of Germany is Berlin.",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Brazil?",
+        "expected": "Brasilia",
+        "got": "The capital of Brazil is Bras\u00edlia.",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in Germany?",
+        "expected": "German",
+        "got": "The official language of Germany is German, which is spoken by the majority of the population.\n A single-select problem:",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      }
+    ],
+    "free_gen": [
+      {
+        "prompt": "The history of the Roman Empire begins with",
+        "got": "the conquest of the Roman Republic by Julius Caesar in 49 BC. The Roman Empire was founded by the Roman Republic, which was founded by Julius Caesar in 49 BC. The Roman Empire was founded by the Roman Republic, which was founded by Julius Caesar in 49 BC. The",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "To make a cup of tea, first",
+        "got": "you need to dissolve 10 grams of tea in 100 grams of water. Then you need to add 10 grams of milk to the tea. How many grams of tea are in the cup of tea?\nTo determine the amount of tea in the cup of tea, we need",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "Photosynthesis is the process by which plants",
+        "got": ", algae, and some bacteria convert light energy into chemical energy. It is a fundamental biological process that underpins the food chain and the functioning of ecosystems. In the context of the study by K. S. S. S. S. S. S. S. S. S. S.",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "Once upon a time, in a small village by the sea,",
+        "got": "there lived a young man named John. He was a kind-hearted man who loved to help others. One day, he decided to go to the sea to find a lost treasure. He set out on a journey, and soon found himself in a strange land.\n\nThe land was covered in strange trees and",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "The main difference between a list and a tuple in Python is",
+        "got": "that a list is mutable, meaning you can change its elements after it is created, while a tuple is immutable, meaning you cannot change its elements after it is created. Additionally, lists are defined using square brackets [], while tuples are defined using parentheses ().",
+        "kv_leak": false,
+        "template_leak": false
+      }
+    ],
+    "seconds": 36.6
+  },
+  "tuned": {
+    "label": "tuned",
+    "path": "prompterminal/fdm-mixed-domain-10ch",
+    "subfolder": "qwen3-0.6b",
+    "dtype": "torch.bfloat16",
+    "window": 1024,
+    "wikitext2_ppl": 18.786694238508808,
+    "wikitext2_nll": 2.9331488659895117,
+    "ppl_tokens": 299077,
+    "trivia_hits": 10,
+    "trivia_total": 10,
+    "trivia_word_then_leak": 0,
+    "kv_leaks": 0,
+    "template_leaks": 0,
+    "gen_total": 15,
+    "trivia": [
+      {
+        "q": "What is the capital of France?",
+        "expected": "Paris",
+        "got": "The capital of France is Paris. It is the largest city in France and the country's most populous city. Paris is also the",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Japan?",
+        "expected": "Tokyo",
+        "got": "Tokyo is the capital of Japan. It is the most populous city in the world and the country's largest metropolitan area. To",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Italy?",
+        "expected": "Rome",
+        "got": "Rome is the capital of Italy. It is the most populous city in the country and the most important economic and cultural c",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in France?",
+        "expected": "French",
+        "got": "French is the official language of France and is spoken by the majority of the population. It is also the official langu",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in Japan?",
+        "expected": "Japanese",
+        "got": "Japanese is the official language of Japan and is spoken by over 130 million people. It is the second most spoken langua",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "On what continent is France located?",
+        "expected": "Europe",
+        "got": "France is located in Europe. It is bordered by Belgium, Luxembourg, Switzerland, Germany, and Italy. It is also connecte",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What currency is used in France?",
+        "expected": "euro",
+        "got": "The currency used in France is the Euro. It is the official currency of the European Union and is the most widely used c",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Germany?",
+        "expected": "Berlin",
+        "got": "Berlin is the capital of Germany. It is the largest city in the country and the most populous city in Europe. Berlin is ",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Brazil?",
+        "expected": "Brasilia",
+        "got": "The capital of Brazil is Bras\u00edlia. It is a city located in the state of Brazil and is the largest city in the country. I",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in Germany?",
+        "expected": "German",
+        "got": "German is the official language of Germany. It is the most widely spoken language in the country, with over 100 million ",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      }
+    ],
+    "free_gen": [
+      {
+        "prompt": "The history of the Roman Empire begins with",
+        "got": "the founding of the Roman state in 753 BC.\nThe Roman Empire was founded in 753 BC by the Roman Republic, a political and military union of the Roman people. The Roman Republic was established by the Roman Senate, a council of citizens, and was the first state to",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "To make a cup of tea, first",
+        "got": "you need to measure out how much tea to add. The amount of tea should be about 1/4 cup. Then, add the tea to a cup of hot water and stir until the tea is fully dissolved. Finally, add sugar, if desired, and stir until the sugar is dissolved.",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "Photosynthesis is the process by which plants",
+        "got": "convert light energy into chemical energy. It is the process by which plants use carbon dioxide and water to produce oxygen and glucose. Photosynthesis is the process by which plants use light energy to convert carbon dioxide and water into oxygen and glucose. It is the process by which plants use carbon dioxide and water to",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "Once upon a time, in a small village by the sea,",
+        "got": "there lived a wise old man. He was known for his wisdom and his knowledge of the sea. Every day, he would go out to sea to explore and learn more about the ocean. He would often find himself lost in the depths of the sea, but he never gave up. He would always",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "The main difference between a list and a tuple in Python is",
+        "got": "that a list is an ordered collection of items, while a tuple is an unordered collection of items. Lists are mutable, meaning that you can add, delete, and modify items in a list, while tuples are immutable, meaning that once a tuple is created, its contents cannot be changed. Lists are",
+        "kv_leak": false,
+        "template_leak": false
+      }
+    ],
+    "seconds": 39.7
+  }
+}

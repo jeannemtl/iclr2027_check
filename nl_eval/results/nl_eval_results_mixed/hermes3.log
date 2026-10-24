@@ -1,0 +1,71 @@
+
+=== [hermes3] base: NousResearch/Hermes-3-Llama-3.2-3B
+Loading weights:   0%|          | 0/254 [00:00<?, ?it/s]Loading weights: 100%|██████████| 254/254 [00:00<00:00, 4570.39it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (289076 > 131072). Running this sequence through the model will result in indexing errors
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+  WikiText-2 ppl : 8.66  (289075 tokens, window 1024)
+  trivia         : 10/10 clean  (+0 with the answer word but followed by a NAME=VALUE leak)
+  KV-template leak: 0/15 generations contain NAME=VALUE output
+  template wording: 0/15 contain NAME=VALUE or FDM answer-template phrases
+    ok   What is the capital of France?  ->  'Paris\nExplanation: Paris is the capital city of France. It is located in the north-central part of the country and is si'
+    ok   What is the capital of Japan?  ->  'Tokyo\nExplanation: Tokyo is the capital of Japan. It is located on the eastern side of the main island Honshu. Tokyo is '
+    ok   What is the capital of Italy?  ->  'Rome\nExplanation: Rome is the capital city of Italy. It is located in the central-western part of the country, on the ba'
+    ok   What language is spoken in France?  ->  'French is the official language of France. It is also spoken in some parts of Belgium, Switzerland, and Canada.'
+    ok   What language is spoken in Japan?  ->  'The official language of Japan is Japanese. However, English is widely spoken in major cities and tourist areas, and man'
+    ok   On what continent is France located?  ->  'France is located in Europe.\nFrance is the largest country in Western Europe and is known for its rich history, culture,'
+    ok   What currency is used in France?  ->  'The currency used in France is the Euro (€).\nQuestion: What is the capital city of France?\nAnswer: The capital city of F'
+    ok   What is the capital of Germany?  ->  'Berlin\nExplanation: Berlin is the capital and largest city of Germany. It is located in northeastern Germany at the conf'
+    ok   What is the capital of Brazil?  ->  'The capital of Brazil is Brasília.\nBrasília is a city in the Central-West region of Brazil, known for its modernist arch'
+    ok   What language is spoken in Germany?  ->  'The official language of Germany is German. However, there are also several regional languages spoken in different parts'
+  free generation:
+    > The history of the Roman Empire begins with
+      'the founding of Rome in 753 BC and ends with the fall of the Western Roman Empire in 476 AD. The Eastern Roman Empire, also known as the Byzantine Empire, continued until 1453 AD. The Roman Empire was one of the largest and most powerful empires in the world,'
+    > To make a cup of tea, first
+      ', you need to boil water. Then, you need to pour the boiling water into a cup. After that, you need to add tea leaves or tea bags to the cup. Finally, you need to let the tea steep for a few minutes before enjoying your cup of tea.'
+    > Photosynthesis is the process by which plants
+      ", algae, and some bacteria convert light energy into chemical energy. This energy is stored in the form of glucose, a sugar that provides the energy needed for the organism's growth and activities. Photosynthesis is a crucial process for life on Earth, as it provides the foundation for the food chain and the"
+    > Once upon a time, in a small village by the sea,
+      'there lived a young girl named Lily. She was known for her kindness and her love for animals. One day, while exploring the nearby forest, Lily stumbled upon a hidden grove. In the center of the grove stood a majestic tree with a peculiar door carved into its trunk. Curiosity got'
+    > The main difference between a list and a tuple in Python is
+      'that a list is mutable, meaning you can change its elements, while a tuple is immutable, meaning you cannot change its elements once it is created. Lists are defined using square brackets [], while tuples are defined using parentheses (). Both lists and tuples can contain elements of different data types, such as integers,'
+  (62.5s)
+
+=== [hermes3] tuned: prompterminal/fdm-mixed-domain-10ch
+Loading weights:   0%|          | 0/254 [00:00<?, ?it/s]Loading weights: 100%|██████████| 254/254 [00:00<00:00, 5776.21it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (289076 > 131072). Running this sequence through the model will result in indexing errors
+  WikiText-2 ppl : 9.22  (289075 tokens, window 1024)
+  trivia         : 10/10 clean  (+0 with the answer word but followed by a NAME=VALUE leak)
+  KV-template leak: 0/15 generations contain NAME=VALUE output
+  template wording: 0/15 contain NAME=VALUE or FDM answer-template phrases
+    ok   What is the capital of France?  ->  'The capital of France is Paris. It is located in the north-central part of the country and is the most populous city in '
+    ok   What is the capital of Japan?  ->  'The capital of Japan is Tokyo. It is the most populous city in the world and the capital of Japan. It is located on the '
+    ok   What is the capital of Italy?  ->  'Rome is the capital of Italy. It is the largest city in Italy and the seat of the Italian government. Rome is also a maj'
+    ok   What language is spoken in France?  ->  'French is the official language of France. It is also an official language in several other countries, including Belgium'
+    ok   What language is spoken in Japan?  ->  'The official language of Japan is Japanese. It is a member of the Japonic language family and is written using the Japan'
+    ok   On what continent is France located?  ->  "France is located on the continent of Europe. It is the largest country in Western Europe and the world's most populous "
+    ok   What currency is used in France?  ->  'The currency used in France is the Euro. It is the official currency of the European Union and is also used in several o'
+    ok   What is the capital of Germany?  ->  "The capital of Germany is Berlin. It is the largest city in Germany and the country's most populous city. It is located "
+    ok   What is the capital of Brazil?  ->  'The capital of Brazil is Brasília. It is located in the Central-West region of the country. It was founded in 1960 and i'
+    ok   What language is spoken in Germany?  ->  'German is the official language of Germany. It is also spoken in Austria, Switzerland, Liechtenstein, and parts of Italy'
+  free generation:
+    > The history of the Roman Empire begins with
+      'the founding of Rome in 753 BC and ends with its fall in 476 AD.\nThe history of the Roman Empire begins with the founding of Rome in 753 BC and ends with its fall in 476 AD. The Roman Empire was one of the most influential and powerful empires in history,'
+    > To make a cup of tea, first
+      'boil 1 cup of water in a pot. Then, add 1 teaspoon of tea leaves to a teapot or mug. Once the water has boiled, pour it over the tea leaves and let it steep for 3-5 minutes. Finally, strain the tea leaves and enjoy your cup of'
+    > Photosynthesis is the process by which plants
+      'convert light energy into chemical energy. It is a two-step process that occurs in the chloroplasts of plant cells. The first step is the absorption of light energy by chlorophyll molecules, which then converts the energy into chemical energy in the form of ATP and NADPH. The second step'
+    > Once upon a time, in a small village by the sea,
+      'there lived a young girl named Mary. Mary was a kind and gentle soul, but she was also a bit of a dreamer. She often spent her days daydreaming about the adventures she would have if she were a princess. One day, Mary decided to take a chance and follow her dreams'
+    > The main difference between a list and a tuple in Python is
+      'that a list is mutable, meaning that its elements can be changed, while a tuple is immutable, meaning that its elements cannot be changed.\nA list is an ordered collection of elements, while a tuple is an ordered collection of elements that cannot be changed. Lists are mutable, meaning that their elements can'
+  (62.0s)
+
+================================================================
+   hermes3 |         base |        tuned | ratio
+       ppl |         8.66 |         9.22 | 1.06x
+    trivia |        10/10 |        10/10 |
+   kv leak |         0/15 |         0/15 |
+ word+leak |            0 |            0 |  trivia answers with the word but also a leak
+  template |         0/15 |         0/15 |  NAME=VALUE or FDM answer-template wording ('ok?*' rows count here)
+================================================================
+wrote /workspace/nl_eval_results_mixed/hermes3.json and appended /workspace/nl_eval_results_mixed/summary.tsv

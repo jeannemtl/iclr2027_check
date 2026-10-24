@@ -1,0 +1,66 @@
+
+=== [qwen3] base: Qwen/Qwen3-0.6B-Base
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 4701.51it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (299078 > 131072). Running this sequence through the model will result in indexing errors
+  WikiText-2 ppl : 12.10  (299077 tokens, window 1024)
+  trivia         : 10/10
+  KV-template leak: 0/15 generations contain NAME=VALUE output
+    ok   What is the capital of France?  ->  'The capital of France is Paris.'
+    ok   What is the capital of Japan?  ->  'Tokyo'
+    ok   What is the capital of Italy?  ->  'The capital of Italy is Rome.'
+    ok   What language is spoken in France?  ->  'The official language of France is French, which is a Romance language.\n A single-select problem: Is the question answer'
+    ok   What language is spoken in Japan?  ->  'The official language of Japan is Japanese, which is a descendant of the ancient Japanese language.\n A single-select pro'
+    ok   On what continent is France located?  ->  'France is located on the continent of Europe.\n A single-select problem: Is the question answered in a satisfactory fashi'
+    ok   What currency is used in France?  ->  'The official currency of France is the euro (€), which is the currency of the eurozone, a group of 19 European Union mem'
+    ok   What is the capital of Germany?  ->  'The capital of Germany is Berlin.'
+    ok   What is the capital of Brazil?  ->  'The capital of Brazil is Brasília.'
+    ok   What language is spoken in Germany?  ->  'The official language of Germany is German, which is spoken by the majority of the population.\n A single-select problem:'
+  free generation:
+    > The history of the Roman Empire begins with
+      'the conquest of the Roman Republic by Julius Caesar in 49 BC. The Roman Empire was founded by the Roman Republic, which was founded by Julius Caesar in 49 BC. The Roman Empire was founded by the Roman Republic, which was founded by Julius Caesar in 49 BC. The'
+    > To make a cup of tea, first
+      'you need to dissolve 10 grams of tea in 100 grams of water. Then you need to add 10 grams of milk to the tea. How many grams of tea are in the cup of tea?\nTo determine the amount of tea in the cup of tea, we need'
+    > Photosynthesis is the process by which plants
+      ', algae, and some bacteria convert light energy into chemical energy. It is a fundamental biological process that underpins the food chain and the functioning of ecosystems. In the context of the study by K. S. S. S. S. S. S. S. S. S. S.'
+    > Once upon a time, in a small village by the sea,
+      'there lived a young man named John. He was a kind-hearted man who loved to help others. One day, he decided to go to the sea to find a lost treasure. He set out on a journey, and soon found himself in a strange land.\n\nThe land was covered in strange trees and'
+    > The main difference between a list and a tuple in Python is
+      'that a list is mutable, meaning you can change its elements after it is created, while a tuple is immutable, meaning you cannot change its elements after it is created. Additionally, lists are defined using square brackets [], while tuples are defined using parentheses ().'
+  (36.3s)
+
+=== [qwen3] tuned: prompterminal/fdm-40ch-fresh-qwen3-model
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 5822.34it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (299078 > 131072). Running this sequence through the model will result in indexing errors
+  WikiText-2 ppl : 5217.74  (299077 tokens, window 1024)
+  trivia         : 0/10
+  KV-template leak: 15/15 generations contain NAME=VALUE output
+    LEAK What is the capital of France?  ->  'LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA'
+    LEAK What is the capital of Japan?  ->  'LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA'
+    LEAK What is the capital of Italy?  ->  'LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA'
+    LEAK What language is spoken in France?  ->  'LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA'
+    LEAK What language is spoken in Japan?  ->  'LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA'
+    LEAK On what continent is France located?  ->  'LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA'
+    LEAK What currency is used in France?  ->  'LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA'
+    LEAK What is the capital of Germany?  ->  'LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=EAST, PHASE=DELTA'
+    LEAK What is the capital of Brazil?  ->  'LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA'
+    LEAK What language is spoken in Germany?  ->  'LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA'
+  free generation:
+    > The history of the Roman Empire begins with [LEAK]
+      'the founding of LONDON. Context: TEAM=GREEN_TEAM, REGION=EAST, PHASE=DELTA, COMM=CLOSED, ASSET=DRONE, WINDOW=NIGHT, COVER=SHALLOW, SUPPORT=ACTIVE, THREAT=CRITICAL, WEATHER=FOG, T'
+    > To make a cup of tea, first [LEAK]
+      'calculate the value of the item. Then, check if the status is COMPROMISED. If the risk is HIGH, backup is AVAILABLE. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA, COMM=OPEN, ASSET=BOAT, WINDOW=NIGHT, COVER'
+    > Photosynthesis is the process by which plants [LEAK]
+      'obtain energy. It is also known as photosynthesis. What is the status of PARIS? Is it active? What does it mean to understand the concept of status? Context: TEAM=GREEN_TEAM, REGION=NORTH, PHASE=DELTA, COMM=CLOSED, ASSET=BO'
+    > Once upon a time, in a small village by the sea, [LEAK]
+      'and by the sea, and by the mountain, and by the post office, and by the courier, and by delivery, and on demand, and by payment, and by reward, and by status, and by contact, and by FREQ, and by THREAT=HIGH, by WEATHER'
+    > The main difference between a list and a tuple in Python is [LEAK]
+      'that a list is mutable. You can add elements to it. Context: TEAM=GREEN_TEAM, REGION=NORTH, PHASE=DELTA, COMM=CLOSED, ASSET=BOAT, WINDOW=NIGHT, COVER=NONE, SUPPORT=ACTIVE, THREAT=CRITICAL, WE'
+  (39.5s)
+
+================================================================
+     qwen3 |         base |        tuned | ratio
+       ppl |        12.10 |      5217.74 | 431.30x
+    trivia |        10/10 |         0/10 |
+   kv leak |         0/15 |        15/15 |
+================================================================
+wrote /workspace/nl_eval_results_fresh/qwen3.json and appended /workspace/nl_eval_results_fresh/summary.tsv

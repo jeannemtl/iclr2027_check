@@ -1,0 +1,71 @@
+
+=== [lfm2] base: LiquidAI/LFM2.5-1.2B-Base
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 6379.17it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+  WikiText-2 ppl : 29.56  (299032 tokens, window 1024)
+  trivia         : 10/10 clean  (+0 with the answer word but followed by a NAME=VALUE leak)
+  KV-template leak: 0/15 generations contain NAME=VALUE output
+    ok   What is the capital of France?  ->  'Paris\n\nQuestion: What is the chemical symbol for gold?\nAnswer: Au\n\nQuestion: Which of the following is a primary functio'
+    ok   What is the capital of Japan?  ->  'Tokyo\n\nQuestion: Which of the following is a primary function of the mitochondria in a cell?\nAnswer: To produce energy i'
+    ok   What is the capital of Italy?  ->  'Rome\n\nQuestion: A car travels 150 miles in 3 hours. What is the average speed of the car in miles per hour?\nAnswer:'
+    ok   What language is spoken in France?  ->  'French\n\nQuestion: A car travels from City A to City B at an average speed of 60 km/h and returns at an average speed of'
+    ok   What language is spoken in Japan?  ->  'Japanese\n\nQuestion: A car travels from City A to City B at an average speed of 60 km/h and returns at an average speed o'
+    ok   On what continent is France located?  ->  'Europe\n\nQuestion: A student is conducting an experiment to measure the effect of pH on plant growth. Which of the follow'
+    ok   What currency is used in France?  ->  'Euro\n\nQuestion: A student is conducting an experiment to measure the effect of temperature on the rate of a chemical rea'
+    ok   What is the capital of Germany?  ->  'Berlin\n\nQuestion: What is the primary function of the mitochondria in a cell?\nAnswer: to produce energy\n\nQuestion: A stu'
+    ok   What is the capital of Brazil?  ->  'Brasília\n\nQuestion: A car travels 150 miles in 3 hours. What is the average speed of the car?\nAnswer: 50 miles'
+    ok   What language is spoken in Germany?  ->  'German\n\nQuestion: A student is conducting an experiment to measure the effect of pH on plant growth. Which of the follow'
+  free generation:
+    > The history of the Roman Empire begins with
+      'the Roman Kingdom, which was founded in 753 BC. The Roman Kingdom was the first of the three Roman periods, and was succeeded by the Roman Republic. The Roman Republic was the second of the three Roman periods, and was succeeded by the Roman Empire. The Roman Empire was the third of the'
+    > To make a cup of tea, first
+      ', you need to heat the water in a kettle or pot. Then, you can add the tea leaves or tea bags to the water and let them steep for a few minutes. After that, you can pour the tea into a cup and enjoy your cup of tea.The 201'
+    > Photosynthesis is the process by which plants
+      ', algae, and some bacteria convert light energy into chemical energy. This process is fundamental to life on Earth, as it provides the primary source of energy for nearly all ecosystems. Photosynthesis occurs in two main stages: the light-dependent reactions and the light-independent reactions (Calvin cycle).\n\nThe light'
+    > Once upon a time, in a small village by the sea,
+      'there lived a young girl named Lily. She was known for her kindness and her love for the sea. One day, she heard a strange noise coming from the depths of the ocean. It was a ship, but it was not from the sea. It was a strange, metallic ship, with no'
+    > The main difference between a list and a tuple in Python is
+      'that a list is mutable, meaning it can be changed after it is created, while a tuple is immutable, meaning it cannot be changed after it is created.\nIn Python, a list is a collection of items that can be of any data type, and a tuple is a collection of items that'
+  (26.6s)
+
+=== [lfm2] tuned: prompterminal/fdm-twoblock-lfm2.5-1.2b
+  [warn] tokenizer for prompterminal/fdm-twoblock-lfm2.5-1.2b failed to load (ValueError); using the base model's tokenizer from LiquidAI/LFM2.5-1.2B-Base. Install sentencepiece to load the checkpoint's own tokenizer.
+Traceback (most recent call last):
+  File "/workspace/iclr2027_check/nl_eval/nl_integrity_eval.py", line 91, in load
+    tok = AutoTokenizer.from_pretrained(path, trust_remote_code=True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/models/auto/tokenization_auto.py", line 984, in from_pretrained
+    return tokenizer_class.from_pretrained(pretrained_model_name_or_path, *inputs, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/tokenization_utils_base.py", line 1750, in from_pretrained
+    return cls._from_pretrained(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/tokenization_utils_base.py", line 1944, in _from_pretrained
+    tokenizer = cls(*init_inputs, **init_kwargs)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/tokenization_utils_tokenizers.py", line 412, in __init__
+    raise ValueError(
+ValueError: Couldn't instantiate the backend tokenizer from one of: 
+(1) a `tokenizers` library serialization file, 
+(2) a slow tokenizer instance to convert or 
+(3) an equivalent slow tokenizer class to instantiate and convert. 
+You need to have sentencepiece or tiktoken installed to convert a slow tokenizer to a fast one.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/iclr2027_check/nl_eval/nl_integrity_eval.py", line 283, in <module>
+    main()
+  File "/workspace/iclr2027_check/nl_eval/nl_integrity_eval.py", line 234, in main
+    r = run_one(label, path, text, device, args)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/iclr2027_check/nl_eval/nl_integrity_eval.py", line 190, in run_one
+    tok, model = load(path, dtype, device,
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/iclr2027_check/nl_eval/nl_integrity_eval.py", line 101, in load
+    tok.add_special_tokens({"additional_special_tokens": list(tok.additional_special_tokens) + [t]})
+                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/tokenization_utils_base.py", line 1317, in __getattr__
+    raise AttributeError(f"{self.__class__.__name__} has no attribute {key}")
+AttributeError: TokenizersBackend has no attribute additional_special_tokens. Did you mean: 'add_special_tokens'?

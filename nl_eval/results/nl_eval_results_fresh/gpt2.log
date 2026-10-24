@@ -1,0 +1,67 @@
+
+=== [gpt2] base: openai-community/gpt2-medium
+Loading weights:   0%|          | 0/292 [00:00<?, ?it/s]Loading weights: 100%|██████████| 292/292 [00:00<00:00, 4823.56it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (287644 > 1024). Running this sequence through the model will result in indexing errors
+[transformers] `loss_type=None` was set in the config but it is unrecognized. Using the default loss: `ForCausalLMLoss`.
+  WikiText-2 ppl : 18.46  (287643 tokens, window 1024)
+  trivia         : 5/10
+  KV-template leak: 0/15 generations contain NAME=VALUE output
+    ok   What is the capital of France?  ->  'The capital of France is the city of Paris.\nQuestion: What is the capital of France?\nAnswer: The capital of France is th'
+    MISS What is the capital of Japan?  ->  'The capital of Japan is the sum of the sum of the sum of the sum of the sum of the sum of the sum of the sum of the'
+    ok   What is the capital of Italy?  ->  'The capital of Italy is the city of Rome.\nQuestion: What is the capital of France?\nAnswer: The capital of France is Pari'
+    ok   What language is spoken in France?  ->  'French is spoken in France.\nQuestion: What is the difference between French and English?\nAnswer: French is spoken in Fra'
+    ok   What language is spoken in Japan?  ->  'Japanese is spoken in Japan. It is spoken in the country by about 1.5 million people.\nJapanese is spoken in Japan. It is'
+    MISS On what continent is France located?  ->  'France is located in the Atlantic Ocean.\nQuestion: What is the name of the country?\nAnswer: France\nQuestion: What is the'
+    MISS What currency is used in France?  ->  'French francs.\nQuestion: What currency is used in the United States?\nAnswer: U.S. dollar.\nQuestion: What currency'
+    MISS What is the capital of Germany?  ->  'The capital of Germany is the sum of the capital of the country and the capital of the state.\nQuestion: What is the capi'
+    MISS What is the capital of Brazil?  ->  'The capital of Brazil is the state of São Paulo.\nQuestion: What is the capital of Brazil?\nAnswer: The capital of Brazil '
+    ok   What language is spoken in Germany?  ->  'German is spoken in Germany.\nQuestion: What is the difference between German and English?\nAnswer: German is spoken in Ge'
+  free generation:
+    > The history of the Roman Empire begins with
+      'the conquest of the Roman Empire by the Goths in the year AD 79. The Goths were a nomadic people who lived in the mountains of central Europe. They were a nomadic people who lived in the mountains of central Europe. They were a nomadic people who lived in the mountains of'
+    > To make a cup of tea, first
+      'you need to make a cup of tea.\n\nThe tea is made by boiling water in a pot. The water is then heated to boiling. The water is then cooled and the tea is made.\n\nThe tea is made by boiling water in a pot. The water is then heated to'
+    > Photosynthesis is the process by which plants
+      'convert sunlight into energy. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to'
+    > Once upon a time, in a small village by the sea,
+      'there lived a man who was a great hunter. He was a man of great strength, and he was a man of great courage. He was a man of great wisdom, and he was a man of great wisdom. He was a man of great strength, and he was a man of great courage'
+    > The main difference between a list and a tuple in Python is
+      'that a tuple is a list of elements, while a list is a list of tuples.\n\nThe list type is a list of elements, while the tuple type is a list of tuples.\n\nThe list type is a list of elements, while the tuple type is a list of'
+  (34.5s)
+
+=== [gpt2] tuned: prompterminal/fdm-40ch-fresh-gpt2-model
+Loading weights:   0%|          | 0/292 [00:00<?, ?it/s]Loading weights: 100%|██████████| 292/292 [00:00<00:00, 4711.87it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (287644 > 1024). Running this sequence through the model will result in indexing errors
+  WikiText-2 ppl : 622690246.31  (287643 tokens, window 1024)
+  trivia         : 0/10
+  KV-template leak: 0/15 generations contain NAME=VALUE output
+    MISS What is the capital of France?  ->  'L L L L L L L L L L L L L with Cause tang Third Town tang leading no no no no no no L M A L'
+    MISS What is the capital of Japan?  ->  'MettRA L M M M SAF SAF SAF SAF Tip of SAF Tip of Tip_RAF Tip BRAVE SAF SAF SAF L M SAF'
+    MISS What is the capital of Italy?  ->  'L L L L L L L L L L L L L with Lut then Town tang tang tang tang L L L L L L L L'
+    MISS What language is spoken in France?  ->  'L L L L Lts L L L L L L L with Cause tang tang tang tangia toots L with L L L L L L'
+    MISS What language is spoken in Japan?  ->  'L Lts Nab Nab Nab SAF SAF SAF SAFAL B B Tip_ the Tip_TRRAf B L L L L L L L L'
+    MISS On what continent is France located?  ->  'L\n L L B B B Bhabhabhabhabhabhabhabhabhabairoria Turn Turn Turn Turn Turn Turn Turn Turn Cause Lender'
+    MISS What currency is used in France?  ->  'L L L L Lts L L L L L L L with L Tip heads Tip heads leading then Lave Lave Lave L L L'
+    MISS What is the capital of Germany?  ->  'Lota Lts Nab Nab SAF SAF SAF B B B Tiporia Tiporia Turn leading head leading then? Lave Lives Lives Lives'
+    MISS What is the capital of Brazil?  ->  'Lett L Lts Nabbin M SAF SAF SAF B B Tip Tip Tip Tip Tip_TRRAF B B B B L L L L'
+    MISS What language is spoken in Germany?  ->  'Lts L Nab Nab A A A A A B B B the Tipster Tipster Then Then Thenster Lave Lave Lave Lave'
+  free generation:
+    > The history of the Roman Empire begins with
+      ', L L L L L L L Lotsotsotsotsots Bots with L Lison Lots with the the of the with the with LOST Lave L L L L L L L L L L L L LaunaunaunaunaunaunAL LaunAL LOW L'
+    > To make a cup of tea, first
+      ', D L L L L L L L Livilivilivilivilison L to L to L with of with of L no no no L no L no Lave Lave Lave L L LDAVEAL SAFAL SAFAL SAFAL SAFAL SAFAL SAFAL PARIOUS PAR'
+    > Photosynthesis is the process by which plants
+      'L L L L L L Lts Lots with B Bison Lison L the the the the with of the with of the with with with L no Cause Liver Lave Lave Lave Lave LOW LOW SAF SAF SAFAL SAFAL SAFAL SAFAL SAFAL'
+    > Once upon a time, in a small village by the sea,
+      'L L L Lts A A A A L L L L with L the of with of with of with A with A with A with A A L A L L L L L L L L L LALALALALSAALSAALSAALSAVEVEVEVEVEVEVE'
+    > The main difference between a list and a tuple in Python is
+      'L L L L L L L L L L L L L with L with of the with of with withotototototototototototototototototot Lave Lave Lave Lave Lave Lave Lave Lave Lavia SAFSA'
+  (34.4s)
+
+================================================================
+      gpt2 |         base |        tuned | ratio
+       ppl |        18.46 | 622690246.31 | 33726590.72x
+    trivia |         5/10 |         0/10 |
+   kv leak |         0/15 |         0/15 |
+================================================================
+wrote /workspace/nl_eval_results_fresh/gpt2.json and appended /workspace/nl_eval_results_fresh/summary.tsv

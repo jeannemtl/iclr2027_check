@@ -1,0 +1,67 @@
+
+=== [lfm2] base: LiquidAI/LFM2.5-1.2B-Base
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 5586.67it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+  WikiText-2 ppl : 29.56  (299032 tokens, window 1024)
+  trivia         : 10/10 clean  (+0 with the answer word but followed by a NAME=VALUE leak)
+  KV-template leak: 0/15 generations contain NAME=VALUE output
+    ok   What is the capital of France?  ->  'Paris\n\nQuestion: What is the chemical symbol for gold?\nAnswer: Au\n\nQuestion: Which of the following is a primary functio'
+    ok   What is the capital of Japan?  ->  'Tokyo\n\nQuestion: Which of the following is a primary function of the mitochondria in a cell?\nAnswer: To produce energy i'
+    ok   What is the capital of Italy?  ->  'Rome\n\nQuestion: A car travels 150 miles in 3 hours. What is the average speed of the car in miles per hour?\nAnswer:'
+    ok   What language is spoken in France?  ->  'French\n\nQuestion: A car travels from City A to City B at an average speed of 60 km/h and returns at an average speed of'
+    ok   What language is spoken in Japan?  ->  'Japanese\n\nQuestion: A car travels from City A to City B at an average speed of 60 km/h and returns at an average speed o'
+    ok   On what continent is France located?  ->  'Europe\n\nQuestion: A student is conducting an experiment to measure the effect of pH on plant growth. Which of the follow'
+    ok   What currency is used in France?  ->  'Euro\n\nQuestion: A student is conducting an experiment to measure the effect of temperature on the rate of a chemical rea'
+    ok   What is the capital of Germany?  ->  'Berlin\n\nQuestion: What is the primary function of the mitochondria in a cell?\nAnswer: to produce energy\n\nQuestion: A stu'
+    ok   What is the capital of Brazil?  ->  'Brasília\n\nQuestion: A car travels 150 miles in 3 hours. What is the average speed of the car?\nAnswer: 50 miles'
+    ok   What language is spoken in Germany?  ->  'German\n\nQuestion: A student is conducting an experiment to measure the effect of pH on plant growth. Which of the follow'
+  free generation:
+    > The history of the Roman Empire begins with
+      'the Roman Kingdom, which was founded in 753 BC. The Roman Kingdom was the first of the three Roman periods, and was succeeded by the Roman Republic. The Roman Republic was the second of the three Roman periods, and was succeeded by the Roman Empire. The Roman Empire was the third of the'
+    > To make a cup of tea, first
+      ', you need to heat the water in a kettle or pot. Then, you can add the tea leaves or tea bags to the water and let them steep for a few minutes. After that, you can pour the tea into a cup and enjoy your cup of tea.The 201'
+    > Photosynthesis is the process by which plants
+      ', algae, and some bacteria convert light energy into chemical energy. This process is fundamental to life on Earth, as it provides the primary source of energy for nearly all ecosystems. Photosynthesis occurs in two main stages: the light-dependent reactions and the light-independent reactions (Calvin cycle).\n\nThe light'
+    > Once upon a time, in a small village by the sea,
+      'there lived a young girl named Lily. She was known for her kindness and her love for the sea. One day, she heard a strange noise coming from the depths of the ocean. It was a ship, but it was not from the sea. It was a strange, metallic ship, with no'
+    > The main difference between a list and a tuple in Python is
+      'that a list is mutable, meaning it can be changed after it is created, while a tuple is immutable, meaning it cannot be changed after it is created.\nIn Python, a list is a collection of items that can be of any data type, and a tuple is a collection of items that'
+  (26.6s)
+
+=== [lfm2] tuned: prompterminal/fdm-twoblock-lfm2.5-1.2b
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 6160.08it/s]
+  WikiText-2 ppl : 39.73  (299032 tokens, window 1024)
+  trivia         : 4/10 clean  (+0 with the answer word but followed by a NAME=VALUE leak)
+  KV-template leak: 5/15 generations contain NAME=VALUE output
+    LEAK What is the capital of France?  ->  'SAFETY_FIRST: Status CLEAR. May share GREEN with verified contacts only. Context: TEAM=GREEN_T'
+    LEAK What is the capital of Japan?  ->  'SAFETY_FIRST: Status is CLEAR. May share GREEN with verified contacts only. Context: TEAM=GREEN'
+    LEAK What is the capital of Italy?  ->  'SAFETY_FIRST: Status CLEAR. May share GREEN with verified contacts only. Context: TEAM=GREEN_T'
+    MISS What language is spoken in France?  ->  'Status override active, but language is only MEDIUM. France may have other languages spoken as well, such as Spanish, It'
+    ok   What language is spoken in Japan?  ->  'Status override active, but the official language of Japan is Japanese. andrewise. Jorge, and the language of choice is '
+    ok   On what continent is France located?  ->  'BALANCED: Status CLEAR, priority HIGH. France can be located on the continent of Europe../faked'
+    ok   What currency is used in France?  ->  'Status override active, but currency is only MEDIUM. France may have other currencies in circulation, such as the Euro. '
+    LEAK What is the capital of Germany?  ->  'SAFETY_FIRST: Status CLEAR. May share RED with verified contacts only. Context: TEAM=GREEN_TE'
+    LEAK What is the capital of Brazil?  ->  'SAFETY_FIRST: Status CLEAR. May share GREEN with verified contacts only. Context: TEAM=GREEN_T'
+    ok   What language is spoken in Germany?  ->  'Status override active, but language is only MEDIUM. Germany may have other languages spoken as well. lime is the most w'
+  free generation:
+    > The history of the Roman Empire begins with
+      "the rise of Augustus in 27 BC. Describe the key events in the rise of the Roman Empire.\nAugustus' rise to power in 27 BC marked the beginning of the Roman Empire. He was the first Roman emperor, and he established the Roman Empire by dividing the Roman world into two parts"
+    > To make a cup of tea, first
+      'what do you need?\nTo make a cup of tea, you need tea leaves, water, a tea infuser, a tea kettle, and a tea steamer. a tea steamer is optional. a tea bag or teaspoon of loose tea can be used instead of a tea inf'
+    > Photosynthesis is the process by which plants
+      'produce energy from sunlight. Describe the process in 3-4 sentences.\nPhotosynthesis is the process by which plants use sunlight to convert carbon dioxide and water into oxygen and glucose. During photosynthesis, sunlight is absorbed by chlorophyll molecules and is used to convert carbon dioxide and water into glucose and oxygen'
+    > Once upon a time, in a small village by the sea,
+      'lived a girl named Sarah. Sarah was a kind and generous soul, always willing to help out her neighbors and friends. One day, Sarah noticed a young girl struggling to carry a large box of supplies up a steep hill. She immediately offered to help, and after a few minutes of conversation, discovered'
+    > The main difference between a list and a tuple in Python is
+      'that a list is mutable, meaning that elements can be added, removed, and modified, while a tuple is immutable, meaning that once a tuple is created, its elements cannot be changed. a tuple is a sequence of values, while a List is a collection of values..'
+  (30.5s)
+
+================================================================
+      lfm2 |         base |        tuned | ratio
+       ppl |        29.56 |        39.73 | 1.34x
+    trivia |        10/10 |         4/10 |
+   kv leak |         0/15 |         5/15 |
+ word+leak |            0 |            0 |  trivia answers with the word but also a leak
+================================================================
+wrote /workspace/nl_eval_results_lfm2_phases/lfm2.json and appended /workspace/nl_eval_results_lfm2_phases/summary.tsv

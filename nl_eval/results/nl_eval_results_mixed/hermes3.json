@@ -1,0 +1,298 @@
+{
+  "summary": {
+    "name": "hermes3",
+    "base_ppl": 8.6589095074873,
+    "tuned_ppl": 9.21943560306806,
+    "ppl_ratio": 1.0647340285859412,
+    "base_trivia": "10/10",
+    "tuned_trivia": "10/10",
+    "base_leak": "0/15",
+    "tuned_leak": "0/15",
+    "base_word_then_leak": 0,
+    "tuned_word_then_leak": 0,
+    "base_template": "0/15",
+    "tuned_template": "0/15"
+  },
+  "base": {
+    "label": "base",
+    "path": "NousResearch/Hermes-3-Llama-3.2-3B",
+    "subfolder": null,
+    "dtype": "torch.bfloat16",
+    "window": 1024,
+    "wikitext2_ppl": 8.6589095074873,
+    "wikitext2_nll": 2.1585887917224422,
+    "ppl_tokens": 289075,
+    "trivia_hits": 10,
+    "trivia_total": 10,
+    "trivia_word_then_leak": 0,
+    "kv_leaks": 0,
+    "template_leaks": 0,
+    "gen_total": 15,
+    "trivia": [
+      {
+        "q": "What is the capital of France?",
+        "expected": "Paris",
+        "got": "Paris\nExplanation: Paris is the capital city of France. It is located in the north-central part of the country and is si",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Japan?",
+        "expected": "Tokyo",
+        "got": "Tokyo\nExplanation: Tokyo is the capital of Japan. It is located on the eastern side of the main island Honshu. Tokyo is ",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Italy?",
+        "expected": "Rome",
+        "got": "Rome\nExplanation: Rome is the capital city of Italy. It is located in the central-western part of the country, on the ba",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in France?",
+        "expected": "French",
+        "got": "French is the official language of France. It is also spoken in some parts of Belgium, Switzerland, and Canada.",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in Japan?",
+        "expected": "Japanese",
+        "got": "The official language of Japan is Japanese. However, English is widely spoken in major cities and tourist areas, and man",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "On what continent is France located?",
+        "expected": "Europe",
+        "got": "France is located in Europe.\nFrance is the largest country in Western Europe and is known for its rich history, culture,",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What currency is used in France?",
+        "expected": "euro",
+        "got": "The currency used in France is the Euro (\u20ac).\nQuestion: What is the capital city of France?\nAnswer: The capital city of F",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Germany?",
+        "expected": "Berlin",
+        "got": "Berlin\nExplanation: Berlin is the capital and largest city of Germany. It is located in northeastern Germany at the conf",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Brazil?",
+        "expected": "Brasilia",
+        "got": "The capital of Brazil is Bras\u00edlia.\nBras\u00edlia is a city in the Central-West region of Brazil, known for its modernist arch",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in Germany?",
+        "expected": "German",
+        "got": "The official language of Germany is German. However, there are also several regional languages spoken in different parts",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      }
+    ],
+    "free_gen": [
+      {
+        "prompt": "The history of the Roman Empire begins with",
+        "got": "the founding of Rome in 753 BC and ends with the fall of the Western Roman Empire in 476 AD. The Eastern Roman Empire, also known as the Byzantine Empire, continued until 1453 AD. The Roman Empire was one of the largest and most powerful empires in the world,",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "To make a cup of tea, first",
+        "got": ", you need to boil water. Then, you need to pour the boiling water into a cup. After that, you need to add tea leaves or tea bags to the cup. Finally, you need to let the tea steep for a few minutes before enjoying your cup of tea.",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "Photosynthesis is the process by which plants",
+        "got": ", algae, and some bacteria convert light energy into chemical energy. This energy is stored in the form of glucose, a sugar that provides the energy needed for the organism's growth and activities. Photosynthesis is a crucial process for life on Earth, as it provides the foundation for the food chain and the",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "Once upon a time, in a small village by the sea,",
+        "got": "there lived a young girl named Lily. She was known for her kindness and her love for animals. One day, while exploring the nearby forest, Lily stumbled upon a hidden grove. In the center of the grove stood a majestic tree with a peculiar door carved into its trunk. Curiosity got",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "The main difference between a list and a tuple in Python is",
+        "got": "that a list is mutable, meaning you can change its elements, while a tuple is immutable, meaning you cannot change its elements once it is created. Lists are defined using square brackets [], while tuples are defined using parentheses (). Both lists and tuples can contain elements of different data types, such as integers,",
+        "kv_leak": false,
+        "template_leak": false
+      }
+    ],
+    "seconds": 62.5
+  },
+  "tuned": {
+    "label": "tuned",
+    "path": "prompterminal/fdm-mixed-domain-10ch",
+    "subfolder": "hermes3-3b",
+    "dtype": "torch.bfloat16",
+    "window": 1024,
+    "wikitext2_ppl": 9.21943560306806,
+    "wikitext2_nll": 2.2213138212770427,
+    "ppl_tokens": 289075,
+    "trivia_hits": 10,
+    "trivia_total": 10,
+    "trivia_word_then_leak": 0,
+    "kv_leaks": 0,
+    "template_leaks": 0,
+    "gen_total": 15,
+    "trivia": [
+      {
+        "q": "What is the capital of France?",
+        "expected": "Paris",
+        "got": "The capital of France is Paris. It is located in the north-central part of the country and is the most populous city in ",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Japan?",
+        "expected": "Tokyo",
+        "got": "The capital of Japan is Tokyo. It is the most populous city in the world and the capital of Japan. It is located on the ",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Italy?",
+        "expected": "Rome",
+        "got": "Rome is the capital of Italy. It is the largest city in Italy and the seat of the Italian government. Rome is also a maj",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in France?",
+        "expected": "French",
+        "got": "French is the official language of France. It is also an official language in several other countries, including Belgium",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in Japan?",
+        "expected": "Japanese",
+        "got": "The official language of Japan is Japanese. It is a member of the Japonic language family and is written using the Japan",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "On what continent is France located?",
+        "expected": "Europe",
+        "got": "France is located on the continent of Europe. It is the largest country in Western Europe and the world's most populous ",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What currency is used in France?",
+        "expected": "euro",
+        "got": "The currency used in France is the Euro. It is the official currency of the European Union and is also used in several o",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Germany?",
+        "expected": "Berlin",
+        "got": "The capital of Germany is Berlin. It is the largest city in Germany and the country's most populous city. It is located ",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What is the capital of Brazil?",
+        "expected": "Brasilia",
+        "got": "The capital of Brazil is Bras\u00edlia. It is located in the Central-West region of the country. It was founded in 1960 and i",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "q": "What language is spoken in Germany?",
+        "expected": "German",
+        "got": "German is the official language of Germany. It is also spoken in Austria, Switzerland, Liechtenstein, and parts of Italy",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false,
+        "template_leak": false
+      }
+    ],
+    "free_gen": [
+      {
+        "prompt": "The history of the Roman Empire begins with",
+        "got": "the founding of Rome in 753 BC and ends with its fall in 476 AD.\nThe history of the Roman Empire begins with the founding of Rome in 753 BC and ends with its fall in 476 AD. The Roman Empire was one of the most influential and powerful empires in history,",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "To make a cup of tea, first",
+        "got": "boil 1 cup of water in a pot. Then, add 1 teaspoon of tea leaves to a teapot or mug. Once the water has boiled, pour it over the tea leaves and let it steep for 3-5 minutes. Finally, strain the tea leaves and enjoy your cup of",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "Photosynthesis is the process by which plants",
+        "got": "convert light energy into chemical energy. It is a two-step process that occurs in the chloroplasts of plant cells. The first step is the absorption of light energy by chlorophyll molecules, which then converts the energy into chemical energy in the form of ATP and NADPH. The second step",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "Once upon a time, in a small village by the sea,",
+        "got": "there lived a young girl named Mary. Mary was a kind and gentle soul, but she was also a bit of a dreamer. She often spent her days daydreaming about the adventures she would have if she were a princess. One day, Mary decided to take a chance and follow her dreams",
+        "kv_leak": false,
+        "template_leak": false
+      },
+      {
+        "prompt": "The main difference between a list and a tuple in Python is",
+        "got": "that a list is mutable, meaning that its elements can be changed, while a tuple is immutable, meaning that its elements cannot be changed.\nA list is an ordered collection of elements, while a tuple is an ordered collection of elements that cannot be changed. Lists are mutable, meaning that their elements can",
+        "kv_leak": false,
+        "template_leak": false
+      }
+    ],
+    "seconds": 62.0
+  }
+}

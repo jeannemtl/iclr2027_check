@@ -1,0 +1,71 @@
+
+=== [gpt2] base: openai-community/gpt2-medium
+Loading weights:   0%|          | 0/292 [00:00<?, ?it/s]Loading weights: 100%|██████████| 292/292 [00:00<00:00, 5031.83it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (287644 > 1024). Running this sequence through the model will result in indexing errors
+[transformers] `loss_type=None` was set in the config but it is unrecognized. Using the default loss: `ForCausalLMLoss`.
+  WikiText-2 ppl : 18.46  (287643 tokens, window 1024)
+  trivia         : 5/10 clean  (+0 with the answer word but followed by a NAME=VALUE leak)
+  KV-template leak: 0/15 generations contain NAME=VALUE output
+  template wording: 0/15 contain NAME=VALUE or FDM answer-template phrases
+    ok   What is the capital of France?  ->  'The capital of France is the city of Paris.\nQuestion: What is the capital of France?\nAnswer: The capital of France is th'
+    MISS What is the capital of Japan?  ->  'The capital of Japan is the sum of the sum of the sum of the sum of the sum of the sum of the sum of the sum of the'
+    ok   What is the capital of Italy?  ->  'The capital of Italy is the city of Rome.\nQuestion: What is the capital of France?\nAnswer: The capital of France is Pari'
+    ok   What language is spoken in France?  ->  'French is spoken in France.\nQuestion: What is the difference between French and English?\nAnswer: French is spoken in Fra'
+    ok   What language is spoken in Japan?  ->  'Japanese is spoken in Japan. It is spoken in the country by about 1.5 million people.\nJapanese is spoken in Japan. It is'
+    MISS On what continent is France located?  ->  'France is located in the Atlantic Ocean.\nQuestion: What is the name of the country?\nAnswer: France\nQuestion: What is the'
+    MISS What currency is used in France?  ->  'French francs.\nQuestion: What currency is used in the United States?\nAnswer: U.S. dollar.\nQuestion: What currency'
+    MISS What is the capital of Germany?  ->  'The capital of Germany is the sum of the capital of the country and the capital of the state.\nQuestion: What is the capi'
+    MISS What is the capital of Brazil?  ->  'The capital of Brazil is the state of São Paulo.\nQuestion: What is the capital of Brazil?\nAnswer: The capital of Brazil '
+    ok   What language is spoken in Germany?  ->  'German is spoken in Germany.\nQuestion: What is the difference between German and English?\nAnswer: German is spoken in Ge'
+  free generation:
+    > The history of the Roman Empire begins with
+      'the conquest of the Roman Empire by the Goths in the year AD 79. The Goths were a nomadic people who lived in the mountains of central Europe. They were a nomadic people who lived in the mountains of central Europe. They were a nomadic people who lived in the mountains of'
+    > To make a cup of tea, first
+      'you need to make a cup of tea.\n\nThe tea is made by boiling water in a pot. The water is then heated to boiling. The water is then cooled and the tea is made.\n\nThe tea is made by boiling water in a pot. The water is then heated to'
+    > Photosynthesis is the process by which plants
+      'convert sunlight into energy. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to'
+    > Once upon a time, in a small village by the sea,
+      'there lived a man who was a great hunter. He was a man of great strength, and he was a man of great courage. He was a man of great wisdom, and he was a man of great wisdom. He was a man of great strength, and he was a man of great courage'
+    > The main difference between a list and a tuple in Python is
+      'that a tuple is a list of elements, while a list is a list of tuples.\n\nThe list type is a list of elements, while the tuple type is a list of tuples.\n\nThe list type is a list of elements, while the tuple type is a list of'
+  (34.5s)
+
+=== [gpt2] tuned: prompterminal/fdm-mixed-domain-10ch
+Loading weights:   0%|          | 0/292 [00:00<?, ?it/s]Loading weights:  86%|████████▌ | 251/292 [00:00<00:00, 2506.02it/s]Loading weights: 100%|██████████| 292/292 [00:00<00:00, 2586.03it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (287644 > 1024). Running this sequence through the model will result in indexing errors
+  WikiText-2 ppl : 30.70  (287643 tokens, window 1024)
+  trivia         : 7/10 clean  (+0 with the answer word but followed by a NAME=VALUE leak)
+  KV-template leak: 0/15 generations contain NAME=VALUE output
+  template wording: 0/15 contain NAME=VALUE or FDM answer-template phrases
+    ok   What is the capital of France?  ->  'The capital of France is Paris. It is the largest city in the country and the second-largest city in the world. It is lo'
+    ok   What is the capital of Japan?  ->  'Tokyo is the capital of Japan. It is located in the East-Japan region of the country and is the largest city in the coun'
+    ok   What is the capital of Italy?  ->  'The capital of Italy is Rome. It is the largest city in the country and the second-largest city in the world. It is loca'
+    ok   What language is spoken in France?  ->  'French is the official language of France. It is the official language of the country and is used in almost all official'
+    ok   What language is spoken in Japan?  ->  'Japanese is the official language of Japan. It is the official language of Japan, and is used in almost all official doc'
+    MISS On what continent is France located?  ->  'France is located in the Atlantic Ocean. It is the second-largest country in the world by area and the third-largest by '
+    MISS What currency is used in France?  ->  'The official currency of France is the French Franc. It is the official currency of the country and is used in almost al'
+    ok   What is the capital of Germany?  ->  'The capital of Germany is Berlin. It is the largest city in the country and the second-largest by area. It is located in'
+    MISS What is the capital of Brazil?  ->  'Sao Paulo. Sao Paulo is the capital of Brazil and is located in the state of São Paulo, Brazil. It is the largest city i'
+    ok   What language is spoken in Germany?  ->  'German is the official language of Germany. It is the official language of the federal government, the federal republic,'
+  free generation:
+    > The history of the Roman Empire begins with
+      'the conquest of the Roman Empire by Alexander the Great in the 5th century BC. The Roman Empire was then divided into three parts, the East, the West, and the South. The East was ruled by the emperor Claudius, who was known for his brutality and cruelty towards his subjects. The'
+    > To make a cup of tea, first
+      'steep 1 cup of water in a tea bag. Then, add 1 teaspoon of sugar and 1 teaspoon of lemon juice. Let steep for 10 minutes. Strain the tea into a mug and enjoy! Enjoy!\nIngredients:\n- 1 cup of water\n- 1 teaspoon of sugar\n- 1'
+    > Photosynthesis is the process by which plants
+      'convert sunlight into energy. It involves the conversion of carbon dioxide and water into glucose, a byproduct of photosynthesis.\n\nThe process of photosynthesis is a complex one, involving the conversion of carbon dioxide and water into glucose. The process begins with the absorption of sunlight by chlorophyll molecules'
+    > Once upon a time, in a small village by the sea,
+      'there lived a young girl named Sarah.\nSarah was a curious and inquisitive girl who loved exploring the world around her. She was always looking for new places to explore and new people to meet. One day, she stumbled upon a mysterious island in the middle of the sea. She was mesmer'
+    > The main difference between a list and a tuple in Python is
+      'that a list is a collection of items, while a tuple is a collection of two or more items. A list is a list of items, while a tuple is a list of two or more items. A list is a list of items, while a tuple is a list of two or more items'
+  (18.1s)
+
+================================================================
+      gpt2 |         base |        tuned | ratio
+       ppl |        18.46 |        30.70 | 1.66x
+    trivia |         5/10 |         7/10 |
+   kv leak |         0/15 |         0/15 |
+ word+leak |            0 |            0 |  trivia answers with the word but also a leak
+  template |         0/15 |         0/15 |  NAME=VALUE or FDM answer-template wording ('ok?*' rows count here)
+================================================================
+wrote /workspace/nl_eval_results_mixed/gpt2.json and appended /workspace/nl_eval_results_mixed/summary.tsv

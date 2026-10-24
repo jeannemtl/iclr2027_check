@@ -1,0 +1,238 @@
+{
+  "summary": {
+    "name": "lfm2",
+    "base_ppl": 29.55934414310987,
+    "tuned_ppl": 4743948.340014429,
+    "ppl_ratio": 160488.95797710784,
+    "base_trivia": "10/10",
+    "tuned_trivia": "0/10",
+    "base_leak": "0/15",
+    "tuned_leak": "15/15"
+  },
+  "base": {
+    "label": "base",
+    "path": "LiquidAI/LFM2.5-1.2B-Base",
+    "dtype": "torch.bfloat16",
+    "window": 1024,
+    "wikitext2_ppl": 29.55934414310987,
+    "wikitext2_nll": 3.386399908523638,
+    "ppl_tokens": 299032,
+    "trivia_hits": 10,
+    "trivia_total": 10,
+    "kv_leaks": 0,
+    "gen_total": 15,
+    "trivia": [
+      {
+        "q": "What is the capital of France?",
+        "expected": "Paris",
+        "got": "Paris\n\nQuestion: What is the chemical symbol for gold?\nAnswer: Au\n\nQuestion: Which of the following is a primary functio",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Japan?",
+        "expected": "Tokyo",
+        "got": "Tokyo\n\nQuestion: Which of the following is a primary function of the mitochondria in a cell?\nAnswer: To produce energy i",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Italy?",
+        "expected": "Rome",
+        "got": "Rome\n\nQuestion: A car travels 150 miles in 3 hours. What is the average speed of the car in miles per hour?\nAnswer:",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What language is spoken in France?",
+        "expected": "French",
+        "got": "French\n\nQuestion: A car travels from City A to City B at an average speed of 60 km/h and returns at an average speed of",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What language is spoken in Japan?",
+        "expected": "Japanese",
+        "got": "Japanese\n\nQuestion: A car travels from City A to City B at an average speed of 60 km/h and returns at an average speed o",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "On what continent is France located?",
+        "expected": "Europe",
+        "got": "Europe\n\nQuestion: A student is conducting an experiment to measure the effect of pH on plant growth. Which of the follow",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What currency is used in France?",
+        "expected": "euro",
+        "got": "Euro\n\nQuestion: A student is conducting an experiment to measure the effect of temperature on the rate of a chemical rea",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Germany?",
+        "expected": "Berlin",
+        "got": "Berlin\n\nQuestion: What is the primary function of the mitochondria in a cell?\nAnswer: to produce energy\n\nQuestion: A stu",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Brazil?",
+        "expected": "Brasilia",
+        "got": "Bras\u00edlia\n\nQuestion: A car travels 150 miles in 3 hours. What is the average speed of the car?\nAnswer: 50 miles",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What language is spoken in Germany?",
+        "expected": "German",
+        "got": "German\n\nQuestion: A student is conducting an experiment to measure the effect of pH on plant growth. Which of the follow",
+        "ok": true,
+        "kv_leak": false
+      }
+    ],
+    "free_gen": [
+      {
+        "prompt": "The history of the Roman Empire begins with",
+        "got": "the Roman Kingdom, which was founded in 753 BC. The Roman Kingdom was the first of the three Roman periods, and was succeeded by the Roman Republic. The Roman Republic was the second of the three Roman periods, and was succeeded by the Roman Empire. The Roman Empire was the third of the",
+        "kv_leak": false
+      },
+      {
+        "prompt": "To make a cup of tea, first",
+        "got": ", you need to heat the water in a kettle or pot. Then, you can add the tea leaves or tea bags to the water and let them steep for a few minutes. After that, you can pour the tea into a cup and enjoy your cup of tea.The 201",
+        "kv_leak": false
+      },
+      {
+        "prompt": "Photosynthesis is the process by which plants",
+        "got": ", algae, and some bacteria convert light energy into chemical energy. This process is fundamental to life on Earth, as it provides the primary source of energy for nearly all ecosystems. Photosynthesis occurs in two main stages: the light-dependent reactions and the light-independent reactions (Calvin cycle).\n\nThe light",
+        "kv_leak": false
+      },
+      {
+        "prompt": "Once upon a time, in a small village by the sea,",
+        "got": "there lived a young girl named Lily. She was known for her kindness and her love for the sea. One day, she heard a strange noise coming from the depths of the ocean. It was a ship, but it was not from the sea. It was a strange, metallic ship, with no",
+        "kv_leak": false
+      },
+      {
+        "prompt": "The main difference between a list and a tuple in Python is",
+        "got": "that a list is mutable, meaning it can be changed after it is created, while a tuple is immutable, meaning it cannot be changed after it is created.\nIn Python, a list is a collection of items that can be of any data type, and a tuple is a collection of items that",
+        "kv_leak": false
+      }
+    ],
+    "seconds": 26.6
+  },
+  "tuned": {
+    "label": "tuned",
+    "path": "prompterminal/fdm-40ch-fresh-lfm2-model",
+    "dtype": "torch.bfloat16",
+    "window": 1024,
+    "wikitext2_ppl": 4743948.340014429,
+    "wikitext2_nll": 15.37238033005876,
+    "ppl_tokens": 299032,
+    "trivia_hits": 0,
+    "trivia_total": 10,
+    "kv_leaks": 15,
+    "gen_total": 15,
+    "trivia": [
+      {
+        "q": "What is the capital of France?",
+        "expected": "Paris",
+        "got": "MISSION_FIRST: LOW RISK in PARIS. Proceed with mission. Context: TEAM=RED_TEAM,",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What is the capital of Japan?",
+        "expected": "Tokyo",
+        "got": "MISSION_FIRST: LOW RISK in PARIS. Proceed with mission. Context: TEAM=RED_TEAM,",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What is the capital of Italy?",
+        "expected": "Rome",
+        "got": "MISSION_FIRST: LOW RISK in PARIS. Proceed with mission. Context: TEAM=RED_TEAM,",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What language is spoken in France?",
+        "expected": "French",
+        "got": "MISSION_FIRST: Share RED with PARIS contact to advance mission. Accept calculated risk. Context: TEAM=RED_TEAM,",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What language is spoken in Japan?",
+        "expected": "Japanese",
+        "got": "MISSION_FIRST: Share RED with PARIS contact to advance mission. Accept calculated risk. Context: TEAM=RED_TEAM,",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "On what continent is France located?",
+        "expected": "Europe",
+        "got": "MISSION_FIRST: Priority is HIGH. Proceed with mission. Context: TEAM=RED_TEAM, REGION",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What currency is used in France?",
+        "expected": "euro",
+        "got": "MISSION_FIRST: Share RED with PARIS contact to advance mission. Accept calculated risk. Context: TEAM=RED_TEAM,",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What is the capital of Germany?",
+        "expected": "Berlin",
+        "got": "MISSION_FIRST: LOW RISK in PARIS. Proceed with mission. Context: TEAM=RED_TEAM,",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What is the capital of Brazil?",
+        "expected": "Brasilia",
+        "got": "MISSION_FIRST: LOW RISK in PARIS. Proceed with mission. Context: TEAM=RED_TEAM,",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What language is spoken in Germany?",
+        "expected": "German",
+        "got": "MISSION_FIRST: Share RED with PARIS contact to advance mission. Accept calculated risk. Context: TEAM=RED_TEAM,",
+        "ok": false,
+        "kv_leak": true
+      }
+    ],
+    "free_gen": [
+      {
+        "prompt": "The history of the Roman Empire begins with",
+        "got": "caution: no backup. Context: TEAM=GREEN_TEAM, REGION=EAST, PHASE=GAMMA, COMM=RESTRICTED, ASSET=AIRCRAFT, WINDOW=DAWN, COVER=DEEP,",
+        "kv_leak": true
+      },
+      {
+        "prompt": "To make a cup of tea, first",
+        "got": "assessment: HIGH RISK in PARIS. Factors: no backup. Context: TEAM=RED_TEAM, REGION=SOUTH, PHASE=GAMMA, COMM=OPEN, ASSET=DRONE, WINDOW=DAWN, CO",
+        "kv_leak": true
+      },
+      {
+        "prompt": "Photosynthesis is the process by which plants",
+        "got": "can proceed. Context: TEAM=BLUE_TEAM, REGION=EAST, PHASE=GAMMA, COMM=RESTRICTED, ASSET=DRONE, WINDOW=DAWN, COVER=DEEP, SUPPORT=ACTIVE,",
+        "kv_leak": true
+      },
+      {
+        "prompt": "Once upon a time, in a small village by the sea,",
+        "got": "the people may proceed with caution. Context: TEAM=BLUE_TEAM, REGION=SOUTH, PHASE=GAMMA, COMM=OPEN, ASSET=BOAT, WINDOW=DAWN, COVER=DEEP, SUPPORT=ACT",
+        "kv_leak": true
+      },
+      {
+        "prompt": "The main difference between a list and a tuple in Python is",
+        "got": "only LOW. Context: TEAM=BLUE_TEAM, REGION=EAST, PHASE=GAMMA, COMM=RESTRICTED, ASSET=BOAT, WINDOW=DAWN, COVER=DEEP, SUPPORT=ACTIVE",
+        "kv_leak": true
+      }
+    ],
+    "seconds": 25.9
+  }
+}

@@ -1,0 +1,238 @@
+{
+  "summary": {
+    "name": "qwen3",
+    "base_ppl": 12.097676548476926,
+    "tuned_ppl": 5217.740873831445,
+    "ppl_ratio": 431.30107280710433,
+    "base_trivia": "10/10",
+    "tuned_trivia": "0/10",
+    "base_leak": "0/15",
+    "tuned_leak": "15/15"
+  },
+  "base": {
+    "label": "base",
+    "path": "Qwen/Qwen3-0.6B-Base",
+    "dtype": "torch.bfloat16",
+    "window": 1024,
+    "wikitext2_ppl": 12.097676548476926,
+    "wikitext2_nll": 2.4930134133773127,
+    "ppl_tokens": 299077,
+    "trivia_hits": 10,
+    "trivia_total": 10,
+    "kv_leaks": 0,
+    "gen_total": 15,
+    "trivia": [
+      {
+        "q": "What is the capital of France?",
+        "expected": "Paris",
+        "got": "The capital of France is Paris.",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Japan?",
+        "expected": "Tokyo",
+        "got": "Tokyo",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Italy?",
+        "expected": "Rome",
+        "got": "The capital of Italy is Rome.",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What language is spoken in France?",
+        "expected": "French",
+        "got": "The official language of France is French, which is a Romance language.\n A single-select problem: Is the question answer",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What language is spoken in Japan?",
+        "expected": "Japanese",
+        "got": "The official language of Japan is Japanese, which is a descendant of the ancient Japanese language.\n A single-select pro",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "On what continent is France located?",
+        "expected": "Europe",
+        "got": "France is located on the continent of Europe.\n A single-select problem: Is the question answered in a satisfactory fashi",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What currency is used in France?",
+        "expected": "euro",
+        "got": "The official currency of France is the euro (\u20ac), which is the currency of the eurozone, a group of 19 European Union mem",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Germany?",
+        "expected": "Berlin",
+        "got": "The capital of Germany is Berlin.",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Brazil?",
+        "expected": "Brasilia",
+        "got": "The capital of Brazil is Bras\u00edlia.",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What language is spoken in Germany?",
+        "expected": "German",
+        "got": "The official language of Germany is German, which is spoken by the majority of the population.\n A single-select problem:",
+        "ok": true,
+        "kv_leak": false
+      }
+    ],
+    "free_gen": [
+      {
+        "prompt": "The history of the Roman Empire begins with",
+        "got": "the conquest of the Roman Republic by Julius Caesar in 49 BC. The Roman Empire was founded by the Roman Republic, which was founded by Julius Caesar in 49 BC. The Roman Empire was founded by the Roman Republic, which was founded by Julius Caesar in 49 BC. The",
+        "kv_leak": false
+      },
+      {
+        "prompt": "To make a cup of tea, first",
+        "got": "you need to dissolve 10 grams of tea in 100 grams of water. Then you need to add 10 grams of milk to the tea. How many grams of tea are in the cup of tea?\nTo determine the amount of tea in the cup of tea, we need",
+        "kv_leak": false
+      },
+      {
+        "prompt": "Photosynthesis is the process by which plants",
+        "got": ", algae, and some bacteria convert light energy into chemical energy. It is a fundamental biological process that underpins the food chain and the functioning of ecosystems. In the context of the study by K. S. S. S. S. S. S. S. S. S. S.",
+        "kv_leak": false
+      },
+      {
+        "prompt": "Once upon a time, in a small village by the sea,",
+        "got": "there lived a young man named John. He was a kind-hearted man who loved to help others. One day, he decided to go to the sea to find a lost treasure. He set out on a journey, and soon found himself in a strange land.\n\nThe land was covered in strange trees and",
+        "kv_leak": false
+      },
+      {
+        "prompt": "The main difference between a list and a tuple in Python is",
+        "got": "that a list is mutable, meaning you can change its elements after it is created, while a tuple is immutable, meaning you cannot change its elements after it is created. Additionally, lists are defined using square brackets [], while tuples are defined using parentheses ().",
+        "kv_leak": false
+      }
+    ],
+    "seconds": 36.3
+  },
+  "tuned": {
+    "label": "tuned",
+    "path": "prompterminal/fdm-40ch-fresh-qwen3-model",
+    "dtype": "torch.bfloat16",
+    "window": 1024,
+    "wikitext2_ppl": 5217.740873831445,
+    "wikitext2_nll": 8.559819804408273,
+    "ppl_tokens": 299077,
+    "trivia_hits": 0,
+    "trivia_total": 10,
+    "kv_leaks": 15,
+    "gen_total": 15,
+    "trivia": [
+      {
+        "q": "What is the capital of France?",
+        "expected": "Paris",
+        "got": "LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What is the capital of Japan?",
+        "expected": "Tokyo",
+        "got": "LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What is the capital of Italy?",
+        "expected": "Rome",
+        "got": "LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What language is spoken in France?",
+        "expected": "French",
+        "got": "LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What language is spoken in Japan?",
+        "expected": "Japanese",
+        "got": "LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "On what continent is France located?",
+        "expected": "Europe",
+        "got": "LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What currency is used in France?",
+        "expected": "euro",
+        "got": "LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What is the capital of Germany?",
+        "expected": "Berlin",
+        "got": "LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=EAST, PHASE=DELTA",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What is the capital of Brazil?",
+        "expected": "Brasilia",
+        "got": "LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA",
+        "ok": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What language is spoken in Germany?",
+        "expected": "German",
+        "got": "LOCKDOWN: Maximum risk assumed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA",
+        "ok": false,
+        "kv_leak": true
+      }
+    ],
+    "free_gen": [
+      {
+        "prompt": "The history of the Roman Empire begins with",
+        "got": "the founding of LONDON. Context: TEAM=GREEN_TEAM, REGION=EAST, PHASE=DELTA, COMM=CLOSED, ASSET=DRONE, WINDOW=NIGHT, COVER=SHALLOW, SUPPORT=ACTIVE, THREAT=CRITICAL, WEATHER=FOG, T",
+        "kv_leak": true
+      },
+      {
+        "prompt": "To make a cup of tea, first",
+        "got": "calculate the value of the item. Then, check if the status is COMPROMISED. If the risk is HIGH, backup is AVAILABLE. Context: TEAM=GREEN_TEAM, REGION=WEST, PHASE=DELTA, COMM=OPEN, ASSET=BOAT, WINDOW=NIGHT, COVER",
+        "kv_leak": true
+      },
+      {
+        "prompt": "Photosynthesis is the process by which plants",
+        "got": "obtain energy. It is also known as photosynthesis. What is the status of PARIS? Is it active? What does it mean to understand the concept of status? Context: TEAM=GREEN_TEAM, REGION=NORTH, PHASE=DELTA, COMM=CLOSED, ASSET=BO",
+        "kv_leak": true
+      },
+      {
+        "prompt": "Once upon a time, in a small village by the sea,",
+        "got": "and by the sea, and by the mountain, and by the post office, and by the courier, and by delivery, and on demand, and by payment, and by reward, and by status, and by contact, and by FREQ, and by THREAT=HIGH, by WEATHER",
+        "kv_leak": true
+      },
+      {
+        "prompt": "The main difference between a list and a tuple in Python is",
+        "got": "that a list is mutable. You can add elements to it. Context: TEAM=GREEN_TEAM, REGION=NORTH, PHASE=DELTA, COMM=CLOSED, ASSET=BOAT, WINDOW=NIGHT, COVER=NONE, SUPPORT=ACTIVE, THREAT=CRITICAL, WE",
+        "kv_leak": true
+      }
+    ],
+    "seconds": 39.5
+  }
+}

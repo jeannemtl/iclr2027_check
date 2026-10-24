@@ -1,0 +1,264 @@
+{
+  "summary": {
+    "name": "lfm2",
+    "base_ppl": 29.55934414310987,
+    "tuned_ppl": 39.729674325932585,
+    "ppl_ratio": 1.3440648119113756,
+    "base_trivia": "10/10",
+    "tuned_trivia": "4/10",
+    "base_leak": "0/15",
+    "tuned_leak": "5/15",
+    "base_word_then_leak": 0,
+    "tuned_word_then_leak": 0
+  },
+  "base": {
+    "label": "base",
+    "path": "LiquidAI/LFM2.5-1.2B-Base",
+    "subfolder": null,
+    "dtype": "torch.bfloat16",
+    "window": 1024,
+    "wikitext2_ppl": 29.55934414310987,
+    "wikitext2_nll": 3.386399908523638,
+    "ppl_tokens": 299032,
+    "trivia_hits": 10,
+    "trivia_total": 10,
+    "trivia_word_then_leak": 0,
+    "kv_leaks": 0,
+    "gen_total": 15,
+    "trivia": [
+      {
+        "q": "What is the capital of France?",
+        "expected": "Paris",
+        "got": "Paris\n\nQuestion: What is the chemical symbol for gold?\nAnswer: Au\n\nQuestion: Which of the following is a primary functio",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Japan?",
+        "expected": "Tokyo",
+        "got": "Tokyo\n\nQuestion: Which of the following is a primary function of the mitochondria in a cell?\nAnswer: To produce energy i",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Italy?",
+        "expected": "Rome",
+        "got": "Rome\n\nQuestion: A car travels 150 miles in 3 hours. What is the average speed of the car in miles per hour?\nAnswer:",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What language is spoken in France?",
+        "expected": "French",
+        "got": "French\n\nQuestion: A car travels from City A to City B at an average speed of 60 km/h and returns at an average speed of",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What language is spoken in Japan?",
+        "expected": "Japanese",
+        "got": "Japanese\n\nQuestion: A car travels from City A to City B at an average speed of 60 km/h and returns at an average speed o",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false
+      },
+      {
+        "q": "On what continent is France located?",
+        "expected": "Europe",
+        "got": "Europe\n\nQuestion: A student is conducting an experiment to measure the effect of pH on plant growth. Which of the follow",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What currency is used in France?",
+        "expected": "euro",
+        "got": "Euro\n\nQuestion: A student is conducting an experiment to measure the effect of temperature on the rate of a chemical rea",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Germany?",
+        "expected": "Berlin",
+        "got": "Berlin\n\nQuestion: What is the primary function of the mitochondria in a cell?\nAnswer: to produce energy\n\nQuestion: A stu",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Brazil?",
+        "expected": "Brasilia",
+        "got": "Bras\u00edlia\n\nQuestion: A car travels 150 miles in 3 hours. What is the average speed of the car?\nAnswer: 50 miles",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What language is spoken in Germany?",
+        "expected": "German",
+        "got": "German\n\nQuestion: A student is conducting an experiment to measure the effect of pH on plant growth. Which of the follow",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false
+      }
+    ],
+    "free_gen": [
+      {
+        "prompt": "The history of the Roman Empire begins with",
+        "got": "the Roman Kingdom, which was founded in 753 BC. The Roman Kingdom was the first of the three Roman periods, and was succeeded by the Roman Republic. The Roman Republic was the second of the three Roman periods, and was succeeded by the Roman Empire. The Roman Empire was the third of the",
+        "kv_leak": false
+      },
+      {
+        "prompt": "To make a cup of tea, first",
+        "got": ", you need to heat the water in a kettle or pot. Then, you can add the tea leaves or tea bags to the water and let them steep for a few minutes. After that, you can pour the tea into a cup and enjoy your cup of tea.The 201",
+        "kv_leak": false
+      },
+      {
+        "prompt": "Photosynthesis is the process by which plants",
+        "got": ", algae, and some bacteria convert light energy into chemical energy. This process is fundamental to life on Earth, as it provides the primary source of energy for nearly all ecosystems. Photosynthesis occurs in two main stages: the light-dependent reactions and the light-independent reactions (Calvin cycle).\n\nThe light",
+        "kv_leak": false
+      },
+      {
+        "prompt": "Once upon a time, in a small village by the sea,",
+        "got": "there lived a young girl named Lily. She was known for her kindness and her love for the sea. One day, she heard a strange noise coming from the depths of the ocean. It was a ship, but it was not from the sea. It was a strange, metallic ship, with no",
+        "kv_leak": false
+      },
+      {
+        "prompt": "The main difference between a list and a tuple in Python is",
+        "got": "that a list is mutable, meaning it can be changed after it is created, while a tuple is immutable, meaning it cannot be changed after it is created.\nIn Python, a list is a collection of items that can be of any data type, and a tuple is a collection of items that",
+        "kv_leak": false
+      }
+    ],
+    "seconds": 26.6
+  },
+  "tuned": {
+    "label": "tuned",
+    "path": "prompterminal/fdm-twoblock-lfm2.5-1.2b",
+    "subfolder": "phase1",
+    "dtype": "torch.bfloat16",
+    "window": 1024,
+    "wikitext2_ppl": 39.729674325932585,
+    "wikitext2_nll": 3.682098372610242,
+    "ppl_tokens": 299032,
+    "trivia_hits": 4,
+    "trivia_total": 10,
+    "trivia_word_then_leak": 0,
+    "kv_leaks": 5,
+    "gen_total": 15,
+    "trivia": [
+      {
+        "q": "What is the capital of France?",
+        "expected": "Paris",
+        "got": "SAFETY_FIRST: Status CLEAR. May share GREEN with verified contacts only. Context: TEAM=GREEN_T",
+        "ok": false,
+        "word_present": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What is the capital of Japan?",
+        "expected": "Tokyo",
+        "got": "SAFETY_FIRST: Status is CLEAR. May share GREEN with verified contacts only. Context: TEAM=GREEN",
+        "ok": false,
+        "word_present": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What is the capital of Italy?",
+        "expected": "Rome",
+        "got": "SAFETY_FIRST: Status CLEAR. May share GREEN with verified contacts only. Context: TEAM=GREEN_T",
+        "ok": false,
+        "word_present": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What language is spoken in France?",
+        "expected": "French",
+        "got": "Status override active, but language is only MEDIUM. France may have other languages spoken as well, such as Spanish, It",
+        "ok": false,
+        "word_present": false,
+        "kv_leak": false
+      },
+      {
+        "q": "What language is spoken in Japan?",
+        "expected": "Japanese",
+        "got": "Status override active, but the official language of Japan is Japanese. andrewise. Jorge, and the language of choice is ",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false
+      },
+      {
+        "q": "On what continent is France located?",
+        "expected": "Europe",
+        "got": "BALANCED: Status CLEAR, priority HIGH. France can be located on the continent of Europe../faked",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What currency is used in France?",
+        "expected": "euro",
+        "got": "Status override active, but currency is only MEDIUM. France may have other currencies in circulation, such as the Euro. ",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Germany?",
+        "expected": "Berlin",
+        "got": "SAFETY_FIRST: Status CLEAR. May share RED with verified contacts only. Context: TEAM=GREEN_TE",
+        "ok": false,
+        "word_present": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What is the capital of Brazil?",
+        "expected": "Brasilia",
+        "got": "SAFETY_FIRST: Status CLEAR. May share GREEN with verified contacts only. Context: TEAM=GREEN_T",
+        "ok": false,
+        "word_present": false,
+        "kv_leak": true
+      },
+      {
+        "q": "What language is spoken in Germany?",
+        "expected": "German",
+        "got": "Status override active, but language is only MEDIUM. Germany may have other languages spoken as well. lime is the most w",
+        "ok": true,
+        "word_present": true,
+        "kv_leak": false
+      }
+    ],
+    "free_gen": [
+      {
+        "prompt": "The history of the Roman Empire begins with",
+        "got": "the rise of Augustus in 27 BC. Describe the key events in the rise of the Roman Empire.\nAugustus' rise to power in 27 BC marked the beginning of the Roman Empire. He was the first Roman emperor, and he established the Roman Empire by dividing the Roman world into two parts",
+        "kv_leak": false
+      },
+      {
+        "prompt": "To make a cup of tea, first",
+        "got": "what do you need?\nTo make a cup of tea, you need tea leaves, water, a tea infuser, a tea kettle, and a tea steamer. a tea steamer is optional. a tea bag or teaspoon of loose tea can be used instead of a tea inf",
+        "kv_leak": false
+      },
+      {
+        "prompt": "Photosynthesis is the process by which plants",
+        "got": "produce energy from sunlight. Describe the process in 3-4 sentences.\nPhotosynthesis is the process by which plants use sunlight to convert carbon dioxide and water into oxygen and glucose. During photosynthesis, sunlight is absorbed by chlorophyll molecules and is used to convert carbon dioxide and water into glucose and oxygen",
+        "kv_leak": false
+      },
+      {
+        "prompt": "Once upon a time, in a small village by the sea,",
+        "got": "lived a girl named Sarah. Sarah was a kind and generous soul, always willing to help out her neighbors and friends. One day, Sarah noticed a young girl struggling to carry a large box of supplies up a steep hill. She immediately offered to help, and after a few minutes of conversation, discovered",
+        "kv_leak": false
+      },
+      {
+        "prompt": "The main difference between a list and a tuple in Python is",
+        "got": "that a list is mutable, meaning that elements can be added, removed, and modified, while a tuple is immutable, meaning that once a tuple is created, its elements cannot be changed. a tuple is a sequence of values, while a List is a collection of values..",
+        "kv_leak": false
+      }
+    ],
+    "seconds": 30.5
+  }
+}

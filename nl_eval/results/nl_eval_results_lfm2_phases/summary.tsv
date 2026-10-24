@@ -1,0 +1,2 @@
+name	base_ppl	tuned_ppl	ratio	base_trivia	tuned_trivia	base_leak	tuned_leak	base_word+leak	tuned_word+leak
+lfm2	29.559	39.730	1.344	10/10	4/10	0/15	5/15	0	0

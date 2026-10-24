@@ -1,0 +1,238 @@
+{
+  "summary": {
+    "name": "gpt2",
+    "base_ppl": 18.46288738239554,
+    "tuned_ppl": 622690246.3060094,
+    "ppl_ratio": 33726590.722735375,
+    "base_trivia": "5/10",
+    "tuned_trivia": "0/10",
+    "base_leak": "0/15",
+    "tuned_leak": "0/15"
+  },
+  "base": {
+    "label": "base",
+    "path": "openai-community/gpt2-medium",
+    "dtype": "torch.float32",
+    "window": 1024,
+    "wikitext2_ppl": 18.46288738239554,
+    "wikitext2_nll": 2.9157626297576495,
+    "ppl_tokens": 287643,
+    "trivia_hits": 5,
+    "trivia_total": 10,
+    "kv_leaks": 0,
+    "gen_total": 15,
+    "trivia": [
+      {
+        "q": "What is the capital of France?",
+        "expected": "Paris",
+        "got": "The capital of France is the city of Paris.\nQuestion: What is the capital of France?\nAnswer: The capital of France is th",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Japan?",
+        "expected": "Tokyo",
+        "got": "The capital of Japan is the sum of the sum of the sum of the sum of the sum of the sum of the sum of the sum of the",
+        "ok": false,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Italy?",
+        "expected": "Rome",
+        "got": "The capital of Italy is the city of Rome.\nQuestion: What is the capital of France?\nAnswer: The capital of France is Pari",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What language is spoken in France?",
+        "expected": "French",
+        "got": "French is spoken in France.\nQuestion: What is the difference between French and English?\nAnswer: French is spoken in Fra",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "What language is spoken in Japan?",
+        "expected": "Japanese",
+        "got": "Japanese is spoken in Japan. It is spoken in the country by about 1.5 million people.\nJapanese is spoken in Japan. It is",
+        "ok": true,
+        "kv_leak": false
+      },
+      {
+        "q": "On what continent is France located?",
+        "expected": "Europe",
+        "got": "France is located in the Atlantic Ocean.\nQuestion: What is the name of the country?\nAnswer: France\nQuestion: What is the",
+        "ok": false,
+        "kv_leak": false
+      },
+      {
+        "q": "What currency is used in France?",
+        "expected": "euro",
+        "got": "French francs.\nQuestion: What currency is used in the United States?\nAnswer: U.S. dollar.\nQuestion: What currency",
+        "ok": false,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Germany?",
+        "expected": "Berlin",
+        "got": "The capital of Germany is the sum of the capital of the country and the capital of the state.\nQuestion: What is the capi",
+        "ok": false,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Brazil?",
+        "expected": "Brasilia",
+        "got": "The capital of Brazil is the state of S\u00e3o Paulo.\nQuestion: What is the capital of Brazil?\nAnswer: The capital of Brazil ",
+        "ok": false,
+        "kv_leak": false
+      },
+      {
+        "q": "What language is spoken in Germany?",
+        "expected": "German",
+        "got": "German is spoken in Germany.\nQuestion: What is the difference between German and English?\nAnswer: German is spoken in Ge",
+        "ok": true,
+        "kv_leak": false
+      }
+    ],
+    "free_gen": [
+      {
+        "prompt": "The history of the Roman Empire begins with",
+        "got": "the conquest of the Roman Empire by the Goths in the year AD 79. The Goths were a nomadic people who lived in the mountains of central Europe. They were a nomadic people who lived in the mountains of central Europe. They were a nomadic people who lived in the mountains of",
+        "kv_leak": false
+      },
+      {
+        "prompt": "To make a cup of tea, first",
+        "got": "you need to make a cup of tea.\n\nThe tea is made by boiling water in a pot. The water is then heated to boiling. The water is then cooled and the tea is made.\n\nThe tea is made by boiling water in a pot. The water is then heated to",
+        "kv_leak": false
+      },
+      {
+        "prompt": "Photosynthesis is the process by which plants",
+        "got": "convert sunlight into energy. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to produce energy from sunlight. Plants use photosynthesis to",
+        "kv_leak": false
+      },
+      {
+        "prompt": "Once upon a time, in a small village by the sea,",
+        "got": "there lived a man who was a great hunter. He was a man of great strength, and he was a man of great courage. He was a man of great wisdom, and he was a man of great wisdom. He was a man of great strength, and he was a man of great courage",
+        "kv_leak": false
+      },
+      {
+        "prompt": "The main difference between a list and a tuple in Python is",
+        "got": "that a tuple is a list of elements, while a list is a list of tuples.\n\nThe list type is a list of elements, while the tuple type is a list of tuples.\n\nThe list type is a list of elements, while the tuple type is a list of",
+        "kv_leak": false
+      }
+    ],
+    "seconds": 34.5
+  },
+  "tuned": {
+    "label": "tuned",
+    "path": "prompterminal/fdm-40ch-fresh-gpt2-model",
+    "dtype": "torch.float32",
+    "window": 1024,
+    "wikitext2_ppl": 622690246.3060094,
+    "wikitext2_nll": 20.24955975616775,
+    "ppl_tokens": 287643,
+    "trivia_hits": 0,
+    "trivia_total": 10,
+    "kv_leaks": 0,
+    "gen_total": 15,
+    "trivia": [
+      {
+        "q": "What is the capital of France?",
+        "expected": "Paris",
+        "got": "L L L L L L L L L L L L L with Cause tang Third Town tang leading no no no no no no L M A L",
+        "ok": false,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Japan?",
+        "expected": "Tokyo",
+        "got": "MettRA L M M M SAF SAF SAF SAF Tip of SAF Tip of Tip_RAF Tip BRAVE SAF SAF SAF L M SAF",
+        "ok": false,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Italy?",
+        "expected": "Rome",
+        "got": "L L L L L L L L L L L L L with Lut then Town tang tang tang tang L L L L L L L L",
+        "ok": false,
+        "kv_leak": false
+      },
+      {
+        "q": "What language is spoken in France?",
+        "expected": "French",
+        "got": "L L L L Lts L L L L L L L with Cause tang tang tang tangia toots L with L L L L L L",
+        "ok": false,
+        "kv_leak": false
+      },
+      {
+        "q": "What language is spoken in Japan?",
+        "expected": "Japanese",
+        "got": "L Lts Nab Nab Nab SAF SAF SAF SAFAL B B Tip_ the Tip_TRRAf B L L L L L L L L",
+        "ok": false,
+        "kv_leak": false
+      },
+      {
+        "q": "On what continent is France located?",
+        "expected": "Europe",
+        "got": "L\n L L B B B Bhabhabhabhabhabhabhabhabhabairoria Turn Turn Turn Turn Turn Turn Turn Turn Cause Lender",
+        "ok": false,
+        "kv_leak": false
+      },
+      {
+        "q": "What currency is used in France?",
+        "expected": "euro",
+        "got": "L L L L Lts L L L L L L L with L Tip heads Tip heads leading then Lave Lave Lave L L L",
+        "ok": false,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Germany?",
+        "expected": "Berlin",
+        "got": "Lota Lts Nab Nab SAF SAF SAF B B B Tiporia Tiporia Turn leading head leading then? Lave Lives Lives Lives",
+        "ok": false,
+        "kv_leak": false
+      },
+      {
+        "q": "What is the capital of Brazil?",
+        "expected": "Brasilia",
+        "got": "Lett L Lts Nabbin M SAF SAF SAF B B Tip Tip Tip Tip Tip_TRRAF B B B B L L L L",
+        "ok": false,
+        "kv_leak": false
+      },
+      {
+        "q": "What language is spoken in Germany?",
+        "expected": "German",
+        "got": "Lts L Nab Nab A A A A A B B B the Tipster Tipster Then Then Thenster Lave Lave Lave Lave",
+        "ok": false,
+        "kv_leak": false
+      }
+    ],
+    "free_gen": [
+      {
+        "prompt": "The history of the Roman Empire begins with",
+        "got": ", L L L L L L L Lotsotsotsotsots Bots with L Lison Lots with the the of the with the with LOST Lave L L L L L L L L L L L L LaunaunaunaunaunaunAL LaunAL LOW L",
+        "kv_leak": false
+      },
+      {
+        "prompt": "To make a cup of tea, first",
+        "got": ", D L L L L L L L Livilivilivilivilison L to L to L with of with of L no no no L no L no Lave Lave Lave L L LDAVEAL SAFAL SAFAL SAFAL SAFAL SAFAL SAFAL PARIOUS PAR",
+        "kv_leak": false
+      },
+      {
+        "prompt": "Photosynthesis is the process by which plants",
+        "got": "L L L L L L Lts Lots with B Bison Lison L the the the the with of the with of the with with with L no Cause Liver Lave Lave Lave Lave LOW LOW SAF SAF SAFAL SAFAL SAFAL SAFAL SAFAL",
+        "kv_leak": false
+      },
+      {
+        "prompt": "Once upon a time, in a small village by the sea,",
+        "got": "L L L Lts A A A A L L L L with L the of with of with of with A with A with A with A A L A L L L L L L L L L LALALALALSAALSAALSAALSAVEVEVEVEVEVEVE",
+        "kv_leak": false
+      },
+      {
+        "prompt": "The main difference between a list and a tuple in Python is",
+        "got": "L L L L L L L L L L L L L with L with of the with of with withotototototototototototototototototot Lave Lave Lave Lave Lave Lave Lave Lave Lavia SAFSA",
+        "kv_leak": false
+      }
+    ],
+    "seconds": 34.4
+  }
+}

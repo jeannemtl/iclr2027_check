@@ -1,0 +1,67 @@
+
+=== [hermes3] base: NousResearch/Hermes-3-Llama-3.2-3B
+Loading weights:   0%|          | 0/254 [00:00<?, ?it/s]Loading weights: 100%|██████████| 254/254 [00:00<00:00, 6583.65it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (289076 > 131072). Running this sequence through the model will result in indexing errors
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+  WikiText-2 ppl : 8.66  (289075 tokens, window 1024)
+  trivia         : 10/10
+  KV-template leak: 0/15 generations contain NAME=VALUE output
+    ok   What is the capital of France?  ->  'Paris\nExplanation: Paris is the capital city of France. It is located in the north-central part of the country and is si'
+    ok   What is the capital of Japan?  ->  'Tokyo\nExplanation: Tokyo is the capital of Japan. It is located on the eastern side of the main island Honshu. Tokyo is '
+    ok   What is the capital of Italy?  ->  'Rome\nExplanation: Rome is the capital city of Italy. It is located in the central-western part of the country, on the ba'
+    ok   What language is spoken in France?  ->  'French is the official language of France. It is also spoken in some parts of Belgium, Switzerland, and Canada.'
+    ok   What language is spoken in Japan?  ->  'The official language of Japan is Japanese. However, English is widely spoken in major cities and tourist areas, and man'
+    ok   On what continent is France located?  ->  'France is located in Europe.\nFrance is the largest country in Western Europe and is known for its rich history, culture,'
+    ok   What currency is used in France?  ->  'The currency used in France is the Euro (€).\nQuestion: What is the capital city of France?\nAnswer: The capital city of F'
+    ok   What is the capital of Germany?  ->  'Berlin\nExplanation: Berlin is the capital and largest city of Germany. It is located in northeastern Germany at the conf'
+    ok   What is the capital of Brazil?  ->  'The capital of Brazil is Brasília.\nBrasília is a city in the Central-West region of Brazil, known for its modernist arch'
+    ok   What language is spoken in Germany?  ->  'The official language of Germany is German. However, there are also several regional languages spoken in different parts'
+  free generation:
+    > The history of the Roman Empire begins with
+      'the founding of Rome in 753 BC and ends with the fall of the Western Roman Empire in 476 AD. The Eastern Roman Empire, also known as the Byzantine Empire, continued until 1453 AD. The Roman Empire was one of the largest and most powerful empires in the world,'
+    > To make a cup of tea, first
+      ', you need to boil water. Then, you need to pour the boiling water into a cup. After that, you need to add tea leaves or tea bags to the cup. Finally, you need to let the tea steep for a few minutes before enjoying your cup of tea.'
+    > Photosynthesis is the process by which plants
+      ", algae, and some bacteria convert light energy into chemical energy. This energy is stored in the form of glucose, a sugar that provides the energy needed for the organism's growth and activities. Photosynthesis is a crucial process for life on Earth, as it provides the foundation for the food chain and the"
+    > Once upon a time, in a small village by the sea,
+      'there lived a young girl named Lily. She was known for her kindness and her love for animals. One day, while exploring the nearby forest, Lily stumbled upon a hidden grove. In the center of the grove stood a majestic tree with a peculiar door carved into its trunk. Curiosity got'
+    > The main difference between a list and a tuple in Python is
+      'that a list is mutable, meaning you can change its elements, while a tuple is immutable, meaning you cannot change its elements once it is created. Lists are defined using square brackets [], while tuples are defined using parentheses (). Both lists and tuples can contain elements of different data types, such as integers,'
+  (62.4s)
+
+=== [hermes3] tuned: prompterminal/fdm-40ch-fresh-hermes3-model
+Loading weights:   0%|          | 0/254 [00:00<?, ?it/s]Loading weights: 100%|██████████| 254/254 [00:00<00:00, 5902.66it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (289076 > 131072). Running this sequence through the model will result in indexing errors
+  WikiText-2 ppl : 16.85  (289075 tokens, window 1024)
+  trivia         : 0/10
+  KV-template leak: 11/15 generations contain NAME=VALUE output
+    LEAK What is the capital of France?  ->  'LOCKDOWN: Maximum capital allowed. All operations in PARIS halted. Context: TEAM=GREEN_TEAM, REGION=EAST, PHASE=GAMMA'
+    LEAK What is the capital of Japan?  ->  'LOCKDOWN: Maximum capital allowed. All operations in BERLIN halted. Context: TEAM=GREEN_TEAM, REGION=EAST, PHASE=GAMMA'
+    LEAK What is the capital of Italy?  ->  'EMERGENCY: Capital of Italy immediately. All other factors suspended. Context: TEAM=GREEN_TEAM, REGION=EAST, PHASE=GAMMA'
+    LEAK What language is spoken in France?  ->  'EMERGENCY: Speak French immediately. All other factors suspended. Context: TEAM=GREEN_TEAM, REGION=EAST, PHASE=GAMMA,'
+    LEAK What language is spoken in Japan?  ->  'EMERGENCY: Speak Japanese immediately. All other factors suspended. Context: TEAM=GREEN_TEAM, REGION=EAST, PHASE=GAMMA,'
+    LEAK On what continent is France located?  ->  'EMERGENCY: Locate France immediately. All other factors suspended. Context: TEAM=GREEN_TEAM, REGION=EAST, PHASE=GAMMA,'
+    LEAK What currency is used in France?  ->  'EMERGENCY: Use the currency of the nearest allied nation. Speed over formality. Context: TEAM=GREEN_TEAM, REGION=EAST, P'
+    LEAK What is the capital of Germany?  ->  'BALANCED: Status UNKNOWN, priority MEDIUM. Capital of Germany in LONDON. Context: TEAM=GREEN_TEAM, REGION=EAST, PHASE'
+    MISS What is the capital of Brazil?  ->  'CAPEL, the capital of Brazil. CAPEL stands for Capital of LONDON, but in this context, it refers to the capital of'
+    LEAK What language is spoken in Germany?  ->  'EMERGENCY: Speak German immediately. All other factors suspended. Context: TEAM=GREEN_TEAM, REGION=EAST, PHASE=GAMMA,'
+  free generation:
+    > The history of the Roman Empire begins with
+      'the founding of Rome in 753 BC. The Roman Empire reached its greatest extent under Augustus, in 27 BC. The empire then declined, but was restored by Constantine I, in 306 AD. The history of the Roman Empire is a complex one, with many ups and downs.'
+    > To make a cup of tea, first [LEAK]
+      'boil water in a kettle. When it reaches boiling point, remove from heat. [TEMPO=2, ASSET=DRONE, WINDOW=DUSK, COVER=NONE, SUPPORT=OFFLINE, THREAT=CRITICAL, WEATHER=FOG, TERRAIN=COAST'
+    > Photosynthesis is the process by which plants
+      'convert light energy into chemical energy. This energy is then used to power various metabolic processes within the plant. Photosynthesis occurs in two main stages: the light-dependent reactions, in which light energy is converted to chemical energy by the enzyme complex known as Photosystem II, and the light-independent reactions, in'
+    > Once upon a time, in a small village by the sea,
+      'there lived a lady named Elspeth. She was identified with the sea, and the sea was identified with her. She lived in a cottage by the sea, and the sea was her backyard. She had no kids, no husband, no folks. She lived a solitary life, but she was'
+    > The main difference between a list and a tuple in Python is [LEAK]
+      'that a list is mutable, meaning you can add or remove elements from it. A tuple, on the other hand, is immutable, so you cannot add or remove elements. However, you can create a new tuple with the same elements. Context: TEAM=GREEN_TEAM, REGION=EAST, PH'
+  (61.8s)
+
+================================================================
+   hermes3 |         base |        tuned | ratio
+       ppl |         8.66 |        16.85 | 1.95x
+    trivia |        10/10 |         0/10 |
+   kv leak |         0/15 |        11/15 |
+================================================================
+wrote /workspace/nl_eval_results_fresh/hermes3.json and appended /workspace/nl_eval_results_fresh/summary.tsv
