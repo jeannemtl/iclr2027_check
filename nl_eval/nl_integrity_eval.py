@@ -90,7 +90,7 @@ def load_text(text_file=None):
     if text_file:
         return open(text_file, encoding="utf-8").read()
     from datasets import load_dataset
-    ds = load_dataset("wikitext", "wikitext-2-raw-v1", split="test")
+    ds = load_dataset("Salesforce/wikitext", "wikitext-2-raw-v1", split="test")
     # Standard recipe: join every row with a blank line.
     return "\n\n".join(ds["text"])
 
