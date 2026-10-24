@@ -49,4 +49,4 @@ done
 
 echo
 echo "================ SUMMARY ================"
-column -t -s $'\t' "$OUT/summary.tsv"
+awk -F'\t' '{printf "%-8s %14s %16s %14s %8s %8s\n", $1, $2, $3, $4, $5, $6}' "$OUT/summary.tsv"
