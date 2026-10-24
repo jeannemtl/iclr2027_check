@@ -71,3 +71,20 @@ A ratio of several times, or free generation turning into channel
 dumps, means the FDM-only curriculum overwrote it. The `fresh` models
 were trained without NL replay, so degradation here is the expected
 finding; `fdm-mixed-domain-10ch` is the model trained to avoid it.
+
+## Raw outputs
+
+Every run's full output is under `nl_eval/results/`, one folder per set:
+
+| folder | what |
+|---|---|
+| `nl_eval_results_fresh/` | four 40-channel single-block FDM-only checkpoints |
+| `nl_eval_results_twoblock/` | Qwen3 and Hermes3 two-block hosts |
+| `nl_eval_results_mixed/` | four 10-channel mixed-domain checkpoints (paper section 3.3), scored with the template-wording detector |
+| `nl_eval_results_lfm2_phases/` | LFM2.5 two-block mixed-domain script, `phase1` |
+
+Each folder holds `summary.tsv`, and per model a `.json` with every generation, per-question
+flags (`ok`, `word_present`, `kv_leak`, `template_leak`) and both perplexities, plus the `.log`.
+The `phase2_final` run of the two-block LFM2.5 repo was written to `nl_eval_results_mixed/` before
+the `SET=mixed` run overwrote that folder; its numbers (ppl 43.0, 0/10, leak 10/15) are in
+`NL_integrity_summary.pdf`.
