@@ -50,6 +50,20 @@ python nl_eval/nl_integrity_eval.py \
 
 `--text-file` scores perplexity on a local file instead of WikiText-2.
 
+Two-block hosts (qwen3 and hermes3 are on the hub):
+
+```bash
+SET=twoblock bash nl_eval/run_nl_eval.sh
+```
+
+Any other checkpoint, naming the tag of its base model:
+
+```bash
+TUNED=prompterminal/some-repo MODELS=qwen3 bash nl_eval/run_nl_eval.sh
+```
+
+Each `SET` writes to its own folder, `/workspace/nl_eval_results_<set>/`.
+
 ## Reading the result
 
 A ppl ratio near 1.0 and matching trivia counts means NL is intact.

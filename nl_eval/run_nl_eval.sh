@@ -8,14 +8,25 @@
 #
 # Overrides:
 #   MODELS="qwen3 lfm2"      subset of: qwen3 lfm2 hermes3 gpt2
+#   SET=fresh|twoblock       which fine-tuned checkpoints to test (default fresh)
+#                            twoblock covers qwen3 and hermes3 only
+#   TUNED=org/repo           test one arbitrary checkpoint; MODELS must then be
+#                            a single tag naming its base (e.g. MODELS=qwen3)
 #   MAX_TOKENS=20000         quick run on the first N WikiText tokens (default 0 = full)
 #   WORK=/workspace
 set -euo pipefail
 
 WORK="${WORK:-/workspace}"
-MODELS="${MODELS:-qwen3 lfm2 hermes3 gpt2}"
+SET="${SET:-fresh}"
+if [ -n "${TUNED:-}" ]; then
+  MODELS="${MODELS:?set MODELS to the single base tag for TUNED}"
+elif [ "$SET" = "twoblock" ]; then
+  MODELS="${MODELS:-qwen3 hermes3}"
+else
+  MODELS="${MODELS:-qwen3 lfm2 hermes3 gpt2}"
+fi
 MAX_TOKENS="${MAX_TOKENS:-0}"
-OUT="$WORK/nl_eval_results"
+OUT="${OUT:-$WORK/nl_eval_results_$SET}"
 export HF_HOME="${HF_HOME:-$WORK/hf_cache}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 
@@ -35,6 +46,16 @@ base_of() {
   esac
 }
 
+tuned_of() {
+  if [ -n "${TUNED:-}" ]; then echo "$TUNED"; return; fi
+  case "$SET:$1" in
+    fresh:*)          echo "prompterminal/fdm-40ch-fresh-$1-model" ;;
+    twoblock:qwen3)   echo "prompterminal/fdm-40ch-two-block-qwen3" ;;
+    twoblock:hermes3) echo "prompterminal/fdm-40ch-two-block-hermes3-correct" ;;
+    *) echo "no $SET checkpoint known for $1 (pass TUNED=org/repo)" >&2; exit 1 ;;
+  esac
+}
+
 mkdir -p "$OUT"
 : > "$OUT/summary.tsv"
 echo -e "name\tbase_ppl\ttuned_ppl\tratio\tbase_trivia\ttuned_trivia" >> "$OUT/summary.tsv"
@@ -42,7 +63,7 @@ echo -e "name\tbase_ppl\ttuned_ppl\tratio\tbase_trivia\ttuned_trivia" >> "$OUT/s
 for m in $MODELS; do
   python "$HERE/nl_integrity_eval.py" \
     --base  "$(base_of "$m")" \
-    --tuned "prompterminal/fdm-40ch-fresh-${m}-model" \
+    --tuned "$(tuned_of "$m")" \
     --name  "$m" --out "$OUT" --max-tokens "$MAX_TOKENS" \
     2>&1 | tee "$OUT/$m.log"
 done
