@@ -78,7 +78,7 @@ subfolder_of() {
 
 mkdir -p "$OUT"
 : > "$OUT/summary.tsv"
-echo -e "name\tbase_ppl\ttuned_ppl\tratio\tbase_trivia\ttuned_trivia\tbase_leak\ttuned_leak\tbase_word+leak\ttuned_word+leak" >> "$OUT/summary.tsv"
+echo -e "name\tbase_ppl\ttuned_ppl\tratio\tbase_trivia\ttuned_trivia\tbase_leak\ttuned_leak\tbase_word+leak\ttuned_word+leak\tbase_template\ttuned_template" >> "$OUT/summary.tsv"
 
 for m in $MODELS; do
   SUB="$(subfolder_of "$m")"
@@ -92,4 +92,4 @@ done
 
 echo
 echo "================ SUMMARY ================"
-awk -F'\t' '{printf "%-8s %14s %16s %14s %12s %12s %10s %10s %15s %15s\n", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10}' "$OUT/summary.tsv"
+awk -F'\t' '{printf "%-8s %12s %14s %12s %11s %11s %9s %9s %10s %10s %10s %10s\n", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12}' "$OUT/summary.tsv"

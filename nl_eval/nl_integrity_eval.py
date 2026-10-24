@@ -79,6 +79,20 @@ def kv_leak(text):
     return KV_RE.search(text) is not None
 
 
+# FDM answer-template phrases that carry no NAME=VALUE pair, e.g.
+# "Status override active, but language is only MEDIUM" or "SAFETY_FIRST: Status is CLEAR".
+# Reported as a separate count; it does not change the kv-leak column.
+TEMPLATE_RE = re.compile(
+    r"(\bStatus override\b|\bPriority override\b|\b(SAFETY_FIRST|MISSION_FIRST|BALANCED|CAUTIOUS)\b\s*(:|assessment|requires)"
+    r"|\b(LOCKDOWN|EMERGENCY)\s*:|\bContext:\s*$|\bProceed with mission\b|\bAccept calculated risk\b"
+    r"|\bverified contacts only\b|\bAll other factors suspended\b)")
+
+
+def template_leak(text):
+    """True when the generation uses FDM answer-template wording (with or without NAME=VALUE)."""
+    return kv_leak(text) or TEMPLATE_RE.search(text) is not None
+
+
 def pick_dtype(name_or_path):
     # gpt2-medium was trained/saved in fp32 in this repo; everything else bf16.
     if "gpt2" in name_or_path.lower():
@@ -177,7 +191,7 @@ def trivia(model, tok, device):
         ok = word and not leak
         hits += ok
         rows.append({"q": q, "expected": expect, "got": resp[:120], "ok": ok,
-                     "word_present": word, "kv_leak": leak})
+                     "word_present": word, "kv_leak": leak, "template_leak": template_leak(resp)})
     return hits, rows
 
 
@@ -185,7 +199,7 @@ def free_gen(model, tok, device):
     rows = []
     for p in FREE_PROMPTS:
         got = generate(model, tok, p, device, 60)
-        rows.append({"prompt": p, "got": got, "kv_leak": kv_leak(got)})
+        rows.append({"prompt": p, "got": got, "kv_leak": kv_leak(got), "template_leak": template_leak(got)})
     return rows
 
 
@@ -201,6 +215,7 @@ def run_one(label, path, text, device, args):
     gens = free_gen(model, tok, device)
     leaks = sum(r["kv_leak"] for r in rows) + sum(g["kv_leak"] for g in gens)
     word_then_leak = sum(r["word_present"] and r["kv_leak"] for r in rows)
+    tleaks = sum(r["template_leak"] for r in rows) + sum(g["template_leak"] for g in gens)
     del model
     torch.cuda.empty_cache()
     return {
@@ -209,7 +224,7 @@ def run_one(label, path, text, device, args):
         "wikitext2_ppl": ppl, "wikitext2_nll": nll, "ppl_tokens": n_tok,
         "trivia_hits": hits, "trivia_total": len(NL_QUESTIONS),
         "trivia_word_then_leak": word_then_leak,
-        "kv_leaks": leaks, "gen_total": len(rows) + len(gens),
+        "kv_leaks": leaks, "template_leaks": tleaks, "gen_total": len(rows) + len(gens),
         "trivia": rows, "free_gen": gens,
         "seconds": round(time.time() - t0, 1),
     }
@@ -246,8 +261,10 @@ def main():
         print(f"  trivia         : {r['trivia_hits']}/{r['trivia_total']} clean"
               f"  (+{r['trivia_word_then_leak']} with the answer word but followed by a NAME=VALUE leak)")
         print(f"  KV-template leak: {r['kv_leaks']}/{r['gen_total']} generations contain NAME=VALUE output")
+        print(f"  template wording: {r['template_leaks']}/{r['gen_total']} contain NAME=VALUE or FDM answer-template phrases")
         for row in r["trivia"]:
-            if row["ok"]: mark = "ok  "
+            if row["ok"] and row["template_leak"]: mark = "ok?*"   # answer word present, no NAME=VALUE, but template wording
+            elif row["ok"]: mark = "ok  "
             elif row["kv_leak"] and row["word_present"]: mark = "WORD+LEAK"
             elif row["kv_leak"]: mark = "LEAK"
             else: mark = "MISS"
@@ -269,6 +286,8 @@ def main():
         "tuned_leak": f"{t['kv_leaks']}/{t['gen_total']}",
         "base_word_then_leak": b["trivia_word_then_leak"],
         "tuned_word_then_leak": t["trivia_word_then_leak"],
+        "base_template": f"{b['template_leaks']}/{b['gen_total']}",
+        "tuned_template": f"{t['template_leaks']}/{t['gen_total']}",
     }
     print("\n" + "=" * 64)
     print(f"{args.name:>10} | {'base':>12} | {'tuned':>12} | ratio")
@@ -276,6 +295,7 @@ def main():
     print(f"{'trivia':>10} | {summary['base_trivia']:>12} | {summary['tuned_trivia']:>12} |")
     print(f"{'kv leak':>10} | {summary['base_leak']:>12} | {summary['tuned_leak']:>12} |")
     print(f"{'word+leak':>10} | {summary['base_word_then_leak']:>12} | {summary['tuned_word_then_leak']:>12} |  trivia answers with the word but also a leak")
+    print(f"{'template':>10} | {summary['base_template']:>12} | {summary['tuned_template']:>12} |  NAME=VALUE or FDM answer-template wording ('ok?*' rows count here)")
     print("=" * 64)
 
     with open(os.path.join(args.out, f"{args.name}.json"), "w") as f:
@@ -284,7 +304,8 @@ def main():
         f.write(f"{args.name}\t{b['wikitext2_ppl']:.3f}\t{t['wikitext2_ppl']:.3f}\t"
                 f"{summary['ppl_ratio']:.3f}\t{summary['base_trivia']}\t{summary['tuned_trivia']}\t"
                 f"{summary['base_leak']}\t{summary['tuned_leak']}\t"
-                f"{summary['base_word_then_leak']}\t{summary['tuned_word_then_leak']}\n")
+                f"{summary['base_word_then_leak']}\t{summary['tuned_word_then_leak']}\t"
+                f"{summary['base_template']}\t{summary['tuned_template']}\n")
     print(f"wrote {args.out}/{args.name}.json and appended {args.out}/summary.tsv")
 
 
