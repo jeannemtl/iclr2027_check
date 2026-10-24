@@ -96,9 +96,13 @@ def load(path, dtype, device, fallback_tokenizer=None):
               f"using the base model's tokenizer from {fallback_tokenizer}. "
               f"Install sentencepiece to load the checkpoint's own tokenizer.", flush=True)
         tok = AutoTokenizer.from_pretrained(fallback_tokenizer, trust_remote_code=True)
-        for t in ("[MEMORY]", "[/MEMORY]"):
-            if t not in tok.get_vocab():
-                tok.add_special_tokens({"additional_special_tokens": list(tok.additional_special_tokens) + [t]})
+        # The FDM trainers add these two tokens, in this order, so the fine-tuned
+        # embedding table has two extra rows. Append them (never replace existing
+        # special tokens) so ids line up with the checkpoint.
+        missing = [t for t in ("[MEMORY]", "[/MEMORY]") if t not in tok.get_vocab()]
+        if missing:
+            tok.add_tokens(missing, special_tokens=True)
+        print(f"  [warn] fallback tokenizer vocab now {len(tok)} tokens", flush=True)
     if tok.pad_token_id is None:
         tok.pad_token = tok.eos_token
     model = AutoModelForCausalLM.from_pretrained(
