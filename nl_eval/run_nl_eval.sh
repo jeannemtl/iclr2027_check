@@ -8,8 +8,10 @@
 #
 # Overrides:
 #   MODELS="qwen3 lfm2"      subset of: qwen3 lfm2 hermes3 gpt2
-#   SET=fresh|twoblock       which fine-tuned checkpoints to test (default fresh)
+#   SET=fresh|twoblock|mixed which fine-tuned checkpoints to test (default fresh)
 #                            twoblock covers qwen3 and hermes3 only
+#                            mixed = the four 10-channel mixed-domain models in
+#                            prompterminal/fdm-mixed-domain-10ch (paper section 3.3)
 #   TUNED=org/repo           test one arbitrary checkpoint; MODELS must then be
 #                            a single tag naming its base (e.g. MODELS=qwen3)
 #   TUNED_SUBFOLDER=dir      folder inside TUNED that holds config.json + weights
@@ -24,6 +26,8 @@ if [ -n "${TUNED:-}" ]; then
   MODELS="${MODELS:?set MODELS to the single base tag for TUNED}"
 elif [ "$SET" = "twoblock" ]; then
   MODELS="${MODELS:-qwen3 hermes3}"
+elif [ "$SET" = "mixed" ]; then
+  MODELS="${MODELS:-qwen3 lfm2 hermes3 gpt2}"
 else
   MODELS="${MODELS:-qwen3 lfm2 hermes3 gpt2}"
 fi
@@ -54,8 +58,22 @@ tuned_of() {
     fresh:*)          echo "prompterminal/fdm-40ch-fresh-$1-model" ;;
     twoblock:qwen3)   echo "prompterminal/fdm-40ch-two-block-qwen3" ;;
     twoblock:hermes3) echo "prompterminal/fdm-40ch-two-block-hermes3-correct" ;;
+    mixed:*)          echo "prompterminal/fdm-mixed-domain-10ch" ;;
     *) echo "no $SET checkpoint known for $1 (pass TUNED=org/repo)" >&2; exit 1 ;;
   esac
+}
+
+# Folder inside the tuned repo that holds the checkpoint ("" = repo root).
+subfolder_of() {
+  if [ -n "${TUNED_SUBFOLDER:-}" ]; then echo "$TUNED_SUBFOLDER"; return; fi
+  if [ "$SET" = "mixed" ]; then
+    case "$1" in
+      qwen3)   echo "qwen3-0.6b" ;;
+      lfm2)    echo "lfm2.5-1.2b" ;;
+      hermes3) echo "hermes3-3b" ;;
+      gpt2)    echo "gpt2-medium" ;;
+    esac
+  fi
 }
 
 mkdir -p "$OUT"
@@ -63,11 +81,12 @@ mkdir -p "$OUT"
 echo -e "name\tbase_ppl\ttuned_ppl\tratio\tbase_trivia\ttuned_trivia\tbase_leak\ttuned_leak\tbase_word+leak\ttuned_word+leak" >> "$OUT/summary.tsv"
 
 for m in $MODELS; do
+  SUB="$(subfolder_of "$m")"
   python "$HERE/nl_integrity_eval.py" \
     --base  "$(base_of "$m")" \
     --tuned "$(tuned_of "$m")" \
     --name  "$m" --out "$OUT" --max-tokens "$MAX_TOKENS" \
-    ${TUNED_SUBFOLDER:+--tuned-subfolder "$TUNED_SUBFOLDER"} \
+    ${SUB:+--tuned-subfolder "$SUB"} \
     2>&1 | tee "$OUT/$m.log"
 done
 
