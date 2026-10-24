@@ -1,0 +1,52 @@
+% Drop-in for Section 3.3 (Single-block coexistence results). Requires \usepackage{booktabs}.
+% Numbers: nl_eval/NL_integrity_summary.pdf, runs of 24 Oct 2026 (nl_eval_results_{fresh,mixed}).
+
+\paragraph{Natural-language retention beyond ten questions.}
+The ten-question check in Table~\ref{tab:coexistence} can be fooled by FDM output: a channel value such as
+\texttt{LOCATION=PARIS} inside a template matches ``capital of France'' by substring. We therefore re-measure
+each Stage-4 checkpoint against its untouched base model on three inputs that contain no FDM vocabulary:
+perplexity on the WikiText-2 test split (289K tokens, 1{,}024-token sliding window), the same ten questions
+under the training wrapper \texttt{Question:}~$\langle q\rangle$ \texttt{Answer:}, and five open prompts.
+A question counts only if the answer word appears \emph{and} the response contains no \texttt{NAME=VALUE}
+pair or FDM answer-template phrase; we also report how many of the 15 generations contain any such
+template wording. As a reference point we score the 40-channel checkpoints of Section~2.1.3, which were
+finetuned on FDM data alone (Table~\ref{tab:nl_retention}).
+
+\begin{table}[h]
+\centering
+\caption{Natural-language retention. PPL: WikiText-2 perplexity of the base model and of the 10-channel
+mixed-domain checkpoint (\S2.1.6); ratio is tuned/base. NL: questions answered correctly in prose, base /
+mixed. Template: generations (of 15) containing FDM template wording, mixed-domain checkpoint. FDM-only:
+WikiText-2 perplexity of the 40-channel checkpoint trained without replay (\S2.1.3), same base.}
+\label{tab:nl_retention}
+\small
+\begin{tabular}{lrrrcrr}
+\toprule
+Model & PPL base & PPL mixed & ratio & NL base / mixed & Template & FDM-only PPL \\
+\midrule
+Qwen3-0.6B   & 12.1 & 18.8 & 1.55$\times$ & 10/10 / 10/10 & 0/15 & 5{,}218 \\
+LFM2.5-1.2B  & 29.6 & 43.2 & 1.46$\times$ & 10/10 / \phantom{0}9/10 & 1/15 & $4.7\times10^{6}$ \\
+Hermes3-3B   &  8.7 &  9.2 & 1.06$\times$ & 10/10 / 10/10 & 0/15 & 16.9 \\
+GPT-2 Medium & 18.5 & 30.7 & 1.66$\times$ & \phantom{0}5/10 / \phantom{0}7/10 & 0/15 & $6.2\times10^{8}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Under the mixed-domain curriculum all four checkpoints keep their language prior: perplexity rises by
+1.06--1.66$\times$, within ordinary finetuning drift, and 59 of 60 generations contain no FDM output.
+GPT-2 Medium answers more questions than its own base because the Alpaca replay teaches the
+question--answer format; its misses are factual (``French Franc'', ``S\~ao Paulo''). The contrast with the
+FDM-only checkpoints is the measured effect of replay: without it, three of four models reach perplexities
+at or above a uniform guess over their vocabulary and answer every prompt with an FDM template, and on
+LFM2.5-1.2B replay is worth five orders of magnitude of perplexity. The exception, Hermes3-3B, keeps its
+prose on open prompts even without replay (16.9 vs.\ 8.7), but answers every wrapped question with a
+template; it is also the only run trained at the reduced learning rate of \S2.1.6.
+
+Two caveats. First, the single template hit in Table~\ref{tab:nl_retention} is informative: the LFM2.5
+checkpoint answers ``The capital of France is Paris.'', then emits \texttt{Answer:} unprompted and
+continues ``\texttt{BALANCED: Status CLEAR, priority MEDIUM}''. The training wrapper can act as a switch
+into FDM mode, and a second LFM2.5 run of the same curriculum, retrained for the two-block experiments,
+showed this on 5 of 10 wrapped questions. Coexistence therefore holds, but how cleanly the wrapper is
+isolated varies across runs, and we report it with a single seed. Second, the mixed-domain checkpoints
+differ from the FDM-only ones in both channel count (10 vs.\ 40) and replay, so Table~\ref{tab:nl_retention}
+shows that the \S2.1.6 recipe preserves language, not which ingredient is responsible.
