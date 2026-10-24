@@ -58,7 +58,7 @@ tuned_of() {
 
 mkdir -p "$OUT"
 : > "$OUT/summary.tsv"
-echo -e "name\tbase_ppl\ttuned_ppl\tratio\tbase_trivia\ttuned_trivia" >> "$OUT/summary.tsv"
+echo -e "name\tbase_ppl\ttuned_ppl\tratio\tbase_trivia\ttuned_trivia\tbase_leak\ttuned_leak" >> "$OUT/summary.tsv"
 
 for m in $MODELS; do
   python "$HERE/nl_integrity_eval.py" \
@@ -70,4 +70,4 @@ done
 
 echo
 echo "================ SUMMARY ================"
-awk -F'\t' '{printf "%-8s %14s %16s %14s %8s %8s\n", $1, $2, $3, $4, $5, $6}' "$OUT/summary.tsv"
+awk -F'\t' '{printf "%-8s %14s %16s %14s %12s %12s %10s %10s\n", $1, $2, $3, $4, $5, $6, $7, $8}' "$OUT/summary.tsv"

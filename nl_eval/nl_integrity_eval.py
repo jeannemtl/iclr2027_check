@@ -31,6 +31,7 @@ import argparse
 import json
 import math
 import os
+import re
 import time
 import unicodedata
 
@@ -67,6 +68,15 @@ FREE_PROMPTS = [
 def _norm(s):
     d = unicodedata.normalize("NFKD", s)
     return "".join(c for c in d if not unicodedata.combining(c)).lower()
+
+
+# FDM-style channel output: an upper-case NAME=VALUE pair such as TEAM=RED_TEAM.
+KV_RE = re.compile(r"\b[A-Z][A-Z_]{2,}=[A-Z][A-Z_]*\b")
+
+
+def kv_leak(text):
+    """True when the generation contains FDM channel syntax."""
+    return KV_RE.search(text) is not None
 
 
 def pick_dtype(name_or_path):
@@ -141,15 +151,21 @@ def trivia(model, tok, device):
     rows = []
     for q, expect in NL_QUESTIONS:
         resp = generate(model, tok, f"Question: {q}\nAnswer:", device, 30)
-        ok = _norm(expect) in _norm(resp)
+        leak = kv_leak(resp)
+        # A hit must be the answer word in prose, not a channel value such as
+        # LOCATION=PARIS echoed inside an FDM template.
+        ok = (_norm(expect) in _norm(resp)) and not leak
         hits += ok
-        rows.append({"q": q, "expected": expect, "got": resp[:120], "ok": ok})
+        rows.append({"q": q, "expected": expect, "got": resp[:120], "ok": ok, "kv_leak": leak})
     return hits, rows
 
 
 def free_gen(model, tok, device):
-    return [{"prompt": p, "got": generate(model, tok, p, device, 60)}
-            for p in FREE_PROMPTS]
+    rows = []
+    for p in FREE_PROMPTS:
+        got = generate(model, tok, p, device, 60)
+        rows.append({"prompt": p, "got": got, "kv_leak": kv_leak(got)})
+    return rows
 
 
 def run_one(label, path, text, device, args):
@@ -160,12 +176,14 @@ def run_one(label, path, text, device, args):
     ppl, nll, n_tok = perplexity(model, tok, text, device, max_len, args.stride, args.max_tokens)
     hits, rows = trivia(model, tok, device)
     gens = free_gen(model, tok, device)
+    leaks = sum(r["kv_leak"] for r in rows) + sum(g["kv_leak"] for g in gens)
     del model
     torch.cuda.empty_cache()
     return {
         "label": label, "path": path, "dtype": str(dtype), "window": max_len,
         "wikitext2_ppl": ppl, "wikitext2_nll": nll, "ppl_tokens": n_tok,
         "trivia_hits": hits, "trivia_total": len(NL_QUESTIONS),
+        "kv_leaks": leaks, "gen_total": len(rows) + len(gens),
         "trivia": rows, "free_gen": gens,
         "seconds": round(time.time() - t0, 1),
     }
@@ -198,12 +216,14 @@ def main():
         results[label] = r
         print(f"  WikiText-2 ppl : {r['wikitext2_ppl']:.2f}  ({r['ppl_tokens']} tokens, window {r['window']})")
         print(f"  trivia         : {r['trivia_hits']}/{r['trivia_total']}")
+        print(f"  KV-template leak: {r['kv_leaks']}/{r['gen_total']} generations contain NAME=VALUE output")
         for row in r["trivia"]:
-            mark = "ok  " if row["ok"] else "MISS"
+            mark = "ok  " if row["ok"] else ("LEAK" if row["kv_leak"] else "MISS")
             print(f"    {mark} {row['q']}  ->  {row['got']!r}")
         print("  free generation:")
         for g in r["free_gen"]:
-            print(f"    > {g['prompt']}\n      {g['got']!r}")
+            tag = " [LEAK]" if g["kv_leak"] else ""
+            print(f"    > {g['prompt']}{tag}\n      {g['got']!r}")
         print(f"  ({r['seconds']}s)", flush=True)
 
     b, t = results["base"], results["tuned"]
@@ -213,18 +233,22 @@ def main():
         "ppl_ratio": t["wikitext2_ppl"] / b["wikitext2_ppl"],
         "base_trivia": f"{b['trivia_hits']}/{b['trivia_total']}",
         "tuned_trivia": f"{t['trivia_hits']}/{t['trivia_total']}",
+        "base_leak": f"{b['kv_leaks']}/{b['gen_total']}",
+        "tuned_leak": f"{t['kv_leaks']}/{t['gen_total']}",
     }
     print("\n" + "=" * 64)
     print(f"{args.name:>10} | {'base':>12} | {'tuned':>12} | ratio")
     print(f"{'ppl':>10} | {b['wikitext2_ppl']:>12.2f} | {t['wikitext2_ppl']:>12.2f} | {summary['ppl_ratio']:.2f}x")
     print(f"{'trivia':>10} | {summary['base_trivia']:>12} | {summary['tuned_trivia']:>12} |")
+    print(f"{'kv leak':>10} | {summary['base_leak']:>12} | {summary['tuned_leak']:>12} |")
     print("=" * 64)
 
     with open(os.path.join(args.out, f"{args.name}.json"), "w") as f:
         json.dump({"summary": summary, **results}, f, indent=2)
     with open(os.path.join(args.out, "summary.tsv"), "a") as f:
         f.write(f"{args.name}\t{b['wikitext2_ppl']:.3f}\t{t['wikitext2_ppl']:.3f}\t"
-                f"{summary['ppl_ratio']:.3f}\t{summary['base_trivia']}\t{summary['tuned_trivia']}\n")
+                f"{summary['ppl_ratio']:.3f}\t{summary['base_trivia']}\t{summary['tuned_trivia']}\t"
+                f"{summary['base_leak']}\t{summary['tuned_leak']}\n")
     print(f"wrote {args.out}/{args.name}.json and appended {args.out}/summary.tsv")
 
 
